@@ -318,107 +318,18 @@ export default function NumerologyPage() {
       // Personalized Introduction Note
       addText(`Dear ${targetName},`, 11, false);
       currentY += 2;
-      addText(`How to Use Your AuraEye(™) Numerology, Chakra & Aura Report
-
-Dear (client name)
-Welcome to your AuraEye™ Numerology & Energy Guidance Report.
-This personalized AuraEye™ report has been thoughtfully prepared for you by your Licensed Healer: (insert healer name). Anytime you wish to connect with them you can reach out on their contact information provided separately.
-
-This report reflects the current state of your energetic field — a living snapshot of your emotions, thoughts,
-and vibrational balance at this moment. Each number resonates to a particular planet and specific chakra in your energy body. The colours of the chakra, aura colours and planets might not resonate in classical astrology or numerological sense to you but the qualities of each planet will when you understand the correlation of them with the 9 chakras in the spiritual body.
-
-Please remember: this report is not a medical or psychological diagnosis. Instead, it is a tool for
-self-awareness, empowerment, and energetic guidance — designed to help you understand where your
-energy flows freely and where it seeks harmony.
-This report is designed as a self-awareness and alignment tool, not a prediction of fate. It helps you understand how numbers, chakras, and aura patterns reflect your current energetic tendencies—and how you can consciously work with them.
-Numerology
- Numerology is based on the idea that numbers carry symbolic patterns of energy. Your birth date generates specific numbers that describe:
-●       How you express yourself
-
-●       How you make decisions
-
-●       What lessons repeat in your life
-
-●       Which energies feel natural or challenging to you
-
-These numbers do not control your life. They simply highlight tendencies—much like a personality map.
-Chakras & Aura
- Chakras are energy centers associated with emotions, behavior, and focus areas in life.
- Your aura reflects how balanced or stressed these centers are right now.
-Just like your heart rate or mood changes daily, your aura and chakra balance also changes with:
-●       Thoughts
-
-●       Emotions
-
-●       Habits
-
-●       Actions (karma)
-
-This is why the report is a snapshot, not a fixed identity.
-________________________________________
-How to Use This Report Practically
-1. Use it as a mirror, not a label
- Read each section as feedback—not judgment.
- If something resonates, observe it.
- If something doesn’t, ignore it without forcing belief.
-2. Follow the Monthly Guidance
- Your Personal Month sections show what type of energy is most active during that month.
-●       Some months support action
-
-●       Some support reflection
-
-●       Some support healing or completion
-
-Work with the month instead of resisting it.
-3. Apply the Remedies Gently
- Remedies (colors, mantras, crystals, journaling, affirmations) are:
-●       Tools to support focus and awareness
-
-●       Not magical shortcuts
-
-●       Not compulsory
-
-Choose 1–2 remedies per month and practice them consistently rather than doing everything.
-4. Yearly vs Monthly Use
-●       Yearly theme → sets the broader focus
-
-●       Monthly themes → guide your short-term actions and mindset
-
-Think of the year as the climate and the months as the weather.
-________________________________________
-A Very Important Reminder
-This report does not decide your future.
-Your results depend on:
-●       Your actions
-
-●       Your choices
-
-●       Your discipline
-
-●       Your effort
-
-●       Your karma (what you repeatedly do)
-
-Numerology and chakra insights can support your journey—but they cannot replace action.
-Awareness without effort changes nothing.
- Effort aligned with awareness changes everything.
-Use this report as:
-●       A compass, not a command
-
-●       A support system, not a dependency
-
-●       A guide, not a guarantee
-
-Your growth is ultimately created by what you choose to do next.
-With awareness and responsibility,
- Team AuraEye™
- Your Energy, Made Visible.
-
-Disclaimer: This AuraEye™ report and any guidance provided by AuraEye™, its platform, or its licensed healers is intended solely for self-awareness, personal reflection, and spiritual or wellness support. It does not constitute and should not be considered a prediction, guarantee, diagnosis, treatment, or professional advice of any kind, including but not limited to medical, psychological, psychiatric, legal, or financial advice. AuraEye™ does not claim to diagnose, treat, cure, or prevent any condition. All insights are symbolic and interpretive in nature, and outcomes depend entirely on the user’s free will, personal choices, actions, and efforts. Users are advised to consult qualified professionals for any medical, mental health, legal, or financial concerns.`, 10);
+      addText(`This personalized AuraEye™ report has been thoughtfully prepared for you by your Licensed Healer. Anytime you wish to connect with them you can reach out on their contact information provided separately.`, 10);
       currentY += 2;
-      
-      
-     
+      addText(`This report reflects the current state of your energetic field — a living snapshot of your emotions, thoughts, and vibrational balance in this moment.`, 10);
+      currentY += 2;
+      addText(`Please remember: this report is not a medical or psychological diagnosis. Instead, it is a tool for self-awareness, empowerment, and energetic guidance — designed to help you understand where your energy flows freely and where it seeks harmony.`, 10);
+      currentY += 2;
+      addText(`Your aura changes—just like your ECG, EEG, or pulse rate—because it reflects your living energy in real time. That's precisely what makes it reliable and empowering: it shows your current state and reminds you that your energy, like your health, can be improved and transformed with awareness.`, 10);
+      currentY += 2;
+      addText(`Use these insights & the guidance of your healer to support your healing journey, strengthen your intuition, and make conscious choices that align your body, mind, and soul.`, 10);
+      currentY += 4;
+      addText(`With light and awareness,`, 10);
+      addText(`Team AuraEye™ "Your Energy, Made Visible."`, 10, true);
       currentY += 8;
 
       // Core Numbers Section
@@ -947,156 +858,60 @@ Disclaimer: This AuraEye™ report and any guidance provided by AuraEye™, its 
     };
   };
 
-  // Comprehensive Personal Month data interface
-  interface PersonalMonthData {
-    title: string;
-    description: string;
-    theme: string;
-    planet: string;
-    chakra: string;
-    positiveEffects: string[];
-    negativeEffects: string[];
-    realLifeExample: string;
-    adviceForBalance: string;
-    practicalSteps: string[];
-    chakraInsight: string;
-  }
-
-  const getPersonalMonthMeaning = (month: number): PersonalMonthData => {
-    const meanings: { [key: number]: PersonalMonthData } = {
+  const getPersonalMonthMeaning = (month: number): { title: string; description: string; theme: string } => {
+    const meanings: { [key: number]: { title: string; description: string; theme: string } } = {
       1: {
-        title: "New Beginnings and Leadership",
-        description: "Personal month 1 is the beginning of a new cycle, a time of fresh starts, self-discovery, and asserting independence. It's an energetic reset where you're encouraged to focus on yourself, your goals, and your dreams. Ruled by the Sun, this month amplifies confidence, ambition, and a desire to lead. The Solar Plexus Chakra fuels your personal power, determination, and ability to take initiative.",
-        theme: "Initiative and Fresh Energy",
-        planet: "Sun",
-        chakra: "Solar Plexus Chakra",
-        positiveEffects: ["You feel a surge of energy, ready to take charge of your life", "New ideas flow easily, and you find clarity in your purpose", "Leadership opportunities may arise, and you'll feel empowered to pursue them"],
-        negativeEffects: ["If unbalanced, you may feel overwhelmed by the weight of responsibility", "Overconfidence or impatience might cause you to act impulsively", "Self-doubt may lead to stagnation"],
-        realLifeExample: "Imagine you've been stuck in the same job for months but always dreamt of starting your own business. This month nudges you to take that leap of faith. You'll notice doors opening—an investor might show interest, or you may stumble upon the resources you need.",
-        adviceForBalance: "Focus on building a strong foundation for the future. This is a month to prioritize action but also to ensure you don't burn out. Practice mindfulness to stay grounded. Use affirmations like 'I am confident, capable, and ready to lead.'",
-        practicalSteps: ["Set clear, achievable goals and break them into smaller tasks", "Say yes to opportunities but evaluate them carefully", "Take care of your health; physical vitality will fuel your drive"],
-        chakraInsight: "The Solar Plexus Chakra governs self-esteem and personal power. Practice yellow light meditations and chant the mantra 'RAM' daily. Visualize your goals while basking in this radiant energy."
+        title: "New Beginnings-Solar Plexus Chakra",
+        description: "This month brings the energy of leadership, independence, and self-empowerment. The Solar Plexus Chakra, your center of confidence and personal power, is highly activated this month. Tap into this reservoir of energy to take full charge of your life and emerge as a leader in your chosen field. This is your time to lead others by example, take bold steps, and claim your position of influence. However, remember to temper this enthusiasm with realistic planning. Avoid overestimating your capabilities or taking on more responsibilities than you can manage, as this can lead to frustration and feelings of being overwhelmed.",
+        theme: "Initiative and Fresh Energy"
       },
       2: {
-        title: "Relationships, Sensitivity, and Patience",
-        description: "Personal month 2 is about connection, collaboration, and harmony. After the dynamic energy of month 1, this month softens the focus on independence and encourages you to nurture relationships. Ruled by the Moon, it's a deeply emotional month where the Heart Chakra becomes your guide.",
-        theme: "Harmony and Partnerships",
-        planet: "Moon",
-        chakra: "Heart Chakra",
-        positiveEffects: ["You'll develop stronger relationships and deepen emotional bonds", "Improved teamwork and emotional intelligence", "Easier to empathize and collaborate with others"],
-        negativeEffects: ["Over-sensitivity may lead to emotional burnout or conflict", "You might feel overly dependent on others for validation", "Struggle with setting healthy boundaries"],
-        realLifeExample: "Imagine you've started a new job. While month 1 may have been about getting the job, this month focuses on building rapport with your team. You'll find yourself navigating different personalities and balancing your needs with the group's goals.",
-        adviceForBalance: "Be patient with yourself and others. Take time to understand your emotions and what triggers them. Focus on self-care to avoid becoming emotionally depleted. Practice gratitude—it helps you find peace during challenges.",
-        practicalSteps: ["Practice active listening in conversations", "Journal daily about your emotions to process them constructively", "Communicate your boundaries with loved ones or colleagues"],
-        chakraInsight: "The Heart Chakra governs love, compassion, and forgiveness. Keep it balanced by visualizing green light and chanting the mantra 'YAM.' Engage in acts of kindness to nurture this energy center."
+        title: "Cooperation and Balance-Heart Chakra",
+        description: "This month is about emotional balance, relationships, and introspection. The Heart Chakra is at the forefront, guiding you to reassess your boundaries in personal and professional relationships. Are you giving more than you’re receiving? Are you feeling drained emotionally? This is the time to ask yourself these questions and restore harmony in your connections. Practice forgiveness and compassion, but also learn to say no when necessary to protect your energy",
+        theme: "Harmony and Partnerships"
       },
       3: {
-        title: "Creativity, Expression, and Growth",
-        description: "Personal month 3 is a vibrant month of self-expression, social engagement, and creativity. It's a time to let your ideas flow and share them with the world. Jupiter, the planet of expansion, encourages you to step out of your shell and embrace growth, while the Crown Chakra connects you to higher wisdom and inspiration.",
-        theme: "Creativity and Communication",
-        planet: "Jupiter",
-        chakra: "Crown Chakra",
-        positiveEffects: ["You'll feel charismatic and magnetic, attracting opportunities", "Forming new connections comes easily", "It's a month of optimism and exploration"],
-        negativeEffects: ["Over-scheduling or perfectionism may lead to frustration", "You might struggle with staying grounded amid the excitement", "Tendency to overcommit or lose focus"],
-        realLifeExample: "Think of a time when you've felt 'in the zone'—everything clicks, and creativity flows effortlessly. This month feels like that, but only if you give yourself the space to explore. You may finally start the podcast or creative project you've been dreaming about.",
-        adviceForBalance: "Focus your creative energy on meaningful pursuits rather than spreading yourself too thin. Schedule time for rest and reflection to avoid burnout.",
-        practicalSteps: ["Set weekly creative goals to channel your energy constructively", "Surround yourself with people who inspire and support you", "Journal ideas as they come, then prioritize ones that align with your long-term vision"],
-        chakraInsight: "The Crown Chakra governs spiritual connection and inspiration. Meditate on violet light and chant 'AUM' to stay connected to your higher purpose."
+        title: "Creative Expression- Crown Chakra",
+        description: "This month brings the energy of creativity, learning, and spiritual growth. The Crown Chakra, your connection to divine wisdom, is activated, inspiring you to acquire new knowledge and express yourself authentically. This is a month to focus on personal and professional growth. However, ensure that your learning is thorough—half knowledge can lead to misunderstandings or lack of confidence. Speak only from a place of truth and clarity to build trust and respect.",
+        theme: "Creativity and Communication"
       },
       4: {
-        title: "Stability, Discipline, and Building Foundations",
-        description: "Personal month 4 is the month of hard work, discipline, and structure. Rahu, the planet of karma and material stability, brings lessons of perseverance and organization, while the Earth Star Chakra grounds you deeply into the physical world. This month emphasizes responsibility and practicality.",
-        theme: "Structure and Foundation",
-        planet: "Rahu",
-        chakra: "Earth Star Chakra",
-        positiveEffects: ["You'll develop a strong sense of discipline and satisfaction from accomplishing tasks", "Projects that have felt stagnant may finally start to move forward", "Consistent effort brings tangible results"],
-        negativeEffects: ["Intense focus on work and responsibility can lead to burnout", "Resistance to change or an overly rigid mindset may create stress", "Progress may feel slow and frustrating"],
-        realLifeExample: "Think of a time when you worked tirelessly to save money for a big purchase or spent countless hours preparing for an important exam. If you've been dreaming of owning a home, this month might be about saving, budgeting, and planning—not glamorous, but essential.",
-        adviceForBalance: "Find harmony between effort and self-care. While it's important to work hard, don't forget to take breaks and celebrate small wins. Be patient—success is a marathon, not a sprint.",
-        practicalSteps: ["Create a clear action plan for your goals and break them into smaller tasks", "Establish routines that support productivity and balance", "Practice gratitude for the progress you make, no matter how small"],
-        chakraInsight: "The Earth Star Chakra connects you to stability, security, and the grounding energy of the Earth. Visualize brown or black light beneath your feet and chant 'LAM' daily. Walk barefoot on grass or practice mindfulness meditation."
+        title: "Hard Work and Organization-Earth Star Chakra",
+        description: "This month is about grounding, stability, and putting your knowledge into practice. The Earth Star Chakra anchors you in reality, urging you to stabilize your energy and translate your ideas into action. This is not a month for immediate results but rather for disciplined experimentation and long-term planning. Trust the process and remain committed to your efforts.",
+        theme: "Structure and Foundation"
       },
       5: {
-        title: "Change, Freedom, and Adaptability",
-        description: "Personal month 5 is all about transformation, freedom, and adventure. Mercury, the planet of communication and adaptability, brings rapid changes, opportunities, and a desire for exploration. The Throat Chakra helps you express your truth, adapt to new circumstances, and embrace the unknown.",
-        theme: "Adventure and Flexibility",
-        planet: "Mercury",
-        chakra: "Throat Chakra",
-        positiveEffects: ["You'll feel inspired and open to new opportunities", "Flexibility and curiosity allow you to learn and grow in unexpected ways", "Great time for networking and new experiences"],
-        negativeEffects: ["The energy of change might leave you feeling scattered or overwhelmed", "Overindulgence in distractions could derail progress", "Impulsive decisions may cause regret"],
-        realLifeExample: "Imagine a time when you've traveled extensively, met new people, and experienced personal transformation. You might take up a new hobby like photography, meet inspiring individuals, or even consider a major life change like switching careers.",
-        adviceForBalance: "Focus on staying centered amid the whirlwind of change. Embrace opportunities that align with your values and goals, and avoid overcommitting. Freedom isn't about doing everything—it's about choosing what truly matters.",
-        practicalSteps: ["Practice clear communication in personal and professional relationships", "Stay open-minded but evaluate opportunities carefully before committing", "Engage in creative outlets to channel restless energy productively"],
-        chakraInsight: "The Throat Chakra governs self-expression and adaptability. Balance it by visualizing blue light and chanting 'HAM.' Speak your truth clearly and authentically while remaining flexible."
+        title: "Freedom and Change- Throat Chakra",
+        description: "This month is dynamic, filled with opportunities for communication, adaptability, and growth. The Throat Chakra encourages you to speak your truth, explore new ideas, and upgrade your mindset. It’s a great time to network and share your knowledge with others. Apply what you’ve learned in practical ways to move your life forward. Engage in meaningful conversations about how you can help others or contribute to their growth.",
+        theme: "Adventure and Flexibility"
       },
       6: {
-        title: "Responsibility, Nurturing, and Harmony",
-        description: "Personal month 6 is a time of nurturing, responsibility, and cultivating harmony in your relationships and environment. Venus, the planet of love, beauty, and balance, inspires a focus on emotional connections, while the Sacral Chakra enhances your ability to give and receive love.",
-        theme: "Service and Family",
-        planet: "Venus",
-        chakra: "Sacral Chakra",
-        positiveEffects: ["You'll feel a sense of purpose and fulfillment through acts of love and service", "Relationships thrive as you invest time and energy into nurturing bonds", "Creative inspiration flows naturally"],
-        negativeEffects: ["Taking on too many responsibilities may lead to emotional exhaustion", "Feelings of being unappreciated may arise", "Struggles with boundaries can leave you feeling drained"],
-        realLifeExample: "Think of a month focused on creating a warm, inviting home or supporting loved ones through challenges. You might help a friend through a tough time, redecorate your living space, or strengthen your relationship with a partner.",
-        adviceForBalance: "While nurturing others is beautiful, remember to nurture yourself too. Set healthy boundaries and don't sacrifice your own needs completely. Self-care isn't selfish—it's essential for caring for others.",
-        practicalSteps: ["Schedule time for creative activities that bring you joy", "Practice setting healthy boundaries with loved ones", "Engage in acts of self-care: warm baths, good food, quality rest"],
-        chakraInsight: "The Sacral Chakra governs creativity, emotions, and pleasure. Keep it balanced by visualizing orange light and chanting 'VAM.' Allow yourself to experience joy and pleasure without guilt."
+        title: "Responsibility and Nurturing-Sacral Chakra",
+        description: "This month brings creativity, emotional flow, and healing. The Sacral Chakra governs this month, encouraging you to embrace your creative potential and release emotional burdens like guilt or shame. This is the time to channel your energy into creating the life you desire. If you feel stuck, tap into your intuitive energy to identify blockages and take intentional steps toward healing and growth.",
+        theme: "Service and Family"
       },
       7: {
-        title: "Spirituality, Analysis, and Reflection",
-        description: "Personal month 7 is a deeply spiritual and introspective time. Ketu, the planet of transcendence and karmic healing, guides you toward inner wisdom, while the Soul Star Chakra opens pathways to higher consciousness. This is a month to step back from busyness and connect with your spiritual essence.",
-        theme: "Wisdom and Introspection",
-        planet: "Ketu",
-        chakra: "Soul Star Chakra",
-        positiveEffects: ["Deep spiritual insights and heightened intuition", "Clarity about your life path and purpose", "Meaningful connections with your inner self"],
-        negativeEffects: ["May feel isolated or disconnected from others", "Overthinking can lead to analysis paralysis", "External pressures may feel more overwhelming than usual"],
-        realLifeExample: "Think of times when you needed to retreat and reflect—perhaps after a major life change or during a spiritual awakening. This month calls for meditation retreats, journaling, or simply spending quiet time in nature.",
-        adviceForBalance: "Honor your need for solitude while staying connected to supportive people. Don't force external progress—trust that inner work is the foundation for future success. This is a time for being, not just doing.",
-        practicalSteps: ["Dedicate time daily for meditation or spiritual practice", "Keep a dream journal to capture insights from your subconscious", "Spend time in nature to ground your spiritual experiences"],
-        chakraInsight: "The Soul Star Chakra governs transcendence and karmic healing. Balance it by visualizing gold or white light above your head and chanting 'OM SO HUM.' Trust your spiritual guidance."
+        title: "Spiritual Reflection-Soul Star Chakra",
+        description: "This is a month of introspection, spiritual alignment, and reflection. The Soul Star Chakra activates, urging you to step back, meditate, and evaluate your progress. If things aren’t going as planned, use this time to assess feedback and identify lessons. This is not a time for rushing forward but for aligning your inner vision with your outer actions.",
+        theme: "Wisdom and Introspection"
       },
       8: {
-        title: "Material Achievement, Power, and Manifestation",
-        description: "Personal month 8 brings powerful energy for material success, achievement, and manifestation. Saturn, the planet of discipline and karma, rewards your past efforts and provides opportunities for recognition. The Third Eye Chakra enhances your vision and clarity, helping you see opportunities others might miss.",
-        theme: "Success and Recognition",
-        planet: "Saturn",
-        chakra: "Third Eye Chakra",
-        positiveEffects: ["Recognition for your hard work and achievements", "Financial opportunities and material gains", "Confidence in making important decisions"],
-        negativeEffects: ["May become overly focused on material success at the expense of relationships", "Power dynamics could create conflicts", "Fear of failure may hold you back from taking necessary risks"],
-        realLifeExample: "Imagine receiving a promotion you've worked toward for years, closing a significant business deal, or finally seeing the fruits of your financial planning. This month brings karmic rewards for consistent effort.",
-        adviceForBalance: "While pursuing material success, don't neglect your spiritual and emotional well-being. Power comes with responsibility—use it wisely and ethically. True success includes harmony in all areas of life.",
-        practicalSteps: ["Take decisive action on important business or financial matters", "Trust your intuition when making major decisions", "Practice visualization to manifest your goals"],
-        chakraInsight: "The Third Eye Chakra governs intuition, clarity, and vision. Balance it by visualizing indigo light between your brows and chanting 'OM.' Trust your inner wisdom to guide your decisions."
+        title: "Material Achievement-ThirdEye Chakra",
+        description: "This month is about clarity, vision, and decisive action. The Third Eye Chakra empowers you to trust your intuition and take the next steps with complete confidence. This is the time to act on what you’ve learned, using your inner wisdom to guide you toward your goals. Be mindful to maintain focus and avoid second-guessing your instincts.",
+        theme: "Success and Recognition"
       },
       9: {
-        title: "Completion, Humanitarian Service, and Transformation",
-        description: "Personal month 9 marks the completion of a cycle and preparation for new beginnings. Mars, the planet of action and courage, combines with the Root Chakra to ground you in reality while inspiring you to let go of what no longer serves you. Focus on completing unfinished projects and contributing to the greater good.",
-        theme: "Completion and Giving",
-        planet: "Mars",
-        chakra: "Root Chakra",
-        positiveEffects: ["Sense of completion and closure on important matters", "Opportunities for humanitarian contribution and service", "Clarity about what to release and what to carry forward"],
-        negativeEffects: ["Letting go can be emotionally challenging", "May feel nostalgic or resistant to endings", "Scattered energy if trying to hold onto too much"],
-        realLifeExample: "Think of ending a chapter in your life—finishing a long project, moving on from a relationship that's run its course, or completing a period of study. This month is about graceful endings and preparing the ground for new seeds.",
-        adviceForBalance: "Embrace endings as natural parts of the cycle. What you release makes space for new blessings. Focus on gratitude for what was, rather than clinging to what's passing. Serve others as a way of completing your own healing.",
-        practicalSteps: ["Complete any lingering projects or commitments", "Practice release rituals—write what you're letting go and burn it", "Engage in volunteer work or acts of service to others"],
-        chakraInsight: "The Root Chakra governs grounding, security, and survival. Balance it by visualizing red light at the base of your spine and chanting 'LAM.' Ground your energy through physical activity and connection with the earth."
+        title: "Completion and Service-Root Chakra",
+        description: "This month brings the energy of completion, grounding, and action. The Root Chakra activates, urging you to take charge of your life and focus on what’s working. Let go of what isn’t serving you, and channel your energy into areas where progress is evident. This is the time to consolidate your efforts and prepare for the next cycle.",
+        theme: "Completion and Giving"
       }
     };
     return meanings[month] || {
       title: "Universal Flow",
       description: "A month of balanced energy and spiritual alignment",
-      theme: "Harmony and Balance",
-      planet: "Universal Energy",
-      chakra: "All Chakras",
-      positiveEffects: ["Balanced energy flow", "Spiritual alignment", "Inner peace"],
-      negativeEffects: ["May feel directionless", "Uncertainty about focus areas"],
-      realLifeExample: "A time of natural flow where all aspects of life are in balance.",
-      adviceForBalance: "Trust the natural flow of life and remain open to guidance.",
-      practicalSteps: ["Practice daily meditation", "Stay open to opportunities", "Trust your intuition"],
-      chakraInsight: "All chakras are in balance. Practice full-body energy healing and maintain awareness of your complete energy system."
+      theme: "Harmony and Balance"
     };
   };
-
 
   const getNumberColorAssociation = (number: number): string => {
     const colorMap: { [key: number]: string } = {
@@ -1953,10 +1768,6 @@ Disclaimer: This AuraEye™ report and any guidance provided by AuraEye™, its 
                                         {personalMonth}
                                       </div>
                                       <div className="text-xs text-blue-600 font-medium">{monthInfo.theme}</div>
-                                      <div className="flex justify-center gap-2 mt-1">
-                                        <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{monthInfo.planet}</span>
-                                        <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">{monthInfo.chakra}</span>
-                                      </div>
                                     </div>
                                     
                                     <div className="space-y-2">
@@ -1965,60 +1776,6 @@ Disclaimer: This AuraEye™ report and any guidance provided by AuraEye™, its 
                                         {monthInfo.description}
                                       </p>
                                     </div>
-                                    
-                                    {/* Extended info for current month */}
-                                    {isCurrentMonth && (
-                                      <div className="mt-3 space-y-3">
-                                        {/* How It Affects You */}
-                                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-100">
-                                          <h6 className="text-xs font-semibold text-green-800 mb-2">Positive Effects</h6>
-                                          <ul className="space-y-1">
-                                            {monthInfo.positiveEffects.map((effect, idx) => (
-                                              <li key={idx} className="text-xs text-green-700 flex items-start">
-                                                <span className="text-green-500 mr-1">+</span> {effect}
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                        
-                                        <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-3 border border-orange-100">
-                                          <h6 className="text-xs font-semibold text-orange-800 mb-2">Watch Out For</h6>
-                                          <ul className="space-y-1">
-                                            {monthInfo.negativeEffects.map((effect, idx) => (
-                                              <li key={idx} className="text-xs text-orange-700 flex items-start">
-                                                <span className="text-orange-500 mr-1">!</span> {effect}
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                        
-                                        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3 border border-blue-100">
-                                          <h6 className="text-xs font-semibold text-blue-800 mb-2">Real-Life Example</h6>
-                                          <p className="text-xs text-blue-700 italic">{monthInfo.realLifeExample}</p>
-                                        </div>
-                                        
-                                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg p-3 border border-purple-100">
-                                          <h6 className="text-xs font-semibold text-purple-800 mb-2">Advice for Balance</h6>
-                                          <p className="text-xs text-purple-700">{monthInfo.adviceForBalance}</p>
-                                        </div>
-                                        
-                                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg p-3 border border-teal-100">
-                                          <h6 className="text-xs font-semibold text-teal-800 mb-2">Practical Steps</h6>
-                                          <ul className="space-y-1">
-                                            {monthInfo.practicalSteps.map((step, idx) => (
-                                              <li key={idx} className="text-xs text-teal-700 flex items-start">
-                                                <span className="text-teal-500 mr-1">{idx + 1}.</span> {step}
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                        
-                                        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 border border-indigo-100">
-                                          <h6 className="text-xs font-semibold text-indigo-800 mb-2">Chakra Insight</h6>
-                                          <p className="text-xs text-indigo-700">{monthInfo.chakraInsight}</p>
-                                        </div>
-                                      </div>
-                                    )}
                                     
                                     <div className="mt-3 pt-2 border-t border-blue-100">
                                       <div className="text-xs text-blue-600 mb-2">
