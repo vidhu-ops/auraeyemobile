@@ -603,8 +603,9 @@ export const paymentTransactions = pgTable("payment_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
-  planId: integer("plan_id").notNull().references(() => paymentPlans.id),
-  amount: integer("amount").notNull(), // Amount in cents
+  stripeSessionId: text("stripe_session_id"), // For idempotency with Payment Links
+  planId: integer("plan_id").references(() => paymentPlans.id), // Optional for direct payment links
+  amount: integer("amount").notNull(), // Amount in cents/paise
   status: text("status").notNull(), // "pending", "completed", "failed", "refunded"
   billingEmail: text("billing_email"),
   creditsBefore: integer("credits_before"),
@@ -615,6 +616,7 @@ export const paymentTransactions = pgTable("payment_transactions", {
 }, (table) => ({
   userIdIdx: index("payment_transactions_user_id_idx").on(table.userId),
   userIdCreatedAtIdx: index("payment_transactions_user_id_created_at_idx").on(table.userId, table.createdAt),
+  stripeSessionIdIdx: index("payment_transactions_stripe_session_id_idx").on(table.stripeSessionId),
 }));
 
 export const insertPaymentTransactionSchema = createInsertSchema(paymentTransactions).omit({

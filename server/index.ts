@@ -3,8 +3,16 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { serveProductionStatic } from "./production-static";
 import { initializeWhatsApp } from "./whatsapp-service";
+import Stripe from "stripe";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 const app = express();
+
+// Initialize Stripe
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY) 
+  : null;
 
 // Add health check endpoint first (before other middleware)
 app.get('/health', (req, res) => {
@@ -20,6 +28,113 @@ app.get('/', (req, res, next) => {
   // Otherwise, continue to normal routing
   next();
 });
+
+// Credit pack configuration - update this when changing pricing
+const CREDIT_PACK = {
+  credits: 100,
+  priceInPaise: 49900, // ₹499 in paise
+};
+
+// Stripe webhook endpoint - MUST be before JSON body parser
+// This route needs raw body for signature verification
+app.post('/api/webhooks/stripe', 
+  express.raw({ type: 'application/json' }),
+  async (req: Request, res: Response) => {
+    console.log('=== STRIPE WEBHOOK RECEIVED ===');
+    
+    if (!stripe) {
+      console.error('Stripe not configured');
+      return res.status(500).json({ error: 'Stripe not configured' });
+    }
+
+    const sig = req.headers['stripe-signature'] as string;
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
+    let event: Stripe.Event;
+    
+    try {
+      // Verify webhook signature for security
+      if (endpointSecret && sig) {
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      } else if (process.env.NODE_ENV === 'development') {
+        // Only allow unverified webhooks in development
+        const payload = typeof req.body === 'string' ? req.body : req.body.toString();
+        event = JSON.parse(payload) as Stripe.Event;
+        console.log('DEV MODE: Processing webhook without signature verification');
+      } else {
+        // In production, reject webhooks without proper signature
+        console.error('Webhook rejected: Missing signature in production');
+        return res.status(400).json({ error: 'Webhook signature required in production' });
+      }
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    }
+
+    console.log('Webhook event type:', event.type);
+
+    // Handle checkout session completed
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const sessionId = session.id;
+      const customerEmail = session.customer_email || session.customer_details?.email;
+      const amountTotal = session.amount_total || CREDIT_PACK.priceInPaise;
+      
+      console.log('Checkout completed for email:', customerEmail);
+      console.log('Session ID:', sessionId);
+      console.log('Payment status:', session.payment_status);
+      console.log('Amount paid:', amountTotal);
+      
+      if (customerEmail && session.payment_status === 'paid') {
+        try {
+          // Idempotency check: Verify this session hasn't been processed already
+          const existingTransaction = await db.execute(
+            sql`SELECT id FROM payment_transactions WHERE stripe_session_id = ${sessionId} LIMIT 1`
+          );
+          const existingRows = existingTransaction.rows || existingTransaction;
+          
+          if ((existingRows as any[]).length > 0) {
+            console.log(`⚠️ Session ${sessionId} already processed, skipping duplicate webhook`);
+            return res.json({ received: true, status: 'duplicate' });
+          }
+          
+          // Find user by email
+          const userResult = await db.execute(
+            sql`SELECT * FROM users WHERE LOWER(email) = LOWER(${customerEmail}) LIMIT 1`
+          );
+          const users = userResult.rows || userResult;
+          const user = (users as any[])[0];
+          
+          if (user) {
+            // Add credits based on pack
+            const creditsToAdd = CREDIT_PACK.credits;
+            const currentCredits = user.credits || 0;
+            const newCredits = currentCredits + creditsToAdd;
+            
+            // Atomic update: Use UPDATE with credits calculation to avoid race conditions
+            await db.execute(
+              sql`UPDATE users SET credits = credits + ${creditsToAdd} WHERE id = ${user.id}`
+            );
+            
+            // Record the transaction with Stripe session ID for idempotency
+            await db.execute(sql`
+              INSERT INTO payment_transactions (user_id, amount, status, billing_email, credits_before, credits_after, stripe_session_id, created_at)
+              VALUES (${user.id}, ${amountTotal}, 'completed', ${customerEmail}, ${currentCredits}, ${newCredits}, ${sessionId}, NOW())
+            `);
+            
+            console.log(`✅ Added ${creditsToAdd} credits to user ${user.username}. New balance: ${newCredits}`);
+          } else {
+            console.log('User not found for email:', customerEmail);
+          }
+        } catch (error) {
+          console.error('Error processing payment:', error);
+        }
+      }
+    }
+
+    res.json({ received: true });
+  }
+);
 
 // Configure body parsers with increased limits for image uploads
 app.use(express.json({ limit: '50mb' }));
