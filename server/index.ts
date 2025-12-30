@@ -110,11 +110,21 @@ app.post('/api/webhooks/stripe',
             const creditsToAdd = CREDIT_PACK.credits;
             const currentCredits = user.credits || 0;
             const newCredits = currentCredits + creditsToAdd;
+            const currentUserType = user.user_type || 'client';
             
-            // Atomic update: Use UPDATE with credits calculation to avoid race conditions
-            await db.execute(
-              sql`UPDATE users SET credits = credits + ${creditsToAdd} WHERE id = ${user.id}`
-            );
+            // Atomic update: Add credits AND upgrade to healer if currently a client
+            if (currentUserType === 'client') {
+              // Upgrade client to healer and add credits in one atomic operation
+              await db.execute(
+                sql`UPDATE users SET credits = credits + ${creditsToAdd}, user_type = 'healer' WHERE id = ${user.id}`
+              );
+              console.log(`🎉 Upgraded user ${user.username} from client to healer`);
+            } else {
+              // Just add credits for existing healers/semi-healers
+              await db.execute(
+                sql`UPDATE users SET credits = credits + ${creditsToAdd} WHERE id = ${user.id}`
+              );
+            }
             
             // Record the transaction with Stripe session ID for idempotency
             await db.execute(sql`
