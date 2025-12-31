@@ -29,11 +29,21 @@ app.get('/', (req, res, next) => {
   next();
 });
 
-// Credit pack configuration - update this when changing pricing
-const CREDIT_PACK = {
-  credits: 100,
-  priceInPaise: 49900, // ₹499 in paise
+// Credit pack configuration - maps payment links to credit amounts
+const CREDIT_PACKS = {
+  '9B614od3JgoS9ICbbxgjC0b': { credits: 10, priceInPaise: 49900 }, // ₹499 for 10 credits
+  '9B64gA7Jpb4y3ke3J5gjC0c': { credits: 1, priceInPaise: 9900 },    // ₹99 for 1 credit
 };
+
+// Function to determine credits based on amount paid
+function determineCredits(amountInPaise: number): number {
+  // 99 paise = 1 credit pack
+  if (amountInPaise === 9900) return 1;
+  // 499 paise = 10 credit pack
+  if (amountInPaise === 49900) return 10;
+  // Fallback: estimate based on rough conversion (1 paise ≈ 0.02 credits)
+  return Math.max(1, Math.round(amountInPaise / 10000));
+}
 
 // Stripe webhook endpoint - MUST be before JSON body parser
 // This route needs raw body for signature verification
@@ -78,7 +88,7 @@ app.post('/api/webhooks/stripe',
       const session = event.data.object as Stripe.Checkout.Session;
       const sessionId = session.id;
       const customerEmail = session.customer_email || session.customer_details?.email;
-      const amountTotal = session.amount_total || CREDIT_PACK.priceInPaise;
+      const amountTotal = session.amount_total || 49900; // Fallback to largest pack if missing
       
       console.log('Checkout completed for email:', customerEmail);
       console.log('Session ID:', sessionId);
@@ -106,8 +116,8 @@ app.post('/api/webhooks/stripe',
           const user = (users as any[])[0];
           
           if (user) {
-            // Add credits based on pack
-            const creditsToAdd = CREDIT_PACK.credits;
+            // Determine credits based on amount paid
+            const creditsToAdd = determineCredits(amountTotal);
             const currentCredits = user.credits || 0;
             const newCredits = currentCredits + creditsToAdd;
             const currentUserType = user.user_type || 'client';

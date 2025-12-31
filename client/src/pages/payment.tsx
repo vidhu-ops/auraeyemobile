@@ -10,7 +10,20 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/9B614od3JgoS9ICbbxgjC0b";
+const CREDIT_PACKS = [
+  {
+    link: "https://buy.stripe.com/9B614od3JgoS9ICbbxgjC0b",
+    credits: 10,
+    price: 499,
+    badge: "Best Value",
+  },
+  {
+    link: "https://buy.stripe.com/9B64gA7Jpb4y3ke3J5gjC0c",
+    credits: 1,
+    price: 99,
+    badge: "Quick Buy",
+  },
+];
 
 export default function PaymentPage() {
   const { user } = useAuth();
@@ -44,25 +57,14 @@ export default function PaymentPage() {
     queryKey: ["/api/payment-transactions"],
   });
 
-  const handlePayNow = () => {
-    // Add user email to the payment link for tracking
-    const paymentUrl = user?.email 
-      ? `${STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(user.email)}`
-      : STRIPE_PAYMENT_LINK;
+  const handlePayNow = (paymentLink: string) => {
+    // Add user email to the payment link for tracking and redirect back to credits
+    const redirectUrl = user?.email 
+      ? `${paymentLink}?prefilled_email=${encodeURIComponent(user.email)}&redirect_url=${encodeURIComponent(window.location.origin + '/payment?payment=success')}`
+      : `${paymentLink}?redirect_url=${encodeURIComponent(window.location.origin + '/payment?payment=success')}`;
     
-    window.location.href = paymentUrl;
+    window.location.href = redirectUrl;
   };
-
-  const creditPackFeatures = [
-    "100 Soul Credits",
-    "Use for Any Service",
-    "Aura Analysis Sessions",
-    "Numerology Readings",
-    "Object Scanning",
-    "What's My Vibe Analysis",
-    "Never Expires",
-    "Instant Activation",
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-cosmic pb-20">
@@ -73,62 +75,65 @@ export default function PaymentPage() {
           <p className="text-purple-200">Power up your spiritual journey</p>
         </div>
 
-        <div className="max-w-lg mx-auto space-y-6">
-          {/* Single Credit Pack */}
-          <Card className="border-2 border-purple-400/70 glass-ethereal glow-cosmic relative overflow-hidden">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-              <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-1">
-                <Sparkles className="w-3 h-3 mr-1" />
-                Best Value
-              </Badge>
-            </div>
-            
-            <CardHeader className="text-center pt-8">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 rounded-full bg-gradient-to-br from-purple-500/30 to-indigo-500/30 border border-purple-400/50">
-                  <Coins className="w-10 h-10 text-yellow-400" />
-                </div>
-              </div>
-              <CardTitle className="text-2xl font-mystical font-bold text-white">
-                Soul Credits Pack
-              </CardTitle>
-              <CardDescription className="text-purple-200 text-lg">
-                One-time purchase • Instant activation
-              </CardDescription>
-              
-              <div className="mt-4">
-                <span className="text-5xl font-bold text-white">₹499</span>
-                <span className="text-purple-300 ml-2">INR</span>
-              </div>
-              <p className="text-purple-300 mt-2">100 Credits included</p>
-            </CardHeader>
-            
-            <CardContent className="space-y-6">
-              <ul className="space-y-3">
-                {creditPackFeatures.map((feature, index) => (
-                  <li key={index} className="flex items-center text-purple-100">
-                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center mr-3">
-                      <Check className="h-3 w-3 text-green-400" />
-                    </div>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              
-              <Button
-                onClick={handlePayNow}
-                className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
-                data-testid="button-pay-now"
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Credit Packs Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {CREDIT_PACKS.map((pack, index) => (
+              <Card 
+                key={index}
+                className={`border-2 glass-ethereal relative overflow-hidden transition-all ${
+                  pack.badge === "Best Value" 
+                    ? "border-purple-400/70 glow-cosmic md:col-span-2 md:w-1/2 mx-auto"
+                    : "border-purple-200/70"
+                }`}
               >
-                <Coins className="w-5 h-5 mr-2" />
-                Pay Now
-              </Button>
-              
-              <p className="text-center text-sm text-purple-300">
-                Secure payment powered by Stripe
-              </p>
-            </CardContent>
-          </Card>
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                  <Badge className={`text-white px-4 py-1 ${
+                    pack.badge === "Best Value"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600"
+                      : "bg-gradient-to-r from-blue-600 to-cyan-600"
+                  }`}>
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    {pack.badge}
+                  </Badge>
+                </div>
+                
+                <CardHeader className="text-center pt-8">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-4 rounded-full bg-gradient-to-br from-purple-500/30 to-indigo-500/30 border border-purple-400/50">
+                      <Coins className="w-10 h-10 text-yellow-400" />
+                    </div>
+                  </div>
+                  <CardTitle className="text-2xl font-mystical font-bold text-white">
+                    {pack.credits} Soul Credits
+                  </CardTitle>
+                  <CardDescription className="text-purple-200 text-lg">
+                    One-time purchase • Instant activation
+                  </CardDescription>
+                  
+                  <div className="mt-4">
+                    <span className="text-5xl font-bold text-white">₹{pack.price}</span>
+                    <span className="text-purple-300 ml-2">INR</span>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  <Button
+                    onClick={() => handlePayNow(pack.link)}
+                    className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                    data-testid={`button-pay-now-${String(pack.credits)}`}
+                  >
+                    <Coins className="w-5 h-5 mr-2" />
+                    Pay Now
+                  </Button>
+                  
+                  <p className="text-center text-sm text-purple-300">
+                    Secure payment powered by Stripe
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
           {/* Current Credits Display */}
           {user && (
