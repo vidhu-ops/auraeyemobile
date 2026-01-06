@@ -45,7 +45,7 @@ export default function NameInput({
           <User className="w-8 h-8 text-primary" />
         </div>
         <CardTitle className="text-xl text-black bg-white">{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-sm text-black">{description}</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
