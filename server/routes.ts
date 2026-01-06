@@ -25,7 +25,11 @@ import { eq, and, gt, gte, lt, sql } from "drizzle-orm";
 import { auraReadings } from "../shared/schema";
 import { getVapidPublicKey, sendPushToUser, sendPushNotification } from "./push-service";
 
-// Credit checking middleware with dynamic pricing
+interface AuthenticatedRequest extends Request {
+  user: User;
+  creditCost?: number;
+}
+
 function checkCredits(serviceType: string) {
   return async (req: any, res: any, next: any) => {
     if (!req.user || !req.user.id) {
@@ -1336,13 +1340,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           // Deduct credits for successful analysis
-          const creditDeducted = await storage.deductCredits(req.user.id, req.creditCost, 'object_analysis', `Object analysis for ${analysisName}`);
+          const creditDeducted = await storage.deductCredits(req.user!.id, req.creditCost!, 'object_analysis', `Object analysis for ${analysisName}`);
           console.log('Object analysis credit deduction result:', creditDeducted);
           
           // Add soul energy (credits * 100) for completing object analysis
           try {
             const soulEnergyAmount = (req.creditCost || 1) * 100;
-            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'object_analysis', 'Object analysis scan completed');
+            await storage.addSoulEnergy(req.user!.id, soulEnergyAmount, 'object_analysis', 'Object analysis scan completed');
             console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for object analysis completion`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
@@ -2276,8 +2280,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         // Save the numerology reading and capture the ID
         const savedReading = await storage.saveNumerologyReading({
-          userId: req.user.id,
-          performedBy: req.user.userType === 'healer' || req.user.userType === 'semi-healer' ? req.user.id : null,
+          userId: req.user!.id,
+          performedBy: (req.user as User).userType === 'healer' || (req.user as User).userType === 'semi-healer' ? req.user!.id : null,
           name,
           birthDate,
           lifePathNumber: numerologyProfile.lifePathNumber,
@@ -2292,13 +2296,13 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         numerologyProfile.readingId = savedReading.id;
         
         // Deduct credits
-        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        await storage.deductCredits(req.user!.id, req.creditCost!, 'numerology', `Numerology reading for ${name}`);
         
         // Add soul energy (credits * 100) for completing numerology analysis
         try {
           const soulEnergyAmount = (req.creditCost || 3) * 100;
-          await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
-          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
+          await storage.addSoulEnergy(req.user!.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
+          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user!.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
         } catch (soulEnergyError) {
           console.error("Error adding soul energy:", soulEnergyError);
         }
@@ -2311,14 +2315,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           destinyNumber: calculateDestiny(name),
           soulUrgeNumber: calculateSoulUrge(name),
           personalityNumber: calculatePersonality(birthDate),
-          soulChakraNumber: calculateDominantSoulChakra(birthDate),
-          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra Your Soul Chakra Number ${calculateDominantSoulChakra(birthDate)} reveals your spiritual energy center.`,
+          soulChakraNumber: calculateSoulChakra(birthDate),
+          interpretation: `Your Life Path Number ${calculateLifePath(birthDate)} indicates your life's journey Your Destiny Number ${calculateDestiny(name)} reveals your goals and abilities Your Soul Urge Number ${calculateSoulUrge(name)} shows your inner desires, while your Personality Number ${calculatePersonality(birthDate)} represents your decision-making chakra Your Soul Chakra Number ${calculateSoulChakra(birthDate)} reveals your spiritual energy center.`,
           colorAssociations: {
             lifePathColor: getColorForNumber(calculateLifePath(birthDate)),
             destinyColor: getColorForNumber(calculateDestiny(name)),
             soulUrgeColor: getColorForNumber(calculateSoulUrge(name)),
             personalityColor: getColorForNumber(calculatePersonality(birthDate)),
-            soulChakraColor: getColorForNumber(calculateDominantSoulChakra(birthDate))
+            soulChakraColor: getColorForNumber(calculateSoulChakra(birthDate))
           },
           strengths: [
             `Natural ${getColorForNumber(calculateLifePath(birthDate))} energy enhances your leadership abilities`,
@@ -2336,13 +2340,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         if (req.isAuthenticated() && req.user) {
           const savedReading = await storage.saveNumerologyReading({
             userId: req.user.id,
-            performedBy: req.user.userType === 'healer' ? req.user.id : null,
+            performedBy: (req.user as User).userType === 'healer' ? req.user.id : null,
             name,
             birthDate,
             lifePathNumber: numerologyProfile.lifePathNumber,
             destinyNumber: numerologyProfile.destinyNumber,
             soulUrgeNumber: numerologyProfile.soulUrgeNumber,
             personalityNumber: numerologyProfile.personalityNumber,
+            personalYearNumber: 5,
             interpretation: numerologyProfile.interpretation
           });
           
