@@ -73,6 +73,8 @@ export interface IStorage {
   // Object analyses
   saveObjectAnalysis(analysis: InsertObjectAnalysis): Promise<ObjectAnalysis>;
   getObjectAnalysesByUser(userId: number): Promise<ObjectAnalysis[]>;
+  getObjectAnalysesByPerformedBy(performedBy: number): Promise<ObjectAnalysis[]>;
+  getObjectAnalysesCountByPerformedBy(performedBy: number): Promise<number>;
   getObjectAnalysis(id: number): Promise<ObjectAnalysis | undefined>;
   updateObjectAnalysisReview(id: number, rating: number, reviewText?: string): Promise<ObjectAnalysis | undefined>;
   
@@ -441,6 +443,13 @@ export class DatabaseStorage implements IStorage {
 
   async getObjectAnalysesByPerformedBy(performedBy: number): Promise<ObjectAnalysis[]> {
     return await db.select().from(objectAnalyses).where(eq(objectAnalyses.performedBy, performedBy)).orderBy(desc(objectAnalyses.createdAt));
+  }
+
+  async getObjectAnalysesCountByPerformedBy(performedBy: number): Promise<number> {
+    const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+      .from(objectAnalyses)
+      .where(eq(objectAnalyses.performedBy, performedBy));
+    return result[0]?.count || 0;
   }
 
   async getObjectAnalysis(id: number): Promise<ObjectAnalysis | undefined> {
