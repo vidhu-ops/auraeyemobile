@@ -315,7 +315,7 @@ export default function ClientDashboard() {
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div className="bg-purple-900/30 rounded-lg p-3 border border-purple-400/30">
                       <div className="text-2xl font-bold text-purple-300 mb-1 text-center">
-                        {(() => {
+                        {user.lifePathNumber || (() => {
                           const dateStr = user.birthDate.replace(/\D/g, '');
                           let sum = 0;
                           for (const digit of dateStr) sum += parseInt(digit);
@@ -327,7 +327,7 @@ export default function ClientDashboard() {
                     </div>
                     <div className="bg-indigo-900/30 rounded-lg p-3 border border-indigo-400/30">
                       <div className="text-2xl font-bold text-indigo-300 mb-1 text-center">
-                        {(() => {
+                        {user.destinyNumber || (() => {
                           let sum = 0;
                           for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
                             const letterMap: Record<string, number> = {
@@ -352,7 +352,7 @@ export default function ClientDashboard() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-pink-900/30 rounded-lg p-3 border border-pink-400/30">
                       <div className="text-2xl font-bold text-pink-300 mb-1 text-center">
-                        {(() => {
+                        {user.soulUrgeNumber || (() => {
                           let sum = 0;
                           const vowels = ['A', 'E', 'I', 'O', 'U'];
                           for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
@@ -377,7 +377,7 @@ export default function ClientDashboard() {
                     </div>
                     <div className="bg-amber-900/30 rounded-lg p-3 border border-amber-400/30">
                       <div className="text-2xl font-bold text-amber-300 mb-1 text-center">
-                        {(() => {
+                        {user.personalYearNumber || (() => {
                           const date = new Date(user.birthDate);
                           const day = date.getDate();
                           const month = date.getMonth() + 1;
