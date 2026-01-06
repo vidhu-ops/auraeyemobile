@@ -2086,7 +2086,7 @@ export default function HealerDashboard() {
   const { checkBadges } = useBadgeContext();
   
   // Fetch login streaks
-  const { data: streakData } = useQuery({
+  const { data: streakData } = useQuery<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }>({
     queryKey: ["/api/streaks"],
   });
   
@@ -2220,7 +2220,7 @@ export default function HealerDashboard() {
 
   // Fetch healer's own vibe readings with immediate updates
   const { data: healerVibeReadings = [], isLoading: isLoadingVibeReadings, refetch: refetchVibeReadings } = useQuery<VibeReading[]>({
-    queryKey: ["/api/vibe-readings"],
+    queryKey: ["/api/healer-vibe-readings"],
     enabled: !!user,
     staleTime: 0, // Always refetch to get latest data
     gcTime: 0, // Don't cache - always fetch fresh data
@@ -2231,7 +2231,7 @@ export default function HealerDashboard() {
 
   // Fetch total count of vibe readings
   const { data: vibeReadingsCountData } = useQuery<{ count: number }>({
-    queryKey: ["/api/vibe-readings-count"],
+    queryKey: ["/api/healer-vibe-readings-count"],
     enabled: !!user,
     staleTime: 30 * 1000,
     refetchInterval: 30000,
@@ -2239,7 +2239,7 @@ export default function HealerDashboard() {
 
   // Fetch healer's own object analyses with immediate updates
   const { data: healerObjectAnalyses = [], isLoading: isLoadingObjectAnalyses, refetch: refetchObjectAnalyses } = useQuery<any[]>({
-    queryKey: ["/api/object-analyses"],
+    queryKey: ["/api/healer-object-analyses"],
     enabled: !!user,
     staleTime: 0, // Always refetch to get latest data
     gcTime: 0, // Don't cache - always fetch fresh data
@@ -2249,7 +2249,7 @@ export default function HealerDashboard() {
   });
 
   // Fetch stored aura PDFs
-  const { data: healerPdfs = [], isLoading: isLoadingPdfs, refetch: refetchPdfs } = useQuery({
+  const { data: healerPdfs = [], isLoading: isLoadingPdfs, refetch: refetchPdfs } = useQuery<any[]>({
     queryKey: ["/api/healer-pdfs"],
     enabled: !!user,
     staleTime: 0,
@@ -2268,7 +2268,7 @@ export default function HealerDashboard() {
   });
 
   // Fetch user achievements
-  const { data: achievementsData } = useQuery({
+  const { data: achievementsData } = useQuery<{ achievements: any[] }>({
     queryKey: ["/api/user-achievements"],
     enabled: !!user?.id,
     staleTime: 0,
