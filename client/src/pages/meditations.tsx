@@ -13,6 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useBadgeContext } from "@/hooks/use-badge-context";
 import { format } from "date-fns";
+import { MeditationPlayerModal } from "@/components/meditation-player-modal";
 
 const meditationCategories = [
   { id: "all", name: "All", icon: Sparkles, color: "from-pink-500 to-rose-500" },
@@ -129,6 +130,8 @@ export default function MeditationsPage() {
   const [completedMeditations, setCompletedMeditations] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState("browse");
   const [favoritedMeditations, setFavoritedMeditations] = useState<number[]>([]);
+  const [selectedMeditation, setSelectedMeditation] = useState<any | null>(null);
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
   // Fetch recently played meditations
   const { data: recentMeditations = [], isLoading: isLoadingRecent } = useQuery<any[]>({
@@ -229,7 +232,8 @@ export default function MeditationsPage() {
       });
       return;
     }
-    completeMeditationMutation.mutate(meditation);
+    setSelectedMeditation(meditation);
+    setIsPlayerOpen(true);
   };
 
   return (
@@ -491,6 +495,18 @@ export default function MeditationsPage() {
 
       {/* Mobile Navigation */}
       <MobileNavigation />
+
+      {/* Meditation Player Modal */}
+      <MeditationPlayerModal
+        meditation={selectedMeditation}
+        isOpen={isPlayerOpen}
+        onClose={() => setIsPlayerOpen(false)}
+        onComplete={() => {
+          if (selectedMeditation) {
+            completeMeditationMutation.mutate(selectedMeditation);
+          }
+        }}
+      />
     </div>
   );
 }
