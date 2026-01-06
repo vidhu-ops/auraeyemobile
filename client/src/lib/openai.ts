@@ -75,9 +75,6 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
     queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
     queryClient.invalidateQueries({ queryKey: ['/api/user'] });
     
-    // Optional: Could add client-side color enhancement/visualization here
-    // based on the detected dominant and secondary colors
-
     return result;
   } catch (error) {
     console.error("Error analyzing aura:", error);
@@ -148,10 +145,10 @@ export interface NumerologyResult {
   // Enhanced properties from AI analysis
   colorAssociations?: {
     lifePathColor?: string;
-    destinyColor?: string;
-    soulUrgeColor?: string;
     personalityColor?: string;
     soulChakraColor?: string;
+    destinyColor?: string;
+    soulUrgeColor?: string;
   };
   energyPattern?: string;
   strengths?: string[];

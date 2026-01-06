@@ -312,39 +312,18 @@ export default function ClientDashboard() {
                     <Calculator className="h-5 w-5 text-purple-400" />
                     <h3 className="text-white font-semibold">Your Numerology Profile</h3>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 mb-3">
                     <div className="bg-purple-900/30 rounded-lg p-3 border border-purple-400/30">
                       <div className="text-2xl font-bold text-purple-300 mb-1 text-center">
                         {(() => {
                           const dateStr = user.birthDate.replace(/\D/g, '');
                           let sum = 0;
                           for (const digit of dateStr) sum += parseInt(digit);
-                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
                           return sum;
                         })()}
                       </div>
-                      <div className="text-xs text-purple-200 text-center mb-2">Life Path</div>
-                      <p className="text-purple-100 text-xs">{(() => {
-                        const n = (() => {
-                          const dateStr = user.birthDate.replace(/\D/g, '');
-                          let sum = 0;
-                          for (const digit of dateStr) sum += parseInt(digit);
-                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
-                          return sum;
-                        })();
-                        const meanings: Record<number, string> = {
-                          1: 'Leader, ambitious, pioneering, independent',
-                          2: 'Mediator, cooperative, sensitive, intuitive',
-                          3: 'Creator, expressive, social, optimistic',
-                          4: 'Builder, practical, organized, responsible',
-                          5: 'Adventurer, dynamic, curious, freedom-loving',
-                          6: 'Nurturer, compassionate, caring, harmonious',
-                          7: 'Seeker, spiritual, analytical, mysterious',
-                          8: 'Achiever, powerful, ambitious, material-focused',
-                          9: 'Humanitarian, universal, compassionate, completion'
-                        };
-                        return meanings[n] || 'Unique spiritual path';
-                      })()}</p>
+                      <div className="text-xs text-purple-200 text-center">Life Path</div>
                     </div>
                     <div className="bg-indigo-900/30 rounded-lg p-3 border border-indigo-400/30">
                       <div className="text-2xl font-bold text-indigo-300 mb-1 text-center">
@@ -358,50 +337,61 @@ export default function ClientDashboard() {
                               'D': 4, 'M': 4, 'T': 4,
                               'E': 5, 'H': 5, 'N': 5, 'X': 5,
                               'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
-                              'Z': 7,
-                              'P': 8
+                              'Z': 7, 'P': 8
                             };
                             sum += letterMap[char.toUpperCase()] || 0;
                           }
-                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
                           return sum;
                         })()}
                       </div>
-                      <div className="text-xs text-indigo-200 text-center mb-2">Destiny Number</div>
-                      <p className="text-indigo-100 text-xs">{(() => {
-                        const n = (() => {
-                          let sum = 0;
-                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
-                            const letterMap: Record<string, number> = {
-                              'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
-                              'B': 2, 'K': 2, 'R': 2,
-                              'C': 3, 'G': 3, 'L': 3, 'S': 3,
-                              'D': 4, 'M': 4, 'T': 4,
-                              'E': 5, 'H': 5, 'N': 5, 'X': 5,
-                              'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
-                              'Z': 7,
-                              'P': 8
-                            };
-                            sum += letterMap[char.toUpperCase()] || 0;
-                          }
-                          while (sum > 9) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
-                          return sum;
-                        })();
-                        const meanings: Record<number, string> = {
-                          1: 'Your life purpose: lead and innovate',
-                          2: 'Your life purpose: create harmony and peace',
-                          3: 'Your life purpose: express and inspire',
-                          4: 'Your life purpose: build and stabilize',
-                          5: 'Your life purpose: explore and adapt',
-                          6: 'Your life purpose: heal and nurture',
-                          7: 'Your life purpose: discover truth and wisdom',
-                          8: 'Your life purpose: manifest abundance',
-                          9: 'Your life purpose: serve humanity'
-                        };
-                        return meanings[n] || 'Discover your unique purpose';
-                      })()}</p>
+                      <div className="text-xs text-indigo-200 text-center">Destiny Number</div>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-pink-900/30 rounded-lg p-3 border border-pink-400/30">
+                      <div className="text-2xl font-bold text-pink-300 mb-1 text-center">
+                        {(() => {
+                          let sum = 0;
+                          const vowels = ['A', 'E', 'I', 'O', 'U'];
+                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
+                            if (vowels.includes(char.toUpperCase())) {
+                              const letterMap: Record<string, number> = {
+                                'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+                                'B': 2, 'K': 2, 'R': 2,
+                                'C': 3, 'G': 3, 'L': 3, 'S': 3,
+                                'D': 4, 'M': 4, 'T': 4,
+                                'E': 5, 'H': 5, 'N': 5, 'X': 5,
+                                'F': 6, 'O': 6, 'U': 6, 'V': 6, 'W': 6,
+                                'Z': 7, 'P': 8
+                              };
+                              sum += letterMap[char.toUpperCase()] || 0;
+                            }
+                          }
+                          while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })()}
+                      </div>
+                      <div className="text-xs text-pink-200 text-center">Soul Urge</div>
+                    </div>
+                    <div className="bg-amber-900/30 rounded-lg p-3 border border-amber-400/30">
+                      <div className="text-2xl font-bold text-amber-300 mb-1 text-center">
+                        {(() => {
+                          const date = new Date(user.birthDate);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1;
+                          const currentYear = new Date().getFullYear();
+                          let sum = day + month + currentYear;
+                          while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                          return sum;
+                        })()}
+                      </div>
+                      <div className="text-xs text-amber-200 text-center">Personal Year</div>
+                    </div>
+                  </div>
+                  
+                  {/* Show upgrade message for clients with no previous readings */}
                   
                   {/* Show upgrade message for clients with no previous readings */}
                   {Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
