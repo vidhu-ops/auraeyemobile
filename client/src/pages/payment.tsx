@@ -14,13 +14,13 @@ const CREDIT_PACKS = [
   {
     link: "https://buy.stripe.com/9B614od3JgoS9ICbbxgjC0b",
     credits: 10,
-    price: 499,
+    price: 4152.69,
     badge: "Best Value",
   },
   {
     link: "https://buy.stripe.com/9B64gA7Jpb4y3ke3J5gjC0c",
     credits: 1,
-    price: 99,
+    price: 125,
     badge: "Quick Buy",
   },
 ];
@@ -77,7 +77,7 @@ export default function PaymentPage() {
 
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Credit Packs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 align-center">
             {CREDIT_PACKS.map((pack, index) => (
               <Card 
                 key={index}

@@ -7589,7 +7589,7 @@ Team AuraEye™
                                         </div>
                                         <div className="mt-3 flex justify-center">
                                           <div className="px-3 py-1 bg-purple-100 rounded-full">
-                                            <span className="text-xs font-medium text-purple-700">! Overdrive</span>
+                                            <span className="text-xs font-medium text-purple-700">😫 Overdrive</span>
                                           </div>
                                         </div>
                                       </div>
