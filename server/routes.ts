@@ -4684,6 +4684,70 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Get healer's vibe readings (for healers, userId IS the healer who performed the reading)
+  app.get("/api/healer-vibe-readings", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      console.log(`Fetching vibe readings for healer: ${req.user.username} (ID: ${req.user.id})`);
+      const vibeReadings = await storage.getVibeReadingsByUserId(req.user.id);
+      console.log(`Found ${vibeReadings.length} vibe readings by healer ${req.user.username}`);
+      res.json(vibeReadings);
+    } catch (error) {
+      console.error("Error retrieving healer vibe readings:", error);
+      res.status(500).json({ message: "Failed to retrieve healer vibe readings" });
+    }
+  });
+
+  // Get healer's vibe readings count
+  app.get("/api/healer-vibe-readings-count", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const count = await storage.getVibeReadingsCountByUserId(req.user.id);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error retrieving healer vibe readings count:", error);
+      res.status(500).json({ message: "Failed to retrieve vibe readings count" });
+    }
+  });
+
+  // Get healer's object analyses (analyses performed by the healer)
+  app.get("/api/healer-object-analyses", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      console.log(`Fetching object analyses for healer: ${req.user.username} (ID: ${req.user.id})`);
+      const objectAnalyses = await storage.getObjectAnalysesByPerformedBy(req.user.id);
+      console.log(`Found ${objectAnalyses.length} object analyses performed by healer ${req.user.username}`);
+      res.json(objectAnalyses);
+    } catch (error) {
+      console.error("Error retrieving healer object analyses:", error);
+      res.status(500).json({ message: "Failed to retrieve healer object analyses" });
+    }
+  });
+
+  // Get healer's object analyses count
+  app.get("/api/healer-object-analyses-count", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+
+      const count = await storage.getObjectAnalysesCountByPerformedBy(req.user.id);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error retrieving healer object analyses count:", error);
+      res.status(500).json({ message: "Failed to retrieve object analyses count" });
+    }
+  });
+
 
   // Admin endpoint to add/subtract credits manually
   app.post("/api/admin/credits", isAuthenticated, async (req, res) => {
