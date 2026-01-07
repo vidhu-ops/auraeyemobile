@@ -84,7 +84,7 @@ export default function Services() {
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-16 bg-gradient-mystical relative overflow-hidden">
+        <section className="py-16 bg-gradient-cosmic relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-mystical font-bold mb-4 text-white glow-mystical">Our Spiritual Services</h1>
@@ -155,7 +155,7 @@ export default function Services() {
         </section>
         
         {/* Premium Banner */}
-        <section className="py-16 bg-gradient-mystical text-white relative overflow-hidden">
+        <section className="py-16 bg-gradient-cosmic text-white relative overflow-hidden">
           <div className="container mx-auto px-4 py-10">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl font-mystical font-bold mb-4 glow-cosmic">Unlock Premium Features</h2>

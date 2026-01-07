@@ -39,7 +39,7 @@ export default function About() {
         </section>
         
         {/* Our story section */}
-        <section className="py-16 bg-gradient-cosmic">
+        <section className="py-16 bg-gradient-cosmic-liner">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
@@ -291,7 +291,7 @@ export default function About() {
                     />
                   </div>
                   <h3 className="font-heading font-semibold text-xl mb-1">Nishant Sharma</h3>
-                  <p className="text-primary mb-3">Founder & Lead Healer</p>
+                  <p className="text-black mb-3">Founder & Lead Healer</p>
                   <p className="text-white-600 text-sm">
                     An IT Engineer with a Master’s in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer, AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.
                   </p>

@@ -495,8 +495,8 @@ export default function VibePage() {
             </h1>
             <p className="text-lg text-purple-600 font-medium">{vibeResult.message}</p>
             <div className="mt-4 text-sm text-slate-600">
-              <p>Today's Scan: 1/1</p>
-              <p>Next free scan in 30 days</p>
+              <p>Today's Scan</p>
+              
               <p className="text-purple-600">Upgrade for daily scans</p>
             </div>
           </div>

@@ -208,10 +208,10 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] bg-gradient-to-br from-slate-800 to-slate-900 text-white border-slate-700">
         <DialogHeader>
-          <DialogTitle className="text-2xl bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-purple">
             {step === 3 ? 'Your Personalized Wellness Guide' : 'Mood Check-In'}
           </DialogTitle>
-          <DialogDescription className="text-slate-300">
+          <DialogDescription className="text-white">
             {step === 3 ? 'Based on your responses, here are some personalized recommendations' : "Let's understand your current state"}
           </DialogDescription>
         </DialogHeader>
@@ -420,7 +420,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                 <Card 
                   className="p-6 border-2" 
                   style={{ 
-                    background: `linear-gradient(135deg, ${recommendations.colorTherapy.color}22, ${recommendations.colorTherapy.color}44)`,
+                    background: `linear-gradient(115deg, ${recommendations.colorTherapy.color}52, ${recommendations.colorTherapy.color}24)`,
                     borderColor: recommendations.colorTherapy.color
                   }}
                 >
@@ -428,7 +428,7 @@ export function MoodCheckIn({ isOpen, onClose, onComplete }: MoodCheckInProps) {
                     <Sparkles className="h-6 w-6" style={{ color: recommendations.colorTherapy.color }} />
                     <h3 className="text-lg font-semibold text-white">Your Color Energy</h3>
                   </div>
-                  <p className="text-slate-200">{recommendations.colorTherapy.meaning}</p>
+                  <p className="text-slate-800">{recommendations.colorTherapy.meaning}</p>
                 </Card>
 
                 <Tabs defaultValue="tips" className="w-full">

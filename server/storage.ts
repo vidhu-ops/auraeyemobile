@@ -135,8 +135,8 @@ export interface IStorage {
   
   // Password reset tokens
   createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
-  validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined>;
-  validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
+  validatePasswordResetToken(username: string, email: string, token: string): Promise<PasswordResetToken | undefined>;
+  validatePasswordResetTokenByMobile(username: string, mobileNumber: string, token: string): Promise<PasswordResetToken | undefined>;
   markPasswordResetTokenAsUsed(tokenId: number): Promise<void>;
 
   // PDF storage for exact PDF retrieval
@@ -1161,17 +1161,24 @@ export class DatabaseStorage implements IStorage {
   async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> {
     const [resetToken] = await db
       .insert(passwordResetTokens)
-      .values(token)
+      .values({
+        username: token.username,
+        email: token.email,
+        mobileNumber: token.mobileNumber,
+        token: token.token,
+        expiresAt: token.expiresAt,
+      })
       .returning();
     return resetToken;
   }
 
-  async validatePasswordResetToken(email: string, token: string): Promise<PasswordResetToken | undefined> {
+  async validatePasswordResetToken(username: string, email: string, token: string): Promise<PasswordResetToken | undefined> {
     const [resetToken] = await db
       .select()
       .from(passwordResetTokens)
       .where(
         and(
+          eq(passwordResetTokens.username, username),
           eq(passwordResetTokens.email, email),
           eq(passwordResetTokens.token, token),
           eq(passwordResetTokens.used, false),
@@ -1181,12 +1188,13 @@ export class DatabaseStorage implements IStorage {
     return resetToken || undefined;
   }
 
-  async validatePasswordResetTokenByMobile(mobileNumber: string, token: string): Promise<PasswordResetToken | undefined> {
+  async validatePasswordResetTokenByMobile(username: string, mobileNumber: string, token: string): Promise<PasswordResetToken | undefined> {
     const [resetToken] = await db
       .select()
       .from(passwordResetTokens)
       .where(
         and(
+          eq(passwordResetTokens.username, username),
           eq(passwordResetTokens.mobileNumber, mobileNumber),
           eq(passwordResetTokens.token, token),
           eq(passwordResetTokens.used, false),

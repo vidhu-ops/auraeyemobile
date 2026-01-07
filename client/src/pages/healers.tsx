@@ -271,7 +271,7 @@ export default function HealersPage() {
                                       <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                                     ))}
                                   </div>
-                                  <p className="text-xs text-gray-600 mt-1">by {rating.raterUsername}</p>
+                                  <p className="text-xs text-gray-600 mt-1">by Username</p>
                                 </div>
                               ))}
                             </div>

@@ -16,10 +16,13 @@ import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 const forgotPasswordSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address"),
 });
 
 const resetPasswordSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email address"),
   token: z.string().min(6, "Reset code must be 6 digits").max(6, "Reset code must be 6 digits"),
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
@@ -33,6 +36,7 @@ type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"request" | "reset" | "success">("request");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +45,7 @@ export default function ForgotPassword() {
   const forgotForm = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
+      username: "",
       email: "",
     },
   });
@@ -48,6 +53,8 @@ export default function ForgotPassword() {
   const resetForm = useForm<ResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
+      username: "",
+      email: "",
       token: "",
       newPassword: "",
       confirmPassword: "",
@@ -63,7 +70,10 @@ export default function ForgotPassword() {
       const result = await response.json();
       
       if (response.ok) {
+        setUsername(data.username);
         setEmail(data.email);
+        resetForm.setValue("username", data.username);
+        resetForm.setValue("email", data.email);
         setStep("reset");
         toast({
           title: "Reset Code Sent",
@@ -85,7 +95,8 @@ export default function ForgotPassword() {
 
     try {
       const response = await apiRequest("POST", "/api/reset-password-email", {
-        email,
+        username: data.username,
+        email: data.email,
         token: data.token,
         newPassword: data.newPassword,
       });
@@ -157,8 +168,8 @@ export default function ForgotPassword() {
           </CardTitle>
           <CardDescription>
             {step === "request" 
-              ? "Enter your email address and we'll send you a reset code" 
-              : "Enter the reset code sent to your email and your new password"
+              ? "Enter your username and email address and we'll send you a reset code" 
+              : "Verify your details and enter the reset code sent to your email"
             }
           </CardDescription>
         </CardHeader>
@@ -172,6 +183,25 @@ export default function ForgotPassword() {
           {step === "request" ? (
             <Form {...forgotForm}>
               <form onSubmit={forgotForm.handleSubmit(handleForgotPassword)} className="space-y-4">
+                <FormField
+                  control={forgotForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your username"
+                          {...field}
+                          disabled={isLoading}
+                          data-testid="input-forgot-username"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={forgotForm.control}
                   name="email"
@@ -216,6 +246,45 @@ export default function ForgotPassword() {
                 <input type="text" name="fake-email-field" style={{ display: 'none' }} tabIndex={-1} autoComplete="email" />
                 <input type="password" name="fake-password-field" style={{ display: 'none' }} tabIndex={-1} autoComplete="current-password" />
                 
+                <FormField
+                  control={resetForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Verify your username"
+                          {...field}
+                          disabled={isLoading}
+                          data-testid="input-reset-username"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={resetForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="Verify your email address"
+                          {...field}
+                          disabled={isLoading}
+                          data-testid="input-reset-email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={resetForm.control}
                   name="token"

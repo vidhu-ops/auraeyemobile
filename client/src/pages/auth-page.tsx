@@ -341,7 +341,7 @@ export default function AuthPage() {
                   <div className="flex justify-center w-full">
                     <Link 
                       href="/forgot-password" 
-                      className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                      className="text-sm text-white hover:text-purple-300 transition-colors"
                       data-testid="link-forgot-password"
                     >
                       Forgot Password?
@@ -429,12 +429,12 @@ export default function AuthPage() {
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <div className="text-sm text-slate-600">
+                          <div className="text-sm text-white">
                             I agree to the{" "}
                             <button
                               type="button"
                               onClick={() => setShowTCDialog(true)}
-                              className="text-purple-600 hover:text-purple-700 underline font-semibold"
+                              className="text-purple-200 hover:text-purple-700 underline font-semibold"
                               data-testid="button-view-terms"
                             >
                               Terms & Conditions
