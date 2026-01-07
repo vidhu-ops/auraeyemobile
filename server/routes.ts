@@ -5188,8 +5188,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
   // Rate limiting for password reset - bounded in-memory store with separate email and IP tracking
   const resetAttempts = new Map<string, { count: number; lastAttempt: number }>();
-  const RESET_RATE_LIMIT_PER_EMAIL = 3; // Max 3 attempts per email
-  const RESET_RATE_LIMIT_PER_IP = 10; // Max 10 attempts per IP (allows multiple users behind same IP)
+  const RESET_RATE_LIMIT_PER_EMAIL = 5; // Max 5 attempts per email
+  const RESET_RATE_LIMIT_PER_IP = 15; // Max 15 attempts per IP (allows multiple users behind same IP)
   const RESET_RATE_WINDOW = 15 * 60 * 1000; // 15 minute window
   const MAX_RATE_LIMIT_ENTRIES = 10000; // Prevent memory exhaustion
   

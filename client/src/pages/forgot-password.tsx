@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { Mail, ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import MobileNavigation from "@/components/layout/mobile-navigation";
@@ -40,6 +40,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resending, setResending] = useState(false);
   const { toast } = useToast();
 
   const forgotForm = useForm<ForgotPasswordForm>({
@@ -127,6 +128,41 @@ export default function ForgotPassword() {
     setStep("request");
     setError("");
     resetForm.reset();
+  };
+
+  const handleResendCode = async () => {
+    if (!username || !email) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Username and email are required to resend code",
+      });
+      return;
+    }
+
+    setResending(true);
+    setError("");
+
+    try {
+      const response = await apiRequest("POST", "/api/forgot-password-email", {
+        username,
+        email,
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        toast({
+          title: "Code Resent",
+          description: "A new reset code has been sent to your email",
+        });
+      } else {
+        setError(result.message || "Failed to resend code");
+      }
+    } catch (error) {
+      setError("Network error. Please try again.");
+    } finally {
+      setResending(false);
+    }
   };
 
   if (step === "success") {
@@ -380,17 +416,39 @@ export default function ForgotPassword() {
                   )}
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={handleBackToRequest}
-                  disabled={isLoading}
-                  data-testid="button-back-to-email"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Email Entry
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={handleResendCode}
+                    disabled={isLoading || resending}
+                    data-testid="button-resend-code"
+                  >
+                    {resending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Resend Code
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="flex-1"
+                    onClick={handleBackToRequest}
+                    disabled={isLoading}
+                    data-testid="button-back-to-email"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                </div>
               </form>
             </Form>
           )}
