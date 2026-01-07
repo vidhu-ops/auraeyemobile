@@ -531,10 +531,10 @@ With awareness and responsibility,
         const monthInfo = getPersonalMonthMeaning(personalMonth);
         const remedy = getMonthlyRemedy(personalMonth);
         
-        addText(`${month.name} (Personal Month ${personalMonth})`, 10, true);
-        addText(`${monthInfo.title} - ${monthInfo.theme}`, 9, true);
-        addText(monthInfo.description, 8, true);
-        addText(`Monthly Remedy: Color - ${remedy.color}, Mantra - ${remedy.mantra}, Crystal - ${remedy.crystal}, Sacred Code - ${remedy.sacredCode}`, 8);
+        addText(`${month.name} (Personal Month ${personalMonth})`, 14, true);
+        addText(`${monthInfo.title} - ${monthInfo.theme}`, 12);
+        addText(monthInfo.description, 12, true);
+        addText(`Monthly Remedy: Color - ${remedy.color}, Mantra - ${remedy.mantra}, Crystal - ${remedy.crystal}, Sacred Code - ${remedy.sacredCode}`, 10);
         currentY += 2;
       });
       currentY += 3;
