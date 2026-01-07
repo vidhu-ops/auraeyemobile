@@ -5170,6 +5170,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       // Hash new password
       const hashedPassword = await hashPassword(newPassword);
+      console.log(`[DEBUG] Updating password for user ID: ${user.id}`);
       
       // Update password
       await storage.updateUserPassword(user.id, hashedPassword);
@@ -5180,7 +5181,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.log(`✅ Password reset successful for user: ${normalizedUsername}`);
       res.json({ message: "Password reset successfully" });
     } catch (error: any) {
-      console.error("Error resetting password:", error);
+      console.error("[ERROR] Password reset failed:", error);
       res.status(500).json({ message: error.message || "Failed to reset password" });
     }
   });
@@ -5296,14 +5297,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
         expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
       });
 
+      console.log(`[DEBUG] Created reset token ${resetToken} for ${normalizedEmail}`);
+
       // Send reset code via email
       const { sendPasswordResetEmail } = await import('./email-service');
+      console.log(`[DEBUG] Attempting to send email to ${normalizedEmail}`);
       const emailSent = await sendPasswordResetEmail(normalizedEmail, resetToken);
+      console.log(`[DEBUG] Email sent status: ${emailSent}`);
       
       if (emailSent) {
         res.json({ message: "Password reset code sent to your email" });
       } else {
-        res.status(500).json({ message: "Failed to send password reset email." });
+        console.error(`[ERROR] Failed to send password reset email to ${normalizedEmail}`);
+        res.status(500).json({ message: "Failed to send password reset email. Please check your email configuration." });
       }
     } catch (error) {
       console.error("Error requesting password reset:", error);
