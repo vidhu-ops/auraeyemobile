@@ -185,12 +185,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db.select().from(users).where(
+      sql`LOWER(${users.username}) = LOWER(${username})`
+    );
     return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const [user] = await db.select().from(users).where(
+      sql`LOWER(${users.email}) = LOWER(${email})`
+    );
     return user || undefined;
   }
 
@@ -1178,8 +1182,8 @@ export class DatabaseStorage implements IStorage {
       .from(passwordResetTokens)
       .where(
         and(
-          eq(passwordResetTokens.username, username),
-          eq(passwordResetTokens.email, email),
+          sql`LOWER(${passwordResetTokens.username}) = LOWER(${username})`,
+          sql`LOWER(${passwordResetTokens.email}) = LOWER(${email})`,
           eq(passwordResetTokens.token, token),
           eq(passwordResetTokens.used, false),
           gt(passwordResetTokens.expiresAt, new Date())
