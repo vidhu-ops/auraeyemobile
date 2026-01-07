@@ -100,19 +100,24 @@ export default function ForgotPassword() {
         token: data.token,
         newPassword: data.newPassword,
       });
-      const result = await response.json();
       
-      if (response.ok) {
-        setStep("success");
-        toast({
-          title: "Password Reset Successful",
-          description: "Your password has been reset successfully",
-        });
-      } else {
-        setError(result.message || "Failed to reset password");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to reset password");
       }
-    } catch (error) {
-      setError("Network error. Please try again.");
+      
+      setStep("success");
+      toast({
+        title: "Password Reset Successful",
+        description: "Your password has been reset successfully",
+      });
+    } catch (error: any) {
+      setError(error.message || "Network error. Please try again.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Network error. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }

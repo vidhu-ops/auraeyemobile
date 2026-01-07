@@ -5177,10 +5177,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Mark token as used
       await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
 
+      console.log(`✅ Password reset successful for user: ${normalizedUsername}`);
       res.json({ message: "Password reset successfully" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error resetting password:", error);
-      res.status(500).json({ message: "Failed to reset password" });
+      res.status(500).json({ message: error.message || "Failed to reset password" });
     }
   });
 
