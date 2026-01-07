@@ -35,7 +35,7 @@ export default function PricingPage() {
     },
     {
       id: "starter",
-      name: "Starter Plan (Seeker)",
+      name: "Seeker Plan",
       price: "TBD",
       period: "Flexible Billing",
       credits: "TBD Credits",
@@ -239,10 +239,10 @@ export default function PricingPage() {
                           {plan.billingOptions ? starterPlanPrices[starterBilling].price : plan.price}
                         </span>
                       </div>
-                      <CardDescription className="text-purple-600 font-cosmic text-xs">
+                      <CardDescription className="text-white font-cosmic text-xs">
                         {plan.period}
                       </CardDescription>
-                      <CardDescription className="text-purple-700 font-cosmic font-semibold text-sm mt-1">
+                      <CardDescription className="text-white font-cosmic font-semibold text-sm mt-1">
                         {plan.billingOptions ? starterPlanPrices[starterBilling].credits : plan.credits}
                       </CardDescription>
                     </CardHeader>
@@ -455,11 +455,9 @@ export default function PricingPage() {
             {/* CTA Section */}
             <div className="text-center">
               <Link href="/dashboard">
-                <Button variant="outline" className="mr-4 bg-purple" data-testid="button-back-dashboard">
-                  Back to Dashboard
-                </Button>
+                
               </Link>
-              <Link href="/login">
+              <Link href="/payment">
                 <Button data-testid="button-get-started">
                   Get Started
                 </Button>

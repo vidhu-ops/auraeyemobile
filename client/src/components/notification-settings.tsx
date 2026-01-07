@@ -266,53 +266,20 @@ export default function NotificationSettings() {
           </div>
 
           {/* SMS Notifications */}
-          <div className="space-y-4">
+          <div className="space-y-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center">
-                  <Smartphone className="h-5 w-5 text-pink-600 dark:text-pink-400" />
-                </div>
-                <div>
-                  <Label htmlFor="sms-notifications" className="text-base font-medium">
-                    SMS Notifications
-                  </Label>
-                  <p className="text-sm text-white">
-                    Receive text messages on your phone
-                  </p>
-                </div>
-              </div>
-              <Switch
-                id="sms-notifications"
-                checked={preferences?.smsEnabled || false}
-                onCheckedChange={handleSMSToggle}
-                disabled={smsToggling}
-                data-testid="switch-sms-notifications"
-              />
+              
+              
             </div>
 
             {/* Phone Number Input */}
-            <div className="ml-13 space-y-2">
-              <Label htmlFor="phone-number">Phone Number</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="phone-number"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={phoneNumber || preferences?.phoneNumber || ""}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  data-testid="input-phone-number"
-                />
-                <Button
-                  onClick={handlePhoneNumberSave}
-                  disabled={updatePreferencesMutation.isPending}
-                  data-testid="button-save-phone"
-                >
-                  Save
-                </Button>
+            <div className="ml-10 space-y-0">
+              
+              <div className="flex gap-0">
+                
+                
               </div>
-              <p className="text-xs text-white">
-                Include country code (e.g., +1 for US)
-              </p>
+              
             </div>
           </div>
 

@@ -321,6 +321,7 @@ export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).
 // Password reset tokens table for forgot password functionality
 export const passwordResetTokens = pgTable("password_reset_tokens", {
   id: serial("id").primaryKey(),
+  username: text("username").notNull(),
   email: text("email").notNull(),
   mobileNumber: text("mobile_number"), // Add mobile number field
   token: text("token").notNull(),

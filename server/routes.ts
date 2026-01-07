@@ -5254,40 +5254,33 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Email-based password reset - Request password reset
   app.post('/api/forgot-password-email', async (req, res) => {
     try {
-      const { email } = req.body;
+      const { username, email } = req.body;
       
-      if (!email) {
-        return res.status(400).json({ message: "Email address is required" });
+      if (!username || !email) {
+        return res.status(400).json({ message: "Username and email address are required" });
       }
 
-      // Normalize email: trim whitespace and convert to lowercase
+      // Normalize username and email
+      const normalizedUsername = username.trim().toLowerCase();
       const normalizedEmail = email.trim().toLowerCase();
       
-      // Rate limit check - prevent email spam/enumeration with separate email and IP tracking
+      // Rate limit check
       const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
       const rateCheck = checkResetRateLimit(
-        `request:email:${normalizedEmail}`,
+        `request:user:${normalizedUsername}:${normalizedEmail}`,
         `request:ip:${clientIP}`,
         RESET_RATE_LIMIT_PER_EMAIL,
         RESET_RATE_LIMIT_PER_IP
       );
       if (!rateCheck.allowed) {
-        console.log(`Rate limit exceeded for password reset request: ${normalizedEmail} from ${clientIP}`);
         return res.status(429).json({ message: rateCheck.reason });
       }
       
-      // Basic email format validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(normalizedEmail)) {
-        return res.status(400).json({ message: "Please enter a valid email address" });
-      }
-
-      // Check if user exists with this email
-      const user = await storage.getUserByEmail(normalizedEmail);
-      if (!user) {
-        // Don't reveal if email exists for security - still return success message
-        // This prevents email enumeration attacks
-        return res.json({ message: "If an account with this email exists, a password reset code has been sent." });
+      // Check if user exists with this username and email
+      const user = await storage.getUserByUsername(normalizedUsername);
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        // Don't reveal if user exists for security
+        return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
 
       // Generate 6-digit reset token
@@ -5295,6 +5288,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       // Store reset token with 15-minute expiry
       await storage.createPasswordResetToken({
+        username: normalizedUsername,
         email: normalizedEmail,
         mobileNumber: user.mobileNumber || null,
         token: resetToken,
@@ -5306,23 +5300,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const emailSent = await sendPasswordResetEmail(normalizedEmail, resetToken);
       
       if (emailSent) {
-        // Safely mask email - hide most of local part regardless of length
-        const atIndex = normalizedEmail.indexOf("@");
-        const localPart = normalizedEmail.slice(0, atIndex);
-        const domain = normalizedEmail.slice(atIndex);
-        const maskedLocal = localPart.length > 2 
-          ? localPart.slice(0, 2) + "***" 
-          : "***";
-        
-        res.json({ 
-          message: "Password reset code sent to your email",
-          email: maskedLocal + domain
-        });
+        res.json({ message: "Password reset code sent to your email" });
       } else {
-        res.status(500).json({ message: "Failed to send password reset email. Please try again." });
+        res.status(500).json({ message: "Failed to send password reset email." });
       }
     } catch (error) {
-      console.error("Error requesting email password reset:", error);
+      console.error("Error requesting password reset:", error);
       res.status(500).json({ message: "Failed to process password reset request" });
     }
   });
@@ -5330,62 +5313,49 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Email-based password reset - Reset password with token
   app.post('/api/reset-password-email', async (req, res) => {
     try {
-      const { email, token, newPassword } = req.body;
+      const { username, email, token, newPassword } = req.body;
       
-      if (!email || !token || !newPassword) {
-        return res.status(400).json({ message: "Email, token, and new password are required" });
+      if (!username || !email || !token || !newPassword) {
+        return res.status(400).json({ message: "Username, email, token, and new password are required" });
       }
 
-      // Normalize email to match how it was stored
+      const normalizedUsername = username.trim().toLowerCase();
       const normalizedEmail = email.trim().toLowerCase();
       
-      // Rate limit check - prevent brute-force token guessing with separate email and IP tracking
+      // Rate limit check
       const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
       const rateCheck = checkResetRateLimit(
-        `reset:email:${normalizedEmail}`,
+        `reset:user:${normalizedUsername}:${normalizedEmail}`,
         `reset:ip:${clientIP}`,
         RESET_RATE_LIMIT_PER_EMAIL,
         RESET_RATE_LIMIT_PER_IP
       );
       if (!rateCheck.allowed) {
-        console.log(`Rate limit exceeded for password reset attempt: ${normalizedEmail} from ${clientIP}`);
         return res.status(429).json({ message: rateCheck.reason });
       }
       
-      // Validate password strength
       if (newPassword.length < 8) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
-      // Validate token format (must be 6 digits)
-      if (!/^\d{6}$/.test(token)) {
-        return res.status(400).json({ message: "Invalid reset code format" });
-      }
-
-      // Validate reset token using email
-      const resetTokenRecord = await storage.validatePasswordResetToken(normalizedEmail, token);
+      // Validate reset token using username, email, and token
+      const resetTokenRecord = await storage.validatePasswordResetToken(normalizedUsername, normalizedEmail, token);
       if (!resetTokenRecord) {
         return res.status(400).json({ message: "Invalid or expired reset token" });
       }
 
-      // Get user by email
-      const user = await storage.getUserByEmail(normalizedEmail);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      const user = await storage.getUserByUsername(normalizedUsername);
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        return res.status(404).json({ message: "User details do not match" });
       }
 
-      // Hash new password
       const hashedPassword = await hashPassword(newPassword);
-      
-      // Update password
       await storage.updateUserPassword(user.id, hashedPassword);
-      
-      // Mark token as used
       await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
 
       res.json({ message: "Password reset successfully" });
     } catch (error) {
-      console.error("Error resetting password via email:", error);
+      console.error("Error resetting password:", error);
       res.status(500).json({ message: "Failed to reset password" });
     }
   });
