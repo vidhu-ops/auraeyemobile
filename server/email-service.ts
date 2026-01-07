@@ -59,6 +59,8 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     
     const result = await resend.emails.send(emailData);
     
+    console.log("[DEBUG] Resend response:", JSON.stringify(result));
+    
     if (result.error) {
       console.error("Resend error:", result.error);
       return false;
