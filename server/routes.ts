@@ -5364,8 +5364,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       const hashedPassword = await hashPassword(newPassword);
       await storage.updateUserPassword(user.id, hashedPassword);
+      
+      // Also update healer table password if this is a healer account
+      if (user.userType === "healer") {
+        console.log(`[DEBUG] Updating healer table password for username: ${user.username}`);
+        await storage.updateHealerPassword(user.username, hashedPassword);
+      }
+      
       await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
 
+      console.log(`✅ Password reset successful for ${user.userType} user: ${user.username}`);
       res.json({ message: "Password reset successfully" });
     } catch (error) {
       console.error("Error resetting password:", error);
