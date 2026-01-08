@@ -48,8 +48,12 @@ export async function comparePasswords(supplied: string, stored: string) {
     return timingSafeEqual(hashedBuf, suppliedBuf);
   } else {
     // It's a plain text password - compare directly
-    console.log("Comparing plain text password for healer");
-    return supplied === stored;
+    console.log(`Comparing plain text password for healer: ${username}`);
+    const result = supplied === stored;
+    if (!result) {
+      console.log(`Plain text comparison failed for ${username}`);
+    }
+    return result;
   }
 }
 
@@ -82,49 +86,60 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        console.log(`[AUTH] Login attempt for: ${username}`);
+        
         // First check if this is a healer login
         const healer = await storage.getHealerByUsername(username);
         if (healer) {
-          console.log(`Healer login attempt for: ${username}`);
-          console.log(`Stored healer password starts with: ${healer.password?.substring(0, 10)}...`);
-          const passwordMatch = await comparePasswords(password, healer.password);
-          console.log(`Password comparison result: ${passwordMatch}`);
+          console.log(`[AUTH] Found healer account for: ${username}`);
+          const passwordMatch = await comparePasswords(password, healer.password, username);
+          console.log(`[AUTH] Healer password match: ${passwordMatch}`);
+          
           if (passwordMatch) {
-            // Find or create corresponding user record for credit management
             let userRecord = await storage.getUserByUsername(username);
             if (!userRecord) {
-            // Create user record for healer if it doesn't exist
-            userRecord = await storage.createUser({
+              console.log(`[AUTH] Creating missing user record for healer: ${username}`);
+              userRecord = await storage.createUser({
+                username: healer.username,
+                password: healer.password,
+                userType: "healer",
+                credits: 100,
+                soulEnergy: 0
+              });
+            }
+            
+            const healerUser = {
+              id: userRecord.id,
               username: healer.username,
               password: healer.password,
-              userType: "healer",
-              credits: 100, // Give new healers 100 initial credits
-              soulEnergy: 0 // Start at 0% tree growth
-            });
-          }
-          
-          // Return healer as authenticated user using the user record ID
-          const healerUser = {
-            id: userRecord.id, // Use user record ID for credit management
-            username: healer.username,
-            password: healer.password,
-            userType: "healer" as const,
-            birthDate: userRecord.birthDate,
-            createdAt: healer.createdAt,
-            healerData: healer // Store full healer data for dashboard access
-          };
-          return done(null, healerUser);
+              userType: "healer" as const,
+              birthDate: userRecord.birthDate,
+              createdAt: healer.createdAt,
+              healerData: healer
+            };
+            return done(null, healerUser);
+          } else {
+            // Password didn't match as a healer, but don't stop yet - check regular users
+            console.log(`[AUTH] Healer password mismatch for: ${username}, checking users table...`);
           }
         }
         
-        // If not a healer, check regular users
+        // Check regular users
         const user = await storage.getUserByUsername(username);
-        if (!user || !(await comparePasswords(password, user.password))) {
-          return done(null, false);
-        } else {
-          return done(null, user);
+        if (user) {
+          console.log(`[AUTH] Found user account for: ${username}`);
+          const passwordMatch = await comparePasswords(password, user.password, username);
+          console.log(`[AUTH] User password match: ${passwordMatch}`);
+          
+          if (passwordMatch) {
+            return done(null, user);
+          }
         }
+
+        console.log(`[AUTH] Authentication failed for: ${username}`);
+        return done(null, false);
       } catch (error) {
+        console.error(`[AUTH] Error during authentication:`, error);
         return done(error);
       }
     }),
