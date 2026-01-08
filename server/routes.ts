@@ -5279,11 +5279,17 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
       
       // Check if user exists with this username and email
+      console.log(`[DEBUG] Looking up user with username: "${normalizedUsername}" and email: "${normalizedEmail}"`);
       const user = await storage.getUserByUsername(normalizedUsername);
+      console.log(`[DEBUG] User lookup result:`, user ? `Found user ID ${user.id}, email: "${user.email}"` : 'Not found');
+      
       if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        console.log(`[DEBUG] User validation failed - user exists: ${!!user}, has email: ${!!user?.email}, email matches: ${user?.email?.toLowerCase() === normalizedEmail}`);
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
+      
+      console.log(`[DEBUG] User validated successfully - proceeding with password reset`);
 
       // Generate 6-digit reset token
       const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
