@@ -22,9 +22,9 @@ export async function hashPassword(password: string) {
   return `${buf.toString("hex")}.${salt}`;
 }
 
-export async function comparePasswords(supplied: string, stored: string) {
+export async function comparePasswords(supplied: string, stored: string, username: string = "unknown") {
   if (!stored) {
-    console.error("No stored password provided");
+    console.error(`No stored password provided for ${username}`);
     return false;
   }
   
@@ -32,7 +32,7 @@ export async function comparePasswords(supplied: string, stored: string) {
   if (stored.includes(".")) {
     const [hashed, salt] = stored.split(".");
     if (!hashed || !salt) {
-      console.error("Missing hash or salt in stored password");
+      console.error(`Missing hash or salt in stored password for ${username}`);
       return false;
     }
     
@@ -41,7 +41,7 @@ export async function comparePasswords(supplied: string, stored: string) {
     
     // Ensure buffers are the same length before calling timingSafeEqual
     if (hashedBuf.length !== suppliedBuf.length) {
-      console.error(`Hash length mismatch: stored=${hashedBuf.length}, supplied=${suppliedBuf.length}`);
+      console.error(`Hash length mismatch for ${username}: stored=${hashedBuf.length}, supplied=${suppliedBuf.length}`);
       return false;
     }
     
