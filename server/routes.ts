@@ -5279,31 +5279,9 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
       
       // Check if user exists with this username and email
-      console.log(`[DEBUG] Looking up user with username: "${normalizedUsername}" and email: "${normalizedEmail}"`);
-      
-      // Find user with EXACT match of both username AND email (case-insensitive)
-      // This is critical for security - we must not allow password reset for the wrong user
-      const usersByEmail = await storage.getUsersByEmail(normalizedEmail);
-      console.log(`[DEBUG] Email lookup result: Found ${usersByEmail.length} users with email "${normalizedEmail}"`);
-
-      // Require EXACT match of both username AND email
-      let user = usersByEmail.find(u => u.username.toLowerCase() === normalizedUsername);
-      
-      if (user) {
-        console.log(`[DEBUG] Found exact match via email lookup: User ID ${user.id}, Username: ${user.username}, Type: ${user.userType}`);
-      } else {
-        // Fallback: Try username lookup and verify email matches exactly
-        const userByUsername = await storage.getUserByUsername(normalizedUsername);
-        if (userByUsername && userByUsername.email && userByUsername.email.toLowerCase() === normalizedEmail) {
-          user = userByUsername;
-          console.log(`[DEBUG] Found exact match via username lookup: User ID ${user.id}, Username: ${user.username}, Type: ${user.userType}`);
-        } else {
-          console.log(`[DEBUG] No exact match found for username "${normalizedUsername}" and email "${normalizedEmail}"`);
-        }
-      }
-      
-      if (!user) {
-        // Don't reveal if user exists for security - return generic message
+      const user = await storage.getUserByUsername(normalizedUsername);
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
 
@@ -5373,29 +5351,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(400).json({ message: "Invalid or expired reset token" });
       }
 
-      // Find user with EXACT match of both username AND email (case-insensitive)
-      // SECURITY: We must update ONLY the specific user that matches both fields exactly
-      console.log(`[DEBUG] Reset password - looking up user with username: "${normalizedUsername}" and email: "${normalizedEmail}"`);
-      const usersByEmail = await storage.getUsersByEmail(normalizedEmail);
-      
-      // Require EXACT match of both username AND email
-      let user = usersByEmail.find(u => u.username.toLowerCase() === normalizedUsername);
-      
-      if (!user) {
-        // Fallback: Try username lookup and verify email matches exactly
-        const userByUsername = await storage.getUserByUsername(normalizedUsername);
-        if (userByUsername && userByUsername.email && userByUsername.email.toLowerCase() === normalizedEmail) {
-          user = userByUsername;
-        }
+      const user = await storage.getUserByUsername(normalizedUsername);
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        return res.status(404).json({ message: "User details do not match" });
       }
 
-      if (!user) {
-        console.log(`[DEBUG] Reset password - no exact match for username "${normalizedUsername}" and email "${normalizedEmail}"`);
-        // Return same error as invalid token for security - don't reveal if user exists
-        return res.status(400).json({ message: "Invalid or expired reset token" });
-      }
-
-      console.log(`[DEBUG] Resetting password for user ID ${user.id} (${user.username}, type: ${user.userType})`);
       const hashedPassword = await hashPassword(newPassword);
       await storage.updateUserPassword(user.id, hashedPassword);
       await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
