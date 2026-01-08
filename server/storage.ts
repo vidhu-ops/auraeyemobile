@@ -28,7 +28,6 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByMobileNumber(mobileNumber: string): Promise<User | undefined>;
-  getUsersByEmail(email: string): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<User | undefined>;
   updateUserOnboarding(userId: number, onboarding: { manifestIntention: string; energyLevel: string; biggestBlock: string }): Promise<User | undefined>;
@@ -197,12 +196,6 @@ export class DatabaseStorage implements IStorage {
       sql`LOWER(${users.email}) = LOWER(${email})`
     );
     return user || undefined;
-  }
-
-  async getUsersByEmail(email: string): Promise<User[]> {
-    return await db.select().from(users).where(
-      sql`LOWER(${users.email}) = LOWER(${email})`
-    );
   }
 
   async getUserByMobileNumber(mobileNumber: string): Promise<User | undefined> {
