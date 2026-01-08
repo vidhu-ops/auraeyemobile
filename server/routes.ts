@@ -5284,12 +5284,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.log(`[DEBUG] Initial lookup result:`, user ? `Found user ID ${user.id}, email: "${user.email}"` : 'User not found');
 
       // If username lookup failed to find a user with the correct email, try email lookup
-      if (!user || (user.email && user.email.toLowerCase() !== normalizedEmail)) {
-        console.log(`[DEBUG] Username lookup didn't match email perfectly, trying email lookup for "${normalizedEmail}"`);
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+        console.log(`[DEBUG] Username lookup didn't match email perfectly (found email: ${user?.email}), trying email lookup for "${normalizedEmail}"`);
         const userByEmail = await storage.getUserByEmail(normalizedEmail);
+        
+        // If we found a user by email, check if their username matches (case-insensitive)
         if (userByEmail && userByEmail.username.toLowerCase() === normalizedUsername) {
           user = userByEmail;
           console.log(`[DEBUG] Found matching user by email lookup: ID ${user.id}`);
+        } else {
+          console.log(`[DEBUG] Email lookup result:`, userByEmail ? `Found user ID ${userByEmail.id}, but username "${userByEmail.username}" does not match "${normalizedUsername}"` : 'No user found with this email');
         }
       }
       
