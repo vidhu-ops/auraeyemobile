@@ -5281,16 +5281,23 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Check if user exists with this username and email
       console.log(`[DEBUG] Looking up user with username: "${normalizedUsername}" and email: "${normalizedEmail}"`);
       
-      // Try finding user by email first, as email should be unique
-      const userByEmail = await storage.getUserByEmail(normalizedEmail);
-      console.log(`[DEBUG] Email lookup result:`, userByEmail ? `Found user ID ${userByEmail.id}, username: "${userByEmail.username}"` : 'No user found with this email');
+      // Try finding user by email first
+      const usersByEmail = await storage.getUsersByEmail(normalizedEmail);
+      console.log(`[DEBUG] Email lookup result: Found ${usersByEmail.length} users with email "${normalizedEmail}"`);
 
       let user = null;
-      if (userByEmail && userByEmail.username.toLowerCase() === normalizedUsername) {
-        user = userByEmail;
-        console.log(`[DEBUG] Found matching user by email and username match: ID ${user.id}`);
-      } else if (userByEmail) {
-        console.log(`[DEBUG] Email exists but username "${userByEmail.username}" doesn't match requested "${normalizedUsername}"`);
+      // Look for a user where both email and username match
+      user = usersByEmail.find(u => u.username.toLowerCase() === normalizedUsername);
+      
+      if (user) {
+        console.log(`[DEBUG] Found matching user by email and username match: ID ${user.id}, Type: ${user.userType}`);
+      } else if (usersByEmail.length > 0) {
+        // If we found users with this email but no exact username match,
+        // we'll try to find a healer account as requested or default to the first one.
+        console.log(`[DEBUG] Found users with email but no exact username match.`);
+        // Prioritize healer type as requested
+        user = usersByEmail.find(u => u.userType === 'healer') || usersByEmail[0];
+        console.log(`[DEBUG] Selecting user ID ${user.id} (Type: ${user.userType}) as best match for email`);
       }
       
       if (!user) {
@@ -5298,12 +5305,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         const userByUsername = await storage.getUserByUsername(normalizedUsername);
         if (userByUsername && userByUsername.email && userByUsername.email.toLowerCase() === normalizedEmail) {
           user = userByUsername;
-          console.log(`[DEBUG] Found matching user by username lookup and email match: ID ${user.id}`);
+          console.log(`[DEBUG] Found matching user by username lookup and email match: ID ${user.id}, Type: ${user.userType}`);
         }
       }
       
       if (!user) {
-        console.log(`[DEBUG] User validation failed - no exact match for username "${normalizedUsername}" and email "${normalizedEmail}"`);
+        console.log(`[DEBUG] User validation failed - no match for username "${normalizedUsername}" and email "${normalizedEmail}"`);
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
