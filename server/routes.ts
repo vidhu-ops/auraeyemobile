@@ -5280,25 +5280,30 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       // Check if user exists with this username and email
       console.log(`[DEBUG] Looking up user with username: "${normalizedUsername}" and email: "${normalizedEmail}"`);
-      let user = await storage.getUserByUsername(normalizedUsername);
-      console.log(`[DEBUG] Initial lookup result:`, user ? `Found user ID ${user.id}, email: "${user.email}"` : 'User not found');
+      
+      // Try finding user by email first, as email should be unique
+      const userByEmail = await storage.getUserByEmail(normalizedEmail);
+      console.log(`[DEBUG] Email lookup result:`, userByEmail ? `Found user ID ${userByEmail.id}, username: "${userByEmail.username}"` : 'No user found with this email');
 
-      // If username lookup failed to find a user with the correct email, try email lookup
-      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
-        console.log(`[DEBUG] Username lookup didn't match email perfectly (found email: ${user?.email}), trying email lookup for "${normalizedEmail}"`);
-        const userByEmail = await storage.getUserByEmail(normalizedEmail);
-        
-        // If we found a user by email, check if their username matches (case-insensitive)
-        if (userByEmail && userByEmail.username.toLowerCase() === normalizedUsername) {
-          user = userByEmail;
-          console.log(`[DEBUG] Found matching user by email lookup: ID ${user.id}`);
-        } else {
-          console.log(`[DEBUG] Email lookup result:`, userByEmail ? `Found user ID ${userByEmail.id}, but username "${userByEmail.username}" does not match "${normalizedUsername}"` : 'No user found with this email');
+      let user = null;
+      if (userByEmail && userByEmail.username.toLowerCase() === normalizedUsername) {
+        user = userByEmail;
+        console.log(`[DEBUG] Found matching user by email and username match: ID ${user.id}`);
+      } else if (userByEmail) {
+        console.log(`[DEBUG] Email exists but username "${userByEmail.username}" doesn't match requested "${normalizedUsername}"`);
+      }
+      
+      if (!user) {
+        // Fallback: Try finding user by username and see if email matches
+        const userByUsername = await storage.getUserByUsername(normalizedUsername);
+        if (userByUsername && userByUsername.email && userByUsername.email.toLowerCase() === normalizedEmail) {
+          user = userByUsername;
+          console.log(`[DEBUG] Found matching user by username lookup and email match: ID ${user.id}`);
         }
       }
       
-      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
-        console.log(`[DEBUG] User validation failed - final check: user exists: ${!!user}, has email: ${!!(user?.email)}, email matches: ${user?.email?.toLowerCase() === normalizedEmail}`);
+      if (!user) {
+        console.log(`[DEBUG] User validation failed - no exact match for username "${normalizedUsername}" and email "${normalizedEmail}"`);
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
