@@ -727,8 +727,10 @@ With awareness and responsibility,
             }),
           });
           
+          console.log('✅ Numerology PDF saved to database automatically');
           // Invalidate healer numerology readings query so dashboard updates immediately
           queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
         } catch (saveError) {
           console.error("Error saving PDF to database:", saveError);
         }
