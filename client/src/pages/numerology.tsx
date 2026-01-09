@@ -485,9 +485,11 @@ With awareness and responsibility,
       
       currentY += 2;
       addText(`Disclaimer: This AuraEye™ report and any guidance provided by AuraEye™, its platform, or its licensed healers is intended solely for self-awareness, personal reflection, and spiritual or wellness support. It does not constitute and should not be considered a prediction, guarantee, diagnosis, treatment, or professional advice of any kind, including but not limited to medical, psychological, psychiatric, legal, or financial advice. AuraEye™ does not claim to diagnose, treat, cure, or prevent any condition. All insights are symbolic and interpretive in nature, and outcomes depend entirely on the user’s free will, personal choices, actions, and efforts. Users are advised to consult qualified professionals for any medical, mental health, legal, or financial concerns.`, 9);
-      currentY += 20;
-      
       currentY += 40;
+      
+      // Ensure Life Path Spotlight starts on a new page after disclaimer
+      pdf.addPage();
+      currentY = margin;
 
       // 2. Life Path Spotlight Box
       pdf.setFillColor(245, 240, 255);
