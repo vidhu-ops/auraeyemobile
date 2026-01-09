@@ -719,7 +719,10 @@ With awareness and responsibility,
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ pdfData: pdfBase64 }),
+            body: JSON.stringify({ 
+              pdfData: pdfBase64,
+              healerNotes: healerNotes // Send notes along with PDF
+            }),
           });
           
           // Invalidate healer numerology readings query so dashboard updates immediately

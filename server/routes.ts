@@ -5070,8 +5070,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "Numerology reading not found" });
       }
 
-      // Update the reading with PDF data
-      const updatedReading = await storage.updateNumerologyReadingPdf(parseInt(id), pdfData);
+      // Update the reading with PDF data and optionally healer notes
+      const updatedReading = await storage.updateNumerologyReadingPdf(parseInt(id), pdfData, healerNotes);
       
       res.json(updatedReading);
     } catch (error) {
