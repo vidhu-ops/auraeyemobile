@@ -333,7 +333,7 @@ export default function NumerologyPage() {
         pdf.setFontSize(fontSize);
         pdf.setFont("helvetica", isBold ? "bold" : "normal");
         pdf.setTextColor(color[0], color[1], color[2]);
-        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+        const lines = pdf.splitTextToSize(String(text), pageWidth - 2 * margin);
         
         lines.forEach((line: string) => {
           if (currentY > 280) {
@@ -369,7 +369,7 @@ export default function NumerologyPage() {
         }
         
         pdf.text('•', bulletX, currentY);
-        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin - 5);
+        const lines = pdf.splitTextToSize(String(text), pageWidth - 2 * margin - 5);
         lines.forEach((line: string, index: number) => {
           if (currentY > 280) {
             pdf.addPage();
@@ -398,18 +398,18 @@ export default function NumerologyPage() {
       addText(`Welcome to your AuraEye™ Numerology & Energy Guidance Report.`, 11, false);
       addText(`This personalized AuraEye™ report has been thoughtfully prepared for you by your Licensed Healer. Anytime you wish to connect with them you can reach out on their contact information provided separately.`, 11);
       currentY += 2;
-      addText(`How to Use Your AuraEye™ Numerology, Chakra & Aura Report
+      addText(`How to Use Your Report`, 11, true);
 
-This report reflects the current state of your energetic field — a living snapshot of your emotions, thoughts,
+addText( `This report reflects the current state of your energetic field — a living snapshot of your emotions, thoughts,
 and vibrational balance at this moment. Each number resonates to a particular planet and specific chakra in your energy body. The colours of the chakra, aura colours and planets might not resonate in classical astrology or numerological sense to you but the qualities of each planet will when you understand the correlation of them with the 9 chakras in the spiritual body.
 
 Please remember: this report is not a medical or psychological diagnosis. Instead, it is a tool for
 self-awareness, empowerment, and energetic guidance — designed to help you understand where your
 energy flows freely and where it seeks harmony.
-This report is designed as a self-awareness and alignment tool, not a prediction of fate. It helps you understand how numbers, chakras, and aura patterns reflect your current energetic tendencies—and how you can consciously work with them.
-Numerology
+This report is designed as a self-awareness and alignment tool, not a prediction of fate. It helps you understand how numbers, chakras, and aura patterns reflect your current energetic tendencies—and how you can consciously work with them.`, 10)
+
  
- Numerology is based on the idea that numbers carry symbolic patterns of energy. Your birth date generates specific numbers that describe:
+ addText( `Numerology is based on the idea that numbers carry symbolic patterns of energy. Your birth date generates specific numbers that describe:
 -       How you express yourself
 -       How you make decisions
 -       What lessons repeat in your life
@@ -427,36 +427,37 @@ Just like your heart rate or mood changes daily, your aura and chakra balance al
 -       Habits
 -       Actions (karma)
 This is why the report is a snapshot, not a fixed identity.
-________________________________________
+________________________________________`, 10);
 
-How to Use This Report Practically
-1. Use it as a mirror, not a label
- Read each section as feedback—not judgment.
+addText( `How to Use This Report Practically`, 11, true);
+addText( `1. Use it as a mirror, not a label`,10, true);
+ addText( `Read each section as feedback—not judgment.
  If something resonates, observe it.
- If something doesn’t, ignore it without forcing belief.
+ If something doesn’t, ignore it without forcing belief.`, 10);
 
-2. Follow the Monthly Guidance
- Your Personal Month sections show what type of energy is most active during that month.
+addText( `2. Follow the Monthly Guidance`,10, true);
+ addText( `Your Personal Month sections show what type of energy is most active during that month.
 -       Some months support action
 -       Some support reflection
 -       Some support healing or completion
-Work with the month instead of resisting it.
+Work with the month instead of resisting it.`, 10);
 
-3. Apply the Remedies Gently
- Remedies (colors, mantras, crystals, journaling, affirmations) are:
+addText( `3. Apply the Remedies Gently`, 10, true);
+ addText( `Remedies (colors, mantras, crystals, journaling, affirmations) are:
 -       Tools to support focus and awareness
 -       Not magical shortcuts
 -       Not compulsory
-Choose 1–2 remedies per month and practice them consistently rather than doing everything.
+Choose 1–2 remedies per month and practice them consistently rather than doing everything.`, 10)
 
-4. Yearly vs Monthly Use
--       Yearly theme > sets the broader focus
+addText( `4. Yearly vs Monthly Use`, 10, true)
+addText( `-       Yearly theme > sets the broader focus
 -       Monthly themes > guide your short-term actions and mindset
-Think of the year as the climate and the months as the weather.
+Think of the year as the climate and the months as the weather.`, 10)
 ________________________________________
 
-A Very Important Reminder
+addText( `A Very Important Reminder
 This report does not decide your future.
+
 Your results depend on:
 -       Your actions
 -       Your choices
@@ -505,13 +506,13 @@ With awareness and responsibility,
       currentY += 35;
 
       // 3. Detailed Interpretation
-      addSection("CORE INTERPRETATION");
+      addSection("");
       const lpMeaning = getLifePathMeaning(numerology.lifePathNumber);
-      const lpSections = parseLifePathText(lpMeaning);
+      const lpSections = parseLifePathText(String(lpMeaning || ""));
       
       lpSections.forEach(section => {
-        addText(section.heading + ":", 11, true, [88, 28, 135]);
-        addText(section.content, 10);
+        addText(String(section.heading || "") + ":", 11, true);
+        addText(String(section.content || ""), 10);
         currentY += 2;
       });
       currentY += 5;
@@ -522,12 +523,12 @@ With awareness and responsibility,
 
       // Destiny Number
       addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true);
-      addText(getDestinyMeaning(numerology.destinyNumber), 10);
+      addText(String(getDestinyMeaning(numerology.destinyNumber) || ""), 10);
       currentY += 4;
       
       // Soul Urge Number
       addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true);
-      addText(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description, 10);
+      addText(String(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description || ""), 10);
       currentY += 4;
       
       // Personality Number
@@ -575,11 +576,11 @@ With awareness and responsibility,
       addSection(``);
       addText("PERSONAL YEAR 2026", 20, true, [88, 28, 135]);
       addText(personalYearInfo.title, 12, true);
-      addText(personalYearInfo.description, 9);
+      addText(String(personalYearInfo.description), 9);
       currentY += 2;
       addText("Focus Areas for 2026:", 10, true);
       personalYearInfo.focus.forEach(item => {
-        addText(`• ${item}`, 9);
+        addText(`• ${String(item)}`, 9);
       });
       currentY += 3;
       
@@ -603,30 +604,30 @@ With awareness and responsibility,
         const monthInfo = getPersonalMonthMeaning(personalMonth);
         const remedy = getMonthlyRemedy(personalMonth);
         
-        addText(`${month.name} (Personal Month ${personalMonth})`, 14);
-        addText(`${monthInfo.title} - ${monthInfo.theme}`, 10);
-        addText(monthInfo.description, 10);
-        addText(`Monthly Remedies: ${monthInfo.positive}`, 10);
-        addText(`Color - ${remedy.color}, Mantra - ${remedy.mantra}, Crystal - ${remedy.crystal}`, 9);
+        addText(`${String(month.name)} (Personal Month ${personalMonth})`, 14);
+        addText(`${String(monthInfo.title)} - ${String(monthInfo.theme)}`, 10);
+        addText(String(monthInfo.description), 10);
+        addText(`Monthly Remedies`, 10, true);
+        addText(`Color - ${String(remedy.color)}, Mantra - ${String(remedy.mantra)}, Crystal - ${String(remedy.crystal)}`, 9);
         addText(`How it affects us`,9, true);
-        addText(` - ${remedy.howitaffects}`, 9);
+        addText(` - ${String(remedy.howitaffects)}`, 9);
         addText(`Real life readability`, 9, true);
-        addText(` - ${remedy.Reallifereadability}`, 9);
+        addText(` - ${String(remedy.Reallifereadability)}`, 9);
         addText(`Advice for balance`, 9, true);
-        addText(` - ${remedy.adviceforbalance}`, 9);
+        addText(` - ${String(remedy.adviceforbalance)}`, 9);
         addText(`Practical Steps`, 9, true);
-        addText(` - ${remedy.practicalsteps}`, 9);
+        addText(` - ${String(remedy.practicalsteps)}`, 9);
         addText(`Chakra Insights`, 9, true);
-        addText(` - ${remedy.Chakrainsights}`, 9);
+        addText(` - ${String(remedy.Chakrainsights)}`, 9);
         addText(`Sacred Code`, 9, true);
-        addText(` - ${remedy.sacredCode}`, 9);
+        addText(` - ${String(remedy.sacredCode)}`, 9);
         currentY += 4;
       });
       currentY += 7;
 
       // Complete Interpretation
       addSection("DETAILED INTERPRETATION");
-      addText(numerology.interpretation, 9);
+      addText(String(numerology.interpretation || ""), 9);
       currentY += 5;
 
       // Tab-Based Profile Information
@@ -664,7 +665,7 @@ With awareness and responsibility,
       if (numerology.strengths && numerology.strengths.length > 0) {
         addSection("YOUR STRENGTHS");
         numerology.strengths.forEach(strength => {
-          addBulletPoint(strength, 9);
+          addBulletPoint(String(strength || ""), 9);
         });
         currentY += 3;
       }
@@ -672,7 +673,7 @@ With awareness and responsibility,
       if (numerology.challenges && numerology.challenges.length > 0) {
         addSection("AREAS FOR GROWTH");
         numerology.challenges.forEach(challenge => {
-          addBulletPoint(challenge, 9);
+          addBulletPoint(String(challenge || ""), 9);
         });
         currentY += 3;
       }
@@ -680,7 +681,7 @@ With awareness and responsibility,
       // Additional Guidance (if available)
       if (numerology.guidance) {
         addSection("ADDITIONAL SPIRITUAL GUIDANCE");
-        addText(numerology.guidance, 9);
+        addText(String(numerology.guidance || ""), 9);
         currentY += 3;
       }
       
@@ -703,9 +704,9 @@ With awareness and responsibility,
       }
       
       // Healer Notes (if any)
-      if (healerNotes.trim()) {
+      if (healerNotes && healerNotes.trim()) {
         addSection("PROFESSIONAL HEALER NOTES");
-        addText(healerNotes, 9);
+        addText(String(healerNotes), 9);
       }
 
       // Get base64 data for storage before saving locally

@@ -2024,11 +2024,11 @@ Team AuraEye™
 
       // Dominant Color Analysis
       pdf.setFontSize(14);
-      pdf.setTextColor(100, 0, 150);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addTextWithPageBreak(`Dominant Color - ${result.dominantColor}:`, pageWidth/2, yPosition, { align: 'center' });
       yPosition += 8;
       pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
+      pdf.setTextColor(0, 0, 0);
       const dominantMeaning = getColorMeaningForPDF(result.dominantColor);
       yPosition = addWrappedText(dominantMeaning, 20, yPosition, pageWidth - 40);
       yPosition += 10;
@@ -2036,11 +2036,11 @@ Team AuraEye™
       // Secondary Color Analysis (if present)
       if (result.secondaryColor) {
         pdf.setFontSize(14);
-        pdf.setTextColor(100, 0, 150);
+        pdf.setTextColor(0, 0, 0);
         yPosition = addTextWithPageBreak(`Secondary Color - ${result.secondaryColor}:`, pageWidth/2, yPosition, { align: 'center' });
         yPosition += 8;
         pdf.setFontSize(11);
-        pdf.setTextColor(60, 60, 60);
+        pdf.setTextColor(0, 0, 0);
         const secondaryMeaning = getColorMeaningForPDF(result.secondaryColor);
         yPosition = addWrappedText(secondaryMeaning, 20, yPosition, pageWidth - 40);
         yPosition += 10;
@@ -2150,7 +2150,7 @@ Team AuraEye™
       
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
-      yPosition = addWrappedText('Complete text information from all aura analysis sections', pageWidth/2, yPosition, pageWidth - 40, 5);
+      yPosition = addWrappedText('', pageWidth/2, yPosition, pageWidth - 40, 5);
       yPosition += 15;
 
       // Extract all aura colors for complete analysis
@@ -2162,7 +2162,7 @@ Team AuraEye™
 
       // ANALYSIS TAB CONTENT - Complete word-for-word copy
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addTextWithPageBreak('ANALYSIS TAB - Aura Photo Analysis', 20, yPosition);
       yPosition += 8;
       
@@ -2172,7 +2172,7 @@ Team AuraEye™
       // Detected Aura Colors section
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(75, 0, 130);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Detected Aura Colors:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2214,7 +2214,7 @@ Team AuraEye™
       // Aura Size
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(75, 0, 130);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Aura Size:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2226,7 +2226,7 @@ Team AuraEye™
       // Personality Traits
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(75, 0, 130);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Personality Traits:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2238,7 +2238,7 @@ Team AuraEye™
       // Personality Integration
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(75, 0, 130);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Personality Integration:', 20, yPosition, pageWidth - 40);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2280,7 +2280,7 @@ Team AuraEye™
       // Natural Strengths
       pdf.setFontSize(13);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(22, 101, 52);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Natural Strengths:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2292,7 +2292,7 @@ Team AuraEye™
       // Growth Opportunities
       pdf.setFontSize(13);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(180, 83, 9);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Growth Opportunities:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2304,7 +2304,7 @@ Team AuraEye™
       // Relationship Dynamics
       pdf.setFontSize(13);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(159, 18, 57);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Relationship Dynamics:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2316,7 +2316,7 @@ Team AuraEye™
       // Career & Life Path Alignment
       pdf.setFontSize(13);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(30, 64, 175);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Career & Life Path Alignment:', 25, yPosition, pageWidth - 50);
       yPosition += 5;
       pdf.setFontSize(10);
@@ -2332,7 +2332,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('ENERGY MAP TAB - 4-Zone Energy Analysis', 20, yPosition);
       yPosition += 8;
       
@@ -2391,7 +2391,7 @@ Team AuraEye™
       
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(75, 0, 130);
+      pdf.setTextColor(0, 0, 0);
       yPosition = addWrappedText('Spiritual & Emotional Insights:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
@@ -2441,7 +2441,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('GUIDANCE TAB - Spiritual Guidance & Practices', 20, yPosition);
       yPosition += 8;
       
@@ -2499,7 +2499,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
+      pdf.setFont('helvetica');
       pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('Traditional Color Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
@@ -2548,7 +2548,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('CHAKRAS TAB - Energy Scores & 9-Chakra System', 20, yPosition);
       yPosition += 8;
       
@@ -2556,28 +2556,33 @@ Team AuraEye™
       pdf.setTextColor(60, 60, 60);
       
       // AURA STRENGTH, VULNERABILITY, ENERGY BALANCE
-      yPosition = addWrappedText('Energy Scores:', 20, yPosition, pageWidth - 40);
+      pdf.setFont('helvetica', 'bold')
+        yPosition = addWrappedText('Energy Scores:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
       const auraStrength = calculateAuraStrength(result);
+      pdf.setFont('helvetica', 'bold')
       yPosition = addWrappedText(`Aura Strength: ${auraStrength}%`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
       yPosition = addWrappedText(getStrengthDescription(auraStrength), 30, yPosition, pageWidth - 55, 5);
       yPosition += 8;
       
       const vulnerability = calculateVulnerability(result);
-      yPosition = addWrappedText(`Vulnerability: ${vulnerability}%`, 25, yPosition, pageWidth - 50);
+       pdf.setFont('helvetica', 'bold')
+         yPosition = addWrappedText(`Vulnerability: ${vulnerability}%`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
       yPosition = addWrappedText(getVulnerabilityDescription(vulnerability), 30, yPosition, pageWidth - 55, 5);
       yPosition += 8;
       
       const energyBalance = calculateEnergyBalance(result);
-      yPosition = addWrappedText(`Energy Balance: ${energyBalance}%`, 25, yPosition, pageWidth - 50);
+       pdf.setFont('helvetica', 'bold')
+         yPosition = addWrappedText(`Energy Balance: ${energyBalance}%`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
       yPosition = addWrappedText(getBalanceDescription(energyBalance), 30, yPosition, pageWidth - 55, 5);
       yPosition += 8;
       
-      yPosition = addWrappedText(`Overall Energy: ${result.energyLevel}/10`, 25, yPosition, pageWidth - 50);
+       pdf.setFont('helvetica', 'bold')
+         yPosition = addWrappedText(`Overall Energy: ${result.energyLevel}/10`, 25, yPosition, pageWidth - 50);
       yPosition += 5;
       yPosition = addWrappedText(getEnergyLevelDescription(result.energyLevel), 30, yPosition, pageWidth - 55, 5);
       yPosition += 12;
@@ -2588,6 +2593,9 @@ Team AuraEye™
         yPosition = 20;
       }
       
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(75, 0, 130);
       yPosition = addWrappedText('9-Chakra Energy System Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
@@ -2706,7 +2714,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('DETAILED TAB - Life Phase & Color Meanings', 20, yPosition);
       yPosition += 8;
       
@@ -2735,7 +2743,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('ENERGY INTERACTIONS - Detailed Zone Analysis', 20, yPosition);
       yPosition += 8;
       
@@ -2769,7 +2777,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('DETAILED TAB - Specialized Aura Interpretation', 20, yPosition);
       yPosition += 8;
       
@@ -2876,7 +2884,11 @@ Team AuraEye™
         yPosition = 20;
       }
       
-      yPosition = addWrappedText('Energy Flow Analysis:', 20, yPosition, pageWidth - 40);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(14);
+      pdf.setTextColor(75, 0, 130);
+                  
+        yPosition = addWrappedText('Energy Flow Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
       yPosition = addWrappedText(`Energy Intensity: ${auraHelpers.getEnergyLevelText(result.energyLevel)}`, 25, yPosition, pageWidth - 50);
@@ -2909,7 +2921,7 @@ Team AuraEye™
       }
       
       pdf.setFontSize(14);
-      pdf.setTextColor(147, 51, 234);
+      pdf.setTextColor(75, 0, 130);
       yPosition = addTextWithPageBreak('SPECTRUM TAB - Life Score Analysis', 20, yPosition);
       yPosition += 8;
       
