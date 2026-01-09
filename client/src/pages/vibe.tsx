@@ -848,18 +848,48 @@ export default function VibePage() {
       {/* Premium PDF Report Modal */}
       {showPremiumPdf && (
         <div 
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-2 sm:p-4"
           onClick={() => setShowPremiumPdf(false)}
         >
           <div 
-            className="bg-white rounded-lg max-w-4xl w-full h-[90vh]"
+            className="bg-white rounded-xl max-w-5xl w-full h-[95vh] flex flex-col shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <iframe
-              src={demoPdfReport}
-              className="w-full h-full rounded-lg"
-              title="Premium Aura & Chakra Analysis Report"
-            />
+            {/* Close Button for mobile */}
+            <Button 
+              variant="mystical" 
+              size="sm" 
+              onClick={() => setShowPremiumPdf(false)}
+              className="absolute -top-12 right-0 sm:top-4 sm:right-4 rounded-full h-10 w-10 p-0 flex items-center justify-center bg-white/20 hover:bg-white/40 z-[110]"
+            >
+              <X className="h-6 w-6 text-white" />
+            </Button>
+
+            <div className="flex-grow w-full h-full overflow-hidden rounded-xl">
+              <iframe
+                src={`${demoPdfReport}#toolbar=0&navpanes=0&scrollbar=0`}
+                className="w-full h-full border-0 bg-white"
+                title="Premium Aura & Chakra Analysis Report"
+                style={{
+                  minHeight: '100%',
+                  width: '100%',
+                  display: 'block'
+                }}
+              />
+            </div>
+            
+            <div className="p-4 bg-white border-t flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <img src={logoImage} alt="AuraEye" className="h-6 w-6 rounded shadow-sm" />
+                <span className="text-xs font-semibold text-slate-500">Premium Demo Report Preview</span>
+              </div>
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold shadow-lg">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Unlock Full Version
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       )}

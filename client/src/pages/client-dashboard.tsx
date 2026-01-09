@@ -54,7 +54,7 @@ export default function ClientDashboard() {
   const { data: achievements = [], refetch: refetchAchievements } = useQuery({
     queryKey: ["/api/achievements"],
     enabled: !!user,
-    refetchInterval: 3000, // Auto-refetch every 3 seconds
+    refetchInterval: 1000, // Auto-refetch every 1 second for immediate feedback
   });
 
   // Fetch numerology readings for upgrade prompt check
