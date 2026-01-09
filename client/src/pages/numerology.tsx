@@ -789,8 +789,9 @@ With awareness and responsibility,
       refetchNumerology();
       setShowForm(false);
       
-      // Invalidate queries to refresh user's reading history immediately
+      // Invalidate queries to refresh user's reading history and healer dashboard immediately
       queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
