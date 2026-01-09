@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import jsPDF from "jspdf";
-import V2010 from "twilio/lib/rest/api/V2010";
+import coverImagePath from "@assets/WhatsApp_Image_2026-01-09_at_1.41.14_PM_(1)_1767971622509.jpeg";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -93,7 +93,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
       sacredCode: "986 (45 times/day)",
       howitaffects: " Positive: You’ll feel inspired and open to new opportunities. Flexibility and curiosity allow you to learn and grow in unexpected ways. Negative: The energy of change might leave you feeling scattered or overwhelmed. Overindulgence in distractions or impulsive decisions could derail progress",
       Reallifereadability: "Imagine a time when you’ve traveled extensively, met new people, and experienced personal transformation. That’s the energy of month 5. For example, you might take up a new hobby like photography, meet inspiring individuals, or even consider a major life change like switching careers",
-       practicalsteps: "1.	Practice clear communication in personal and professional relationships. 2. Stay open-minded but evaluate opportunities carefully before committing. 3.	Engage in creative outlets to channel restless energy productively.",
+       practicalsteps: "1.      Practice clear communication in personal and professional relationships. 2. Stay open-minded but evaluate opportunities carefully before committing. 3. Engage in creative outlets to channel restless energy productively.",
       adviceforbalance: "Focus on staying centered amid the whirlwind of change. Embrace opportunities that align with your values and goals, and avoid overcommitting. Remember, freedom isn’t about doing everything—it’s about choosing what truly matters.",
       Chakrainsights: "The Throat Chakra governs self-expression and adaptability. Balance it by visualizing blue light and chanting HAM. Speak your truth clearly and authentically while remaining flexible in your approach to challenges."
     },
@@ -304,6 +304,28 @@ export default function NumerologyPage() {
       const pageWidth = 210;
       const margin = 20;
       const lineHeight = 6;
+      
+      // Add cover page
+      const img = new Image();
+      img.src = coverImagePath;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      
+      // Calculate aspect ratio to fit the page
+      const imgWidth = pageWidth;
+      const imgHeight = (img.height * imgWidth) / img.width;
+      
+      // If height exceeds page height, scale down
+      const finalHeight = imgHeight > 297 ? 297 : imgHeight;
+      const finalWidth = (img.width * finalHeight) / img.height;
+      const xOffset = (pageWidth - finalWidth) / 2;
+      const yOffset = (297 - finalHeight) / 2;
+      
+      pdf.addImage(img, 'JPEG', xOffset, yOffset, finalWidth, finalHeight);
+      pdf.addPage();
+      
       let currentY = margin;
 
       // Helper function to add text with word wrapping
@@ -388,10 +410,10 @@ This report is designed as a self-awareness and alignment tool, not a prediction
 Numerology
  
  Numerology is based on the idea that numbers carry symbolic patterns of energy. Your birth date generates specific numbers that describe:
--	How you express yourself
--	How you make decisions
--	What lessons repeat in your life
--	Which energies feel natural or challenging to you
+-       How you express yourself
+-       How you make decisions
+-       What lessons repeat in your life
+-       Which energies feel natural or challenging to you
 
 These numbers do not control your life. They simply highlight tendencies—much like a personality map.
 Chakras & Aura
@@ -400,10 +422,10 @@ Chakras & Aura
  Your aura reflects how balanced or stressed these centers are right now.
 
 Just like your heart rate or mood changes daily, your aura and chakra balance also changes with:
--	Thoughts
--	Emotions
--	Habits
--	Actions (karma)
+-       Thoughts
+-       Emotions
+-       Habits
+-       Actions (karma)
 This is why the report is a snapshot, not a fixed identity.
 ________________________________________
 
@@ -415,40 +437,40 @@ How to Use This Report Practically
 
 2. Follow the Monthly Guidance
  Your Personal Month sections show what type of energy is most active during that month.
--	Some months support action
--	Some support reflection
--	Some support healing or completion
+-       Some months support action
+-       Some support reflection
+-       Some support healing or completion
 Work with the month instead of resisting it.
 
 3. Apply the Remedies Gently
  Remedies (colors, mantras, crystals, journaling, affirmations) are:
--	Tools to support focus and awareness
--	Not magical shortcuts
--	Not compulsory
+-       Tools to support focus and awareness
+-       Not magical shortcuts
+-       Not compulsory
 Choose 1–2 remedies per month and practice them consistently rather than doing everything.
 
 4. Yearly vs Monthly Use
--	Yearly theme > sets the broader focus
--	Monthly themes > guide your short-term actions and mindset
+-       Yearly theme > sets the broader focus
+-       Monthly themes > guide your short-term actions and mindset
 Think of the year as the climate and the months as the weather.
 ________________________________________
 
 A Very Important Reminder
 This report does not decide your future.
 Your results depend on:
--	Your actions
--	Your choices
--	Your discipline
--	Your effort
--	Your karma (what you repeatedly do)
+-       Your actions
+-       Your choices
+-       Your discipline
+-       Your effort
+-       Your karma (what you repeatedly do)
 
 Numerology and chakra insights can support your journey—but they cannot replace action.
 Awareness without effort changes nothing. Effort aligned with awareness changes everything.
 
 Use this report as:
--	A compass, not a command
--	A support system, not a dependency
--	A guide, not a guarantee
+-       A compass, not a command
+-       A support system, not a dependency
+-       A guide, not a guarantee
 
 Your growth is ultimately created by what you choose to do next.
 With awareness and responsibility,
@@ -469,7 +491,7 @@ With awareness and responsibility,
 
       // Core Numbers Section
       addSection("");
-      addText("Your core numbers",20, true, [88, 28, 135])
+      addText("YOUR CORE NUMBERS",20, true, [88, 28, 135])
       // Life Path Number
       addText(`Life Path Number: ${numerology.lifePathNumber}`, 12, true);
       const lifePathMeaning = getLifePathMeaning(numerology.lifePathNumber);
@@ -541,7 +563,7 @@ With awareness and responsibility,
       currentY += 5;
 
       // Color Associations
-      addText("COLOR VIBRATIONS", 20, true, [88, 28, 135]);
+      addText("COLOUR VIBRATIONS", 20, true, [88, 28, 135]);
       addText(`Life Path: ${getNumberColorAssociation(numerology.lifePathNumber)}`, 10);
       addText(`Destiny: ${getNumberColorAssociation(numerology.destinyNumber)}`, 10);
       addText(`Soul Urge: ${getNumberColorAssociation(numerology.soulUrgeNumber)}`, 10);
@@ -625,16 +647,17 @@ With awareness and responsibility,
       
 
       // Spiritual Guidance
-      addSection("SPIRITUAL GUIDANCE");
+      addSection("");
+      addText("SPIRITUAL GUIDANCE", 20, true)
       addText(`Focus on harmonizing the ${getNumberColorAssociation(numerology.lifePathNumber)} and ${getNumberColorAssociation(numerology.destinyNumber)} energies in your numerological blueprint for optimal growth and spiritual development.`, 9);
       currentY += 3;
-      addText("Key Strengths:", 10, true);
+      addText("Key Strengths:", 10);
       addBulletPoint(`Natural ${getNumberColorAssociation(numerology.lifePathNumber)} energy enhances your leadership abilities`, 9);
       addBulletPoint(`Your ${getNumberColorAssociation(numerology.destinyNumber)} vibration amplifies your communication skills`, 9);
       addBulletPoint(`The ${getNumberColorAssociation(numerology.soulUrgeNumber)} influence strengthens your intuitive abilities`, 9);
       currentY += 3;
       
-      addText("Potential Challenges:", 10, true);
+      addText("Potential Challenges:", 10);
       addBulletPoint(`Balancing ${getNumberColorAssociation(numerology.lifePathNumber)} intensity in daily interactions`, 9);
       addBulletPoint(`Integrating ${getNumberColorAssociation(numerology.destinyNumber)} energy with practical matters`, 9);
       addBulletPoint(`Managing the sensitivity that comes with ${getNumberColorAssociation(numerology.soulUrgeNumber)} vibrations`, 9);
@@ -1055,7 +1078,7 @@ With awareness and responsibility,
       },
       9: {
         title: "Completion Letting Go and Reflection- Root Chakra. Planet- Mars",
-        description: "Definition and Impact: Personal month 9 marks the end of a 9-month cycle, a time of closure, reflection, and letting go. Mars, the planet of action and transformation, energizes you to release what no longer serves you—whether it’s relationships, habits, or outdated beliefs. The Root Chakra supports this process by grounding you and helping you feel secure as you prepare for new beginnings. This journey from 1 to 9 if used well can be deeply transformative, offering the opportunity to heal past wounds and tie up loose ends. While it may feel bittersweet to let go, it’s necessary to create space for the fresh opportunities awaiting you in the next cycle.",
+        description: "Definition and Impact: Personal month 9 marks the end of a 9-month cycle, a time of closure, reflection, and letting go. Mars, the planet of action and transformation, energizes you to release what no longer serves you—whether it’s relationships, habits, or outdated beliefs. The Root Chakra supports this process by grounding you and helping you feel secure as you prepare for new beginnings. This journey from 1 to 9 if used well can be deeply transformative, offering the opportunity to heal past wounds and tie up loose ends. While it may feel bittersweet to let go, it’s necessary to create space for the fresh opportunities awaiting you in the next cycle. How It Affects Us:Life Relatability: Imagine a time when you decluttered your home, ended a toxic relationship, or left a job that no longer fulfilled you. For example, you might decide to sell your childhood home, say goodbye to a long-held dream, or reconcile with someone you’ve been estranged from. Advice for Balance: Reflect on your past and acknowledge your growth. Focus on forgiveness—of yourself and others—and trust that endings are the gateway to new beginnings. POSITIVE: You’ll feel lighter and more aligned as you release old patterns. There’s a sense of fulfillment and readiness for change. NEGATIVE: Resistance to letting go may lead to stagnation or emotional struggles. Fear of the unknown might make it challenging to embrace closure.Practical Steps: 1.      Journal about areas of your life that need closure and take steps to address them. 2.   Practice forgiveness meditations to release resentment and find peace. 3.       Declutter your physical and emotional space to prepare for the new cycle ahead. Chakra Insight: The Root Chakra anchors you during times of transition. Balance it by visualizing red light and chanting LAM. Engage in grounding activities like walking in nature or practicing yoga to stay connected to the present moment.",
         
       }
     };
