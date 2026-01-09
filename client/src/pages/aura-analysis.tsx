@@ -6732,6 +6732,8 @@ Team AuraEye™
             
             // Invalidate queries to refresh user's reading history immediately
             queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/healer-aura-readings'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/healer-client-stats'] });
             queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
             queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
             queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
