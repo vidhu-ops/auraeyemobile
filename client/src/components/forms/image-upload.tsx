@@ -68,12 +68,12 @@ export default function ImageUpload({ onImageSelect, isLoading = false }: ImageU
             onChange={handleImageChange}
           />
           <Upload className="h-12 w-12 text-primary mb-4" />
-          <p className="font-medium text-white mb-2">Drag and drop your photo here</p>
-          <p className="text-sm text-white mb-4 text-center">or click to browse your files</p>
+          <p className="font-medium text-black mb-2">Drag and drop your photo here</p>
+          <p className="text-sm text-black mb-4 text-center">or click to browse your files</p>
           <Button className="bg-primary hover:bg-primary-dark">
             Select Image
           </Button>
-          <p className="text-xs text-white mt-4 text-center">Supported formats: JPG, PNG, HEIC. Max size: 12MB</p>
+          <p className="text-xs text-black mt-4 text-center">Supported formats: JPG, PNG, HEIC. Max size: 12MB</p>
         </div>
       ) : (
         <Card className="relative rounded-xl overflow-hidden">
