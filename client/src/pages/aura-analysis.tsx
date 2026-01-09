@@ -1636,6 +1636,23 @@ export default function AuraAnalysis() {
       return;
     }
 
+    // Save PDF to database as soon as it's prepared for download
+    const savePdfToDatabase = async (pdfData: string) => {
+        if (!currentAnalysisId) return;
+        try {
+            await apiRequest('POST', '/api/pdf-storage', {
+                auraReadingId: currentAnalysisId,
+                fileName: `aura-analysis-${analysisName || 'unnamed'}-${new Date().getTime()}.pdf`,
+                pdfData: pdfData.split(',')[1],
+                clientName: analysisName || 'Unnamed'
+            });
+            console.log('✅ PDF saved to database automatically');
+            queryClient.invalidateQueries({ queryKey: ['/api/healer-pdfs'] });
+        } catch (err) {
+            console.error('Error auto-saving PDF:', err);
+        }
+    };
+
     console.log('Starting PDF generation with result:', result);
     console.log('Processed aura image available:', !!processedAuraImage);
     console.log('Enhanced aura image available:', !!enhancedAuraImage);
@@ -3293,6 +3310,10 @@ Team AuraEye™
         // Download PDF to client
         pdf.save(fileName);
         console.log('PDF save operation completed successfully');
+        
+        // Refresh healer PDF list immediately
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-pdfs'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
       } catch (saveError) {
         console.error('Error during PDF save:', saveError);
         throw new Error(`PDF save failed: ${saveError}`);
