@@ -489,60 +489,55 @@ With awareness and responsibility,
       
       currentY += 40;
 
-      // Core Numbers Section
-      addSection("");
-      addText("YOUR CORE NUMBERS",20, true, [88, 28, 135])
-      // Life Path Number
-      addText(`Life Path Number: ${numerology.lifePathNumber}`, 12, true);
-      const lifePathMeaning = getLifePathMeaning(numerology.lifePathNumber);
-      addText(lifePathMeaning, 9);
-      currentY += 3;
+      // 2. Life Path Spotlight Box
+      pdf.setFillColor(245, 240, 255);
+      pdf.rect(margin, currentY, pageWidth - 2 * margin, 25, 'F');
+      pdf.setDrawColor(88, 28, 135);
+      pdf.setLineWidth(0.3);
+      pdf.rect(margin, currentY, pageWidth - 2 * margin, 25, 'S');
       
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(88, 28, 135);
+      pdf.text(`LIFE PATH NUMBER: ${numerology.lifePathNumber}`, margin + 10, currentY + 16);
+      currentY += 35;
+
+      // 3. Detailed Interpretation
+      addSection("CORE INTERPRETATION");
+      const lpMeaning = getLifePathMeaning(numerology.lifePathNumber);
+      const lpSections = parseLifePathText(lpMeaning);
+      
+      lpSections.forEach(section => {
+        addText(section.heading + ":", 11, true, [88, 28, 135]);
+        addText(section.content, 10);
+        currentY += 2;
+      });
+      currentY += 5;
+
+      // Core Numbers Analysis
+      addText("YOUR CORE NUMBERS", 20, true, [88, 28, 135]);
+      currentY += 5;
+
       // Destiny Number
       addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true);
-      addText(getDestinyMeaning(numerology.destinyNumber), 9);
-      currentY += 3;
+      addText(getDestinyMeaning(numerology.destinyNumber), 10);
+      currentY += 4;
       
       // Soul Urge Number
       addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true);
-      addText(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description, 9);
-      currentY += 3;
+      addText(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description, 10);
+      currentY += 4;
       
-      // Personality Number (Decision-Making Chakra)
-      addText(`Personality Number (Decision-Making Chakra): ${numerology.personalityNumber}`, 12, true);
-      addText("Most of your decisions will be based on the qualities of this chakra", 9);
-      currentY += 3;
+      // Personality Number
+      addText(`Personality Number: ${numerology.personalityNumber}`, 12, true);
+      addText("This number influences how others perceive you and how you express your outer personality.", 10);
+      currentY += 4;
       
       // Dominant Soul Chakra
       const dominantSoulNumber = calculateDominantSoulChakra(targetBirthDate);
       addText(`Dominant Soul Chakra: ${dominantSoulNumber}`, 12, true);
-      addText("Your soul wants you to operate from the positive and balanced qualities of this chakra. This is your greatest challenge area.", 9);
-      currentY += 5;
-
-      // Chakra-Planet Analysis
-      addText("CHAKRA-PLANET ANALYSIS", 20, true, [88, 28, 135]);
-      
-      // Decision-Making Chakra Analysis
-      const personalityInfo = getChakraPlanetInfo(numerology.personalityNumber);
-      addText("Decision-Making Chakra:", 11, true);
-      addText(`Number ${numerology.personalityNumber}: ${personalityInfo.chakra} • ${personalityInfo.planet}`, 10, false);
-      addText(personalityInfo.description, 9);
-      addText("Recommended Remedies:", 10, true);
-      personalityInfo.remedies.forEach(remedy => {
-        addText(`• ${remedy}`, 9);
-      });
-      currentY += 3;
-      
-      // Dominant Soul Chakra Analysis
-      const soulInfo = getChakraPlanetInfo(dominantSoulNumber);
-      addText("Dominant Soul Chakra:", 11, true);
-      addText(`Number ${dominantSoulNumber}: ${soulInfo.chakra} • ${soulInfo.planet}`, 10, false);
-      addText(soulInfo.description, 9);
-      addText("Healing Remedies:", 10, true);
-      soulInfo.remedies.forEach(remedy => {
-        addText(`• ${remedy}`, 9);
-      });
-      currentY += 5;
+      addText("This represents your soul's primary focus for growth and the energetic center that seeks the most harmony in this lifetime.", 10);
+      currentY += 8;
 
       // Vibration Qualities
       addText("VIBRATION QUALITIES", 20, true, [88, 28, 135]);
