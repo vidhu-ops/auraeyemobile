@@ -49,7 +49,7 @@ export default function ClientDashboard() {
   const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [previousAchievementCount, setPreviousAchievementCount] = useState(0);
+  const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
   const { data: streakData } = useQuery({ queryKey: ["/api/streaks"] });
   const { data: achievements = [], refetch: refetchAchievements } = useQuery({
     queryKey: ["/api/achievements"],
@@ -77,18 +77,18 @@ export default function ClientDashboard() {
   
   const [activeTab, setActiveTab] = useState(getInitialTab());
   
-  // Notify user when new achievement is earned
+  // Notify user when new achievement is earned (skip initial hydration)
   useEffect(() => {
-    if (achievements.length > previousAchievementCount) {
+    if (previousAchievementCount !== null && achievements.length > previousAchievementCount) {
       const newAchievement = achievements[achievements.length - 1];
       toast({
         title: `🎉 Achievement Unlocked!`,
-        description: `${newAchievement.title}: ${newAchievement.description}`,
+        description: `${newAchievement.title || newAchievement.achievementTitle || 'New Badge'}: ${newAchievement.description || 'You earned a new achievement!'}`,
         duration: 5000,
       });
-      setPreviousAchievementCount(achievements.length);
     }
-  }, [achievements.length, achievements, toast]);
+    setPreviousAchievementCount(achievements.length);
+  }, [achievements.length, previousAchievementCount, toast]);
 
   const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Activity", "Settings"];
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);

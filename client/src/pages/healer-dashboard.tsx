@@ -2097,7 +2097,7 @@ export default function HealerDashboard() {
     refetchInterval: 2000, // Auto-refetch every 2 seconds for immediate feedback
   });
   const achievements = Array.isArray(achievementsData) ? achievementsData : [];
-  const [previousAchievementCount, setPreviousAchievementCount] = useState(0);
+  const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
   
   const [activeTab, setActiveTab] = useState("overview");
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
@@ -2128,11 +2128,12 @@ export default function HealerDashboard() {
 
   // Real-time badge notification effect - shows toast when new achievements are earned
   useEffect(() => {
-    if (achievements.length > 0 && achievements.length > previousAchievementCount && previousAchievementCount > 0) {
+    // Skip initial hydration (when previousAchievementCount is null)
+    if (previousAchievementCount !== null && achievements.length > previousAchievementCount) {
       const newAchievement = achievements[achievements.length - 1];
       toast({
         title: `🎉 Achievement Unlocked!`,
-        description: `${newAchievement.title || 'New Badge'}: ${newAchievement.description || 'You earned a new achievement!'}`,
+        description: `${newAchievement.title || newAchievement.achievementTitle || 'New Badge'}: ${newAchievement.description || 'You earned a new achievement!'}`,
         duration: 5000,
       });
     }
@@ -2300,9 +2301,10 @@ export default function HealerDashboard() {
       return cleanEarned.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanEarned);
     });
     
-    // Check user achievements (for journal, numerology, vibe badges)
+    // Check user achievements (for journal, numerology, vibe badges) - support both title and achievementTitle
     const inAchievements = achievements.some((achievement: any) => {
-      const cleanAchievementTitle = (achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+      const achievementTitle = achievement.title || achievement.achievementTitle || '';
+      const cleanAchievementTitle = achievementTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return cleanAchievementTitle.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanAchievementTitle);
     });
     
