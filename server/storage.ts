@@ -241,6 +241,14 @@ export class DatabaseStorage implements IStorage {
       .set({ password: hashedPassword })
       .where(eq(users.id, userId))
       .returning();
+
+    // If user is a healer, sync password to healers table
+    if (user && (user.userType === 'healer' || user.userType === 'semi_healer')) {
+      await db
+        .update(healers)
+        .set({ password: hashedPassword })
+        .where(eq(healers.username, user.username));
+    }
     return user || undefined;
   }
 
