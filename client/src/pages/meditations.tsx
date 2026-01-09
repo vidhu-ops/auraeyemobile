@@ -85,6 +85,20 @@ const meditations = [
     mediaType: "youtube"
   },
   {
+    id: 5,
+    title: "Starlight Meditation",
+    author: "Celestial Guide",
+    duration: 18.00,
+    difficulty: "Intermediate",
+    description: "Connect with cosmic energies...",
+    category: "focus",
+    color: "from-indigo-500 to-purple-600",
+    tag: "Spiritual",
+    image: meditationImage2,
+    mediaUrl: "https://www.youtube.com/watch?v=qXXeN49sQZA",
+    mediaType: "youtube"
+  },
+  {
     id: 6,
     title: "Cosmic Peace Journey",
     author: "YouTube Guide",
@@ -125,7 +139,36 @@ const meditations = [
     image: meditationImage2,
     mediaUrl: "/attached_assets/WhatsApp_Video_2025-12-17_at_3.50.50_PM_1765966899853.mp4",
     mediaType: "video"
+  },
+  {
+  id: 9,
+    title: "GUIDED MEDITATION: White Light Protection: Warrior of Light (Epic Power-Meditation)",
+    author: "The Honest Guys - Meditations - Relaxation",
+    duration: 7.52,
+    difficulty: "Beginner",
+    description: "Journey through the cosmos to find inner peace...",
+    category: "calm",
+    color: "from-blue-600 to-purple-600",
+    tag: "Relaxation",
+    image: meditationImage1,
+    mediaUrl: "https://www.youtube.com/watch?v=qXXeN49sQZA",
+    mediaType: "youtube"
+  },
+  {
+    id: 10,
+    title: "Guided Meditation: Energy Cleanse, Protection & Shielding | Self Healing | Soul Energy Activation",
+    author: "Kenneth Soares",
+    duration: 13.07,
+    difficulty: "Beginner",
+    description: "Journey through the cosmos to find inner peace...",
+    category: "calm",
+    color: "from-blue-600 to-purple-600",
+    tag: "Relaxation",
+    image: meditationImage1,
+    mediaUrl: "https://www.youtube.com/watch?v=4hdU4ABGn1c",
+    mediaType: "youtube"
   }
+  
 ];
 
 export default function MeditationsPage() {
