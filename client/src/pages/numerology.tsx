@@ -39,6 +39,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
 
     const getMonthlyRemedy = (number: number): {color: string; mantra: string; crystal: string; sacredCode: string; howitaffects: string; Reallifereadability: string; adviceforbalance: string; practicalsteps: string; Chakrainsights: string[] } => {
   const remedies: { [key: number]: { color: string; mantra: string; crystal: string; sacredCode: string; howitaffects: string; Reallifereadability: string; adviceforbalance: string; practicalsteps: string; Chakrainsights: string[] } } = {
+   
     1: {
       color: "Yellow (Solar Plexus)",
       mantra: "RAM (45 times/day)",
@@ -47,8 +48,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
       howitaffects: "Positive: You feel a surge of energy, ready to take charge of your life. New ideas flow easily, and you find clarity in your purpose. Leadership opportunities may arise, and you’ll feel empowered to pursue them. Negative: If unbalanced, you may feel overwhelmed by the weight of responsibility. Overconfidence or impatience might cause you to act impulsively, while self-doubt may lead to stagnation.",
       Reallifereadability: "Imagine you’ve been stuck in the same job for months but always dreamt of starting your own business. This month nudges you to take that leap of faith. You’ll notice doors opening—an investor might show interest, or you may stumble upon the resources you need. However, fear might creep in, making you doubt your capabilities.",
       adviceforbalance: "Focus on building a strong foundation for the future. This is a month to prioritize action but also to ensure you don’t burn out. Balance is key. Practice mindfulness to stay grounded and avoid overextending yourself. Use affirmations like “I am confident, capable, and ready to lead” to align your Solar Plexus Chakra.",
-      practicalsteps: "1.Set clear, achievable goals. Break them into smaller tasks to maintain focus. 2.Say yes to opportunities but evaluate them carefully—don’t spread yourself too thin. 3.Take care of your health; physical vitality will fuel your drive.",
-     Chakrainsights: "The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy."
+      practicalsteps: "1.Set clear, achievable goals. Break them into smaller tasks to maintain focus. 2.Say yes to opportunities but evaluate them carefully—don’t spread yourself too thin. 3.Take care of your health; physical vitality will fuel your drive.The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy."
     },
     2: {
       color: "Green/Pink (Heart)",
@@ -58,8 +58,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
       howitaffects: "Positive: You’ll develop stronger relationships, deepen emotional bonds, and improve teamwork. Emotional intelligence is heightened, making it easier to empathize and collaborate. Negative: Over-sensitivity may lead to emotional burnout or burnout or conflict. You might feel overly dependent on others for validation or struggle with setting boundaries.",
       Reallifereadability: "Imagine you’ve started a new job. While month 1 may have been about getting the job, this month ruled by number 2 focuses on building rapport with your team. You’ll find yourself navigating different personalities and balancing your own needs with the group’s goals.",
       adviceforbalance: "Be patient with yourself and others. Take time to understand your emotions and what triggers them. Focus on self-care to avoid becoming emotionally depleted. Practice gratitude—it helps you find peace during challenges.",
-       practicalsteps: "1.Practice active listening in conversations. 2.Journaling daily about your emotions helps you process them constructively. 3.Don’t hesitate to communicate your boundaries with loved ones or colleagues.",
-       Chakrainsights: "The Heart Chakra governs love, compassion, and forgiveness. Keep it balanced by visualizing green light and chanting the mantra YAM. Engage in acts of kindness to nurture this energy center."
+       practicalsteps: "1.Practice active listening in conversations. 2.Journaling daily about your emotions helps you process them constructively. 3.Don’t hesitate to communicate your boundaries with loved ones or colleagues.The Heart Chakra governs love, compassion, and forgiveness. Keep it balanced by visualizing green light and chanting the mantra YAM. Engage in acts of kindness to nurture this energy center."
     },
     
     3: {
@@ -296,35 +295,59 @@ export default function NumerologyPage() {
 
   // Generate PDF with numerology results and healer notes
   const generatePDF = async () => {
-    if (!numerology) return;
+    console.log('PDF generation requested', { hasNumerology: !!numerology, currentReadingId });
+    if (!numerology) {
+      toast({
+        title: "No Data",
+        description: "Please calculate numerology before generating a report.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsGeneratingPDF(true);
     try {
+      console.log('Initializing jsPDF...');
       const pdf = new jsPDF();
+      console.log('jsPDF initialized');
       const pageWidth = 210;
       const margin = 20;
       const lineHeight = 6;
       
       // Add cover page
-      const img = new Image();
-      img.src = coverImagePath;
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-      
-      // Calculate aspect ratio to fit the page
-      const imgWidth = pageWidth;
-      const imgHeight = (img.height * imgWidth) / img.width;
-      
-      // If height exceeds page height, scale down
-      const finalHeight = imgHeight > 297 ? 297 : imgHeight;
-      const finalWidth = (img.width * finalHeight) / img.height;
-      const xOffset = (pageWidth - finalWidth) / 2;
-      const yOffset = (297 - finalHeight) / 2;
-      
-      pdf.addImage(img, 'JPEG', xOffset, yOffset, finalWidth, finalHeight);
-      pdf.addPage();
+      try {
+        console.log('Adding cover page...', coverImagePath);
+        const img = new Image();
+        img.src = coverImagePath;
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error("Image load timeout")), 5000);
+          img.onload = () => {
+            clearTimeout(timeout);
+            resolve(null);
+          };
+          img.onerror = (e) => {
+            clearTimeout(timeout);
+            reject(new Error("Failed to load cover image"));
+          };
+        });
+        
+        // Calculate aspect ratio to fit the page
+        const imgWidth = pageWidth;
+        const imgHeight = (img.height * imgWidth) / img.width;
+        
+        // If height exceeds page height, scale down
+        const finalHeight = imgHeight > 297 ? 297 : imgHeight;
+        const finalWidth = (img.width * finalHeight) / img.height;
+        const xOffset = (pageWidth - finalWidth) / 2;
+        const yOffset = (297 - finalHeight) / 2;
+        
+        pdf.addImage(img, 'JPEG', xOffset, yOffset, finalWidth, finalHeight);
+        pdf.addPage();
+        console.log('Cover page added');
+      } catch (imgError) {
+        console.error("Cover image error (continuing without it):", imgError);
+        // If cover image fails, we just start on page 1
+      }
       
       let currentY = margin;
 
@@ -544,29 +567,29 @@ With awareness and responsibility,
 
       // Vibration Qualities
       addText("VIBRATION QUALITIES", 20, true, [88, 28, 135]);
-      addText(`Life Path (${numerology.lifePathNumber}):`, 10, true);
-      addText(getVibrationQualities(numerology.lifePathNumber).join(', '), 9);
+      addText(`Life Path (${numerology.lifePathNumber}):`, 10, true, [0, 0, 0]);
+      addText(String(getVibrationQualities(numerology.lifePathNumber).join(', ') || ""), 9, false, [0, 0, 0]);
       currentY += 2;
       
-      addText(`Destiny (${numerology.destinyNumber}):`, 10, true);
-      addText(getVibrationQualities(numerology.destinyNumber).join(', '), 9);
+      addText(`Destiny (${numerology.destinyNumber}):`, 10, true, [0, 0, 0]);
+      addText(String(getVibrationQualities(numerology.destinyNumber).join(', ') || ""), 9, false, [0, 0, 0]);
       currentY += 2;
       
-      addText(`Soul Urge (${numerology.soulUrgeNumber}):`, 10, true);
-      addText(getVibrationQualities(numerology.soulUrgeNumber).join(', '), 9);
+      addText(`Soul Urge (${numerology.soulUrgeNumber}):`, 10, true, [0, 0, 0]);
+      addText(String(getVibrationQualities(numerology.soulUrgeNumber).join(', ') || ""), 9, false, [0, 0, 0]);
       currentY += 2;
       
-      addText(`Personality (${numerology.personalityNumber}):`, 10, true);
-      addText(getVibrationQualities(numerology.personalityNumber).join(', '), 9);
+      addText(`Personality (${numerology.personalityNumber}):`, 10, true, [0, 0, 0]);
+      addText(String(getVibrationQualities(numerology.personalityNumber).join(', ') || ""), 9, false, [0, 0, 0]);
       currentY += 5;
 
       // Color Associations
       addText("COLOUR VIBRATIONS", 20, true, [88, 28, 135]);
-      addText(`Life Path: ${getNumberColorAssociation(numerology.lifePathNumber)}`, 10);
-      addText(`Destiny: ${getNumberColorAssociation(numerology.destinyNumber)}`, 10);
-      addText(`Soul Urge: ${getNumberColorAssociation(numerology.soulUrgeNumber)}`, 10);
-      addText(`Personality: ${getNumberColorAssociation(numerology.personalityNumber)}`, 10);
-      addText(`Soul Chakra: ${getNumberColorAssociation(dominantSoulNumber)}`, 10);
+      addText(`Life Path: ${String(getNumberColorAssociation(numerology.lifePathNumber) || "")}`, 10, false, [0, 0, 0]);
+      addText(`Destiny: ${String(getNumberColorAssociation(numerology.destinyNumber) || "")}`, 10, false, [0, 0, 0]);
+      addText(`Soul Urge: ${String(getNumberColorAssociation(numerology.soulUrgeNumber) || "")}`, 10, false, [0, 0, 0]);
+      addText(`Personality: ${String(getNumberColorAssociation(numerology.personalityNumber) || "")}`, 10, false, [0, 0, 0]);
+      addText(`Soul Chakra: ${String(getNumberColorAssociation(dominantSoulNumber) || "")}`, 10, false, [0, 0, 0]);
       currentY += 5;
 
       // Personal Year Analysis
