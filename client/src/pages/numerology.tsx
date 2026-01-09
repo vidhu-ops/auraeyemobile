@@ -511,8 +511,8 @@ With awareness and responsibility,
       const lpSections = parseLifePathText(String(lpMeaning || ""));
       
       lpSections.forEach(section => {
-        addText(String(section.heading || "") + ":", 11, true);
-        addText(String(section.content || ""), 10);
+        addText(String(section.heading || "") + ":", 11, true, [88, 28, 135]);
+        addText(String(section.content || ""), 10, false, [0, 0, 0]);
         currentY += 2;
       });
       currentY += 5;
@@ -522,18 +522,18 @@ With awareness and responsibility,
       currentY += 5;
 
       // Destiny Number
-      addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true);
-      addText(String(getDestinyMeaning(numerology.destinyNumber) || ""), 10);
+      addText(`Destiny Number: ${numerology.destinyNumber}`, 12, true, [88, 28, 135]);
+      addText(String(getDestinyMeaning(numerology.destinyNumber) || ""), 10, false, [0, 0, 0]);
       currentY += 4;
       
       // Soul Urge Number
-      addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true);
-      addText(String(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description || ""), 10);
+      addText(`Soul Urge Number: ${numerology.soulUrgeNumber}`, 12, true, [88, 28, 135]);
+      addText(String(getNumberMeaning(numerology.soulUrgeNumber, 'soulUrge').description || ""), 10, false, [0, 0, 0]);
       currentY += 4;
       
       // Personality Number
-      addText(`Personality Number: ${numerology.personalityNumber}`, 12, true);
-      addText("This number influences how others perceive you and how you express your outer personality.", 10);
+      addText(`Personality Number: ${numerology.personalityNumber}`, 12, true, [88, 28, 135]);
+      addText("This number influences how others perceive you and how you express your outer personality.", 10, false, [0, 0, 0]);
       currentY += 4;
       
       // Dominant Soul Chakra
@@ -604,23 +604,23 @@ With awareness and responsibility,
         const monthInfo = getPersonalMonthMeaning(personalMonth);
         const remedy = getMonthlyRemedy(personalMonth);
         
-        addText(`${String(month.name)} (Personal Month ${personalMonth})`, 14);
-        addText(`${String(monthInfo.title)} - ${String(monthInfo.theme)}`, 10);
-        addText(String(monthInfo.description), 10);
-        addText(`Monthly Remedies`, 10, true);
-        addText(`Color - ${String(remedy.color)}, Mantra - ${String(remedy.mantra)}, Crystal - ${String(remedy.crystal)}`, 9);
-        addText(`How it affects us`,9, true);
-        addText(` - ${String(remedy.howitaffects)}`, 9);
-        addText(`Real life readability`, 9, true);
-        addText(` - ${String(remedy.Reallifereadability)}`, 9);
-        addText(`Advice for balance`, 9, true);
-        addText(` - ${String(remedy.adviceforbalance)}`, 9);
-        addText(`Practical Steps`, 9, true);
-        addText(` - ${String(remedy.practicalsteps)}`, 9);
-        addText(`Chakra Insights`, 9, true);
-        addText(` - ${String(remedy.Chakrainsights)}`, 9);
-        addText(`Sacred Code`, 9, true);
-        addText(` - ${String(remedy.sacredCode)}`, 9);
+        addText(`${String(month.name)} (Personal Month ${personalMonth})`, 14, true, [88, 28, 135]);
+        addText(`${String(monthInfo.title)} - ${String(monthInfo.theme)}`, 10, true, [0, 0, 0]);
+        addText(String(monthInfo.description), 10, false, [0, 0, 0]);
+        addText(`Monthly Remedies`, 10, true, [88, 28, 135]);
+        addText(`Color - ${String(remedy.color)}, Mantra - ${String(remedy.mantra)}, Crystal - ${String(remedy.crystal)}`, 9, false, [0, 0, 0]);
+        addText(`How it affects us`,9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.howitaffects)}`, 9, false, [0, 0, 0]);
+        addText(`Real life readability`, 9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.Reallifereadability)}`, 9, false, [0, 0, 0]);
+        addText(`Advice for balance`, 9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.adviceforbalance)}`, 9, false, [0, 0, 0]);
+        addText(`Practical Steps`, 9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.practicalsteps)}`, 9, false, [0, 0, 0]);
+        addText(`Chakra Insights`, 9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.Chakrainsights)}`, 9, false, [0, 0, 0]);
+        addText(`Sacred Code`, 9, true, [0, 0, 0]);
+        addText(` - ${String(remedy.sacredCode)}`, 9, false, [0, 0, 0]);
         currentY += 4;
       });
       currentY += 7;
@@ -709,32 +709,38 @@ With awareness and responsibility,
         addText(String(healerNotes), 9);
       }
 
-      // Get base64 data for storage before saving locally
-      const pdfBase64 = pdf.output('datauristring');
-      
-      pdf.save(`numerology-analysis-${targetName.replace(/\s+/g, '-')}-${new Date().getTime()}.pdf`);
-      
-      // Save PDF data to database if we have a reading ID
-      if (currentReadingId) {
-        try {
-          await fetch(`/api/numerology-readings/${currentReadingId}/pdf`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              pdfData: pdfBase64,
-              healerNotes: healerNotes // Send notes along with PDF
-            }),
-          });
-          
-          console.log('✅ Numerology PDF saved to database automatically');
-          // Invalidate healer numerology readings query so dashboard updates immediately
-          queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
-          queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
-        } catch (saveError) {
-          console.error("Error saving PDF to database:", saveError);
+      // Download and save the PDF with proper error handling
+      try {
+        const currentDate = new Date().toISOString().split('T')[0];
+        const fileName = `numerology-analysis-${targetName.replace(/\s+/g, '-')}-${new Date().getTime()}.pdf`;
+        console.log('Attempting to save PDF:', fileName);
+        
+        // Get PDF data as base64
+        const pdfData = pdf.output('dataurlstring').split(',')[1];
+        
+        // Save PDF to backend for healer dashboard access
+        if (currentReadingId && user?.id) {
+          try {
+            await apiRequest('PATCH', `/api/numerology-readings/${currentReadingId}/pdf`, {
+              pdfData: pdfData,
+              healerNotes: healerNotes || ""
+            });
+            console.log('PDF saved to backend successfully');
+          } catch (backendError) {
+            console.warn('Failed to save PDF to backend, but continuing with download:', backendError);
+          }
         }
+        
+        // Download PDF to client
+        pdf.save(fileName);
+        console.log('PDF save operation completed successfully');
+        
+        // Refresh healer readings query so dashboard updates immediately
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+      } catch (saveError) {
+        console.error('Error during PDF save:', saveError);
+        throw new Error(`PDF save failed: ${saveError}`);
       }
       
       toast({
