@@ -2090,6 +2090,15 @@ export default function HealerDashboard() {
     queryKey: ["/api/streaks"],
   });
   
+  // Fetch achievements with real-time updates for badge notifications
+  const { data: achievementsData = [] } = useQuery<any[]>({
+    queryKey: ["/api/achievements"],
+    enabled: !!user,
+    refetchInterval: 2000, // Auto-refetch every 2 seconds for immediate feedback
+  });
+  const achievements = Array.isArray(achievementsData) ? achievementsData : [];
+  const [previousAchievementCount, setPreviousAchievementCount] = useState(0);
+  
   const [activeTab, setActiveTab] = useState("overview");
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -2116,6 +2125,19 @@ export default function HealerDashboard() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Real-time badge notification effect - shows toast when new achievements are earned
+  useEffect(() => {
+    if (achievements.length > 0 && achievements.length > previousAchievementCount && previousAchievementCount > 0) {
+      const newAchievement = achievements[achievements.length - 1];
+      toast({
+        title: `🎉 Achievement Unlocked!`,
+        description: `${newAchievement.title || 'New Badge'}: ${newAchievement.description || 'You earned a new achievement!'}`,
+        duration: 5000,
+      });
+    }
+    setPreviousAchievementCount(achievements.length);
+  }, [achievements.length, previousAchievementCount, toast]);
 
   // Password change form schema
   const changePasswordSchema = z.object({
@@ -2266,18 +2288,6 @@ export default function HealerDashboard() {
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
-
-  // Fetch user achievements
-  const { data: achievementsData } = useQuery<{ achievements: any[] }>({
-    queryKey: ["/api/user-achievements"],
-    enabled: !!user?.id,
-    staleTime: 0,
-    refetchInterval: 2000, // Refresh every 2 seconds for real-time achievement updates
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  });
-
-  const achievements = achievementsData?.achievements || [];
 
   // Helper function to check if a badge is earned (checks both healer badges and user achievements)
   const isBadgeEarned = (badgeTitle: string): boolean => {
