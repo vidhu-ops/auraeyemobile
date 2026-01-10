@@ -5059,7 +5059,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   app.patch('/api/numerology-readings/:id/pdf', isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const { pdfData } = req.body;
+      const { pdfData, healerNotes } = req.body;
 
       if (!pdfData) {
         return res.status(400).json({ message: "PDF data is required" });
@@ -5071,7 +5071,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       // Update the reading with PDF data and optionally healer notes
-      const updatedReading = await storage.updateNumerologyReadingPdf(parseInt(id), pdfData, healerNotes);
+      const updatedReading = await storage.updateNumerologyReadingPdf(parseInt(id), pdfData, healerNotes || "");
       
       res.json(updatedReading);
     } catch (error) {
