@@ -65,7 +65,7 @@ export default function NotificationPrompt() {
   }
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-fade-in">
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md md:left-auto md:right-4 md:translate-x-0 md:w-96 z-50 animate-fade-in">
       <Card className="bg-gradient-to-r from-purple-500 to-pink-500 border-0 shadow-2xl">
         <CardContent className="p-6 relative">
           <button
@@ -76,21 +76,21 @@ export default function NotificationPrompt() {
             <X className="h-3 w-3" />
           </button>
 
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
               <Bell className="h-6 w-6 text-white" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 text-center sm:text-left">
               <h3 className="text-white font-bold mb-2">
                 Stay Connected to Your Journey 🌟
               </h3>
               <p className="text-white/90 text-sm mb-4">
                 Get instant updates about your soul energy, aura insights, and spiritual progress!
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   onClick={handleAllow}
-                  className="bg-white text-purple-600 hover:bg-white/90 font-semibold"
+                  className="bg-white text-purple-600 hover:bg-white/90 font-semibold w-full sm:w-auto"
                   data-testid="button-allow-notifications"
                 >
                   Enable Notifications
@@ -98,7 +98,7 @@ export default function NotificationPrompt() {
                 <Button
                   onClick={handleDismiss}
                   variant="ghost"
-                  className="text-white hover:bg-white/20"
+                  className="text-white hover:bg-white/20 w-full sm:w-auto"
                   data-testid="button-dismiss-notifications"
                 >
                   Maybe Later

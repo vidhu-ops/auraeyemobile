@@ -229,13 +229,13 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl max-w-sm mx-auto max-h-[95vh] overflow-y-auto p-4`}>
+      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl w-[95vw] max-w-sm mx-auto max-h-[90vh] overflow-y-auto p-4 sm:p-6 rounded-3xl`}>
         <DialogHeader className="mb-2">
           <div className="flex items-center justify-between w-full">
-            <DialogTitle className="text-white text-base truncate pr-2">{meditation.title}</DialogTitle>
+            <DialogTitle className="text-white text-base sm:text-lg truncate pr-2">{meditation.title}</DialogTitle>
             <button
               onClick={onClose}
-              className="rounded-full bg-white/20 hover:bg-white/30 p-1 flex-shrink-0"
+              className="rounded-full bg-white/20 hover:bg-white/30 p-1.5 flex-shrink-0"
               data-testid="button-close-meditation"
             >
               <X className="h-4 w-4 text-white" />
@@ -245,9 +245,9 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
         <div className="space-y-4">
           {/* Media Player or Album Art */}
-          <div className="flex justify-center">
+          <div className="flex justify-center w-full">
             {meditation.mediaType === 'youtube' && meditation.mediaUrl ? (
-              <div className="w-full max-w-md rounded-2xl overflow-hidden aspect-video shadow-lg">
+              <div className="w-full rounded-2xl overflow-hidden aspect-video shadow-lg bg-black/20">
                 <iframe
                   width="100%"
                   height="100%"
@@ -255,14 +255,14 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                   title={meditation.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="rounded-2xl h-[200px] sm:h-[250px] md:h-[300px]"
+                  className="w-full aspect-video"
                 />
               </div>
             ) : meditation.mediaType === 'video' ? (
-              <div className="w-full max-w-md aspect-video">
+              <div className="w-full aspect-video">
                 <video
                   ref={videoRef}
-                  className="w-full h-full rounded-2xl bg-black"
+                  className="w-full h-full rounded-2xl bg-black shadow-lg"
                   controls
                   playsInline
                   preload="auto"
@@ -277,10 +277,10 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                 </video>
               </div>
             ) : (
-              <div className="w-40 h-40 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
                 <div className="text-center">
-                  <div className="text-5xl mb-2">🧘</div>
-                  <p className="text-white/80 text-xs font-semibold px-2 truncate w-32">{meditation.title}</p>
+                  <div className="text-4xl sm:text-5xl mb-2">🧘</div>
+                  <p className="text-white/80 text-[10px] sm:text-xs font-semibold px-2 truncate w-24 sm:w-32">{meditation.title}</p>
                 </div>
               </div>
             )}
