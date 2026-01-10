@@ -20,7 +20,7 @@ import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 
 interface ObjectAnalysisResult {
-  newBadges: boolean;
+  newBadges?: Array<{ id: number; name: string; description: string; icon: string }>;
   id?: number;
   objectName: string;
   objectDescription: string;
@@ -686,7 +686,7 @@ export default function ObjectAnalysis() {
       
       // Invalidate queries to refresh user's reading history immediately
       queryClient.invalidateQueries({ queryKey: ['/api/object-analyses'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       
@@ -698,7 +698,7 @@ export default function ObjectAnalysis() {
       
       // Show badges if returned from server
       if (data.newBadges && data.newBadges.length > 0) {
-        showBadges(data.newBadges);
+        showBadges(data.newBadges as any);
       } else {
         // Check for new badges as fallback
         await checkBadges();

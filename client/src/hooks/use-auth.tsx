@@ -40,11 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       // Refetch the user query to ensure component gets updated state
       queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      // Immediately refetch credits and other user data after login with new user ID
-      queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user-stats", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/home-stats", user.id] });
+      // Immediately refetch credits and other user data after login (use predicate to match any user-specific key)
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/home-stats" });
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Login successful",
@@ -69,11 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       // Refetch the user query to ensure component gets updated state
       queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      // Immediately refetch credits and other user data after registration with new user ID
-      queryClient.invalidateQueries({ queryKey: ["/api/credits", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/soul-energy", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user-stats", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/home-stats", user.id] });
+      // Immediately refetch credits and other user data after registration (use predicate to match any user-specific key)
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/home-stats" });
       queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Registration successful",
@@ -95,11 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
-      // Clear all user-specific caches to prevent data leakage between user accounts
-      queryClient.removeQueries({ queryKey: ["/api/credits"] });
-      queryClient.removeQueries({ queryKey: ["/api/soul-energy"] });
-      queryClient.removeQueries({ queryKey: ["/api/user-stats"] });
-      queryClient.removeQueries({ queryKey: ["/api/home-stats"] });
+      // Clear all user-specific caches using predicates to match user-scoped keys (e.g., ["/api/credits", userId])
+      queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
+      queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
+      queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
+      queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/home-stats" });
       queryClient.removeQueries({ queryKey: ["/api/notification-preferences"] });
       toast({
         title: "Logged out successfully",

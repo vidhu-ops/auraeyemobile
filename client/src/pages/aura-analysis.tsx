@@ -6767,7 +6767,7 @@ Team AuraEye™
             queryClient.invalidateQueries({ queryKey: ['/api/aura-readings'] });
             queryClient.invalidateQueries({ queryKey: ['/api/healer-aura-readings'] });
             queryClient.invalidateQueries({ queryKey: ['/api/healer-client-stats'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+            queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
             queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
             queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
             

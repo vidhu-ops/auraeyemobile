@@ -83,7 +83,7 @@ export default function HealersPage() {
       // Invalidate user bookings to refresh data
       queryClient.invalidateQueries({ queryKey: ["/api/user-bookings"] });
       // Refresh credits to show updated balance
-      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
     },
     onError: (error: any) => {
       toast({
