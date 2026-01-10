@@ -2884,9 +2884,9 @@ Team AuraEye™
         yPosition = 20;
       }
       
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(14);
-      pdf.setTextColor(75, 0, 130);
+      pdf.setFont('helvetica');
+      pdf.setFontSize(11);
+      pdf.setTextColor(60, 60, 60);
                   
         yPosition = addWrappedText('Energy Flow Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
@@ -3271,21 +3271,21 @@ Team AuraEye™
         }
 
         pdf.setFontSize(18);
-        pdf.setTextColor(147, 51, 234);
+        pdf.setTextColor(75, 0, 130);
         yPosition = addTextWithPageBreak('PROFESSIONAL HEALER NOTES', pageWidth/2, yPosition, { align: 'center' });
         yPosition += 20;
 
         // Add styled box background for notes
        
 
-        pdf.setFontSize(12);
-        pdf.setTextColor(55, 65, 81);
+        pdf.setFontSize(11);
+        pdf.setTextColor(60, 60, 60);
         yPosition = addWrappedText(healerNotes.trim(), 20, yPosition + 5, pageWidth - 40);
         yPosition += 60;
 
         // Add healer attribution
         pdf.setFontSize(10);
-        pdf.setTextColor(107, 114, 128);
+        pdf.setTextColor(75, 0, 130);
         yPosition = addTextWithPageBreak(`Professional insights provided by: ${user?.username || 'Certified Healer'}`, 20, yPosition);
         yPosition += 15;
       }
