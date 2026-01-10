@@ -513,14 +513,6 @@ With awareness and responsibility,
         addText(String(section.content || ""), 10, false, [0, 0, 0]);
         currentY += 2;
       });
-      currentY += 3;
-
-      // PPI Section
-      addText("PPI (Personal Power Index):", 11, true, [88, 28, 135]);
-      addText("The Personal Power Index (PPI) represents your internal engine of manifestation and spiritual authority. It is a unique calculation that determines how effectively you can channel your Life Path energy into physical reality.", 10, false, [0, 0, 0]);
-      addBulletPoint("Manifestation Strength: High potential for turning thoughts into tangible results.");
-      addBulletPoint("Spiritual Authority: Natural ability to lead and inspire through personal resonance.");
-      addBulletPoint("Core Alignment: Measures how closely your daily actions align with your soul's purpose.");
       currentY += 5;
 
       // Core Numbers Analysis
