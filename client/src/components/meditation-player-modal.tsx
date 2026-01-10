@@ -255,7 +255,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                   title={meditation.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="rounded-2xl"
+                  className="rounded-2xl h-[200px] sm:h-[250px] md:h-[300px]"
                 />
               </div>
             ) : meditation.mediaType === 'video' ? (
