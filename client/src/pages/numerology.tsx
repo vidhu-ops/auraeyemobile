@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import jsPDF from "jspdf";
-import coverImagePath from "@assets/WhatsApp_Image_2026-01-09_at_1.41.14_PM_(1)_1767971622509.jpeg";
+import coverImagePath from "../assets/numerology-cover.jpeg";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
