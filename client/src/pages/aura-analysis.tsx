@@ -1556,7 +1556,11 @@ export default function AuraAnalysis() {
       pdf.text('CHAKRA ENERGY SYSTEM', pageWidth / 2, yPos + 4, { align: 'center' });
       
       // Draw decorative underline
+      pdf.setDrawColor(150, 100, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(containerPaddingX + 30, yPos + 7, containerWidth - 30, yPos + 7);
       
+      yPos += 11;
       
       // Draw each chakra as a professional horizontal bar
       chakras.forEach((chakra) => {
