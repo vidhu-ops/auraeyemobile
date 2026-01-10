@@ -1752,7 +1752,7 @@ export default function AuraAnalysis() {
       const addUploadedImageAsFirstPage = async () => {
         try {
           // Import the new cover image directly from attached assets  
-          const uploadedImageModule = await import('@assets/pdf-cover-image.jpeg');
+          const uploadedImageModule = await import('@/assets/aura-cover.jpeg');
           const uploadedImageSrc = uploadedImageModule.default;
           
           // Create image to get dimensions
@@ -2593,9 +2593,9 @@ Team AuraEye™
         yPosition = 20;
       }
       
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold')
-      pdf.setTextColor(75, 0, 130);
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica')
+      pdf.setTextColor(60, 60, 60);
       yPosition = addWrappedText('9-Chakra Energy System Analysis:', 20, yPosition, pageWidth - 40);
       yPosition += 8;
       
