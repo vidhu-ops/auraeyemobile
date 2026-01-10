@@ -1553,10 +1553,14 @@ export default function AuraAnalysis() {
       // Add decorative title
       pdf.setFontSize(12);
       pdf.setTextColor(120, 40, 180);
-      pdf.text('CHAKRA ENERGY SYSTEM', pageWidth / 2, yPos + 4, { align: 'center' });
+      pdf.text('✦ CHAKRA ENERGY SYSTEM ✦', pageWidth / 2, yPos + 4, { align: 'center' });
       
       // Draw decorative underline
+      pdf.setDrawColor(150, 100, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(containerPaddingX + 30, yPos + 7, containerWidth - 30, yPos + 7);
       
+      yPos += 11;
       
       // Draw each chakra as a professional horizontal bar
       chakras.forEach((chakra) => {
@@ -2112,7 +2116,7 @@ Team AuraEye™
 
       pdf.setFontSize(18);
       pdf.setTextColor(75, 0, 130);
-      yPosition = addTextWithPageBreak("CHAKRA SYSTEM GRAPH", pageWidth/2, yPosition, { align: 'center' });
+      yPosition = addTextWithPageBreak('CHAKRA SYSTEM ANALYSIS', pageWidth/2, yPosition, { align: 'center' });
       yPosition += 10;
 
       pdf.setFontSize(12);
