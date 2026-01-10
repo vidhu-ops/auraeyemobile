@@ -229,13 +229,13 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl max-w-sm mx-auto`}>
-        <DialogHeader>
+      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl max-w-sm mx-auto max-h-[95vh] overflow-y-auto p-4`}>
+        <DialogHeader className="mb-2">
           <div className="flex items-center justify-between w-full">
-            <DialogTitle className="text-white text-lg">{meditation.title}</DialogTitle>
+            <DialogTitle className="text-white text-base truncate pr-2">{meditation.title}</DialogTitle>
             <button
               onClick={onClose}
-              className="rounded-full bg-white/20 hover:bg-white/30 p-1"
+              className="rounded-full bg-white/20 hover:bg-white/30 p-1 flex-shrink-0"
               data-testid="button-close-meditation"
             >
               <X className="h-4 w-4 text-white" />
@@ -243,14 +243,14 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4">
           {/* Media Player or Album Art */}
           <div className="flex justify-center">
             {meditation.mediaType === 'youtube' && meditation.mediaUrl ? (
-              <div className="w-full max-w-md rounded-2xl overflow-hidden">
+              <div className="w-full max-w-md rounded-2xl overflow-hidden aspect-video shadow-lg">
                 <iframe
                   width="100%"
-                  height="300"
+                  height="100%"
                   src={`https://www.youtube.com/embed/${extractYouTubeId(meditation.mediaUrl)}?autoplay=0&rel=0`}
                   title={meditation.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -259,26 +259,28 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                 />
               </div>
             ) : meditation.mediaType === 'video' ? (
-              <video
-                ref={videoRef}
-                className="w-full max-w-md rounded-2xl bg-black"
-                controls
-                playsInline
-                preload="auto"
-                onLoadedData={() => {
-                  if (videoRef.current) {
-                    videoRef.current.volume = volume / 100;
-                  }
-                }}
-              >
-                <source src={meditation.mediaUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <div className="w-full max-w-md aspect-video">
+                <video
+                  ref={videoRef}
+                  className="w-full h-full rounded-2xl bg-black"
+                  controls
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => {
+                    if (videoRef.current) {
+                      videoRef.current.volume = volume / 100;
+                    }
+                  }}
+                >
+                  <source src={meditation.mediaUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             ) : (
-              <div className="w-56 h-56 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+              <div className="w-40 h-40 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
                 <div className="text-center">
-                  <div className="text-6xl mb-3">🧘</div>
-                  <p className="text-white/80 text-sm font-semibold">{meditation.title}</p>
+                  <div className="text-5xl mb-2">🧘</div>
+                  <p className="text-white/80 text-xs font-semibold px-2 truncate w-32">{meditation.title}</p>
                 </div>
               </div>
             )}
@@ -286,53 +288,53 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
           {/* Info */}
           <div className="text-center text-white">
-            <h2 className="text-2xl font-bold mb-1">{meditation.title}</h2>
-            <p className="text-sm text-white/70">{meditation.author}</p>
+            <h2 className="text-xl font-bold leading-tight">{meditation.title}</h2>
+            <p className="text-xs text-white/70">{meditation.author}</p>
           </div>
 
           {/* Progress Bar */}
-          <div className="space-y-2">
-            <Progress value={progress} className="h-2" data-testid="meditation-progress" />
-            <div className="flex justify-between text-xs text-white/70">
+          <div className="space-y-1">
+            <Progress value={progress} className="h-1.5" data-testid="meditation-progress" />
+            <div className="flex justify-between text-[10px] text-white/70">
               <span>{formatTime(elapsedTime)}</span>
               <span>{formatTime(actualDuration || meditation.duration * 60)}</span>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-4">
             <button
               onClick={handleSkipBack}
-              className="rounded-full bg-white/20 hover:bg-white/30 p-2 transition-all"
+              className="rounded-full bg-white/20 hover:bg-white/30 p-1.5 transition-all"
               data-testid="button-skip-back"
             >
-              <SkipBack className="h-5 w-5 text-white" fill="white" />
+              <SkipBack className="h-4 w-4 text-white" fill="white" />
             </button>
 
             <button
               onClick={handlePlayPause}
-              className="rounded-full bg-white/30 hover:bg-white/40 p-4 transition-all"
+              className="rounded-full bg-white/30 hover:bg-white/40 p-3 transition-all"
               data-testid={`button-${isPlaying ? 'pause' : 'play'}`}
             >
               {isPlaying ? (
-                <Pause className="h-7 w-7 text-white fill-white" />
+                <Pause className="h-6 w-6 text-white fill-white" />
               ) : (
-                <Play className="h-7 w-7 text-white fill-white" />
+                <Play className="h-6 w-6 text-white fill-white" />
               )}
             </button>
 
             <button
               onClick={handleSkipForward}
-              className="rounded-full bg-white/20 hover:bg-white/30 p-2 transition-all"
+              className="rounded-full bg-white/20 hover:bg-white/30 p-1.5 transition-all"
               data-testid="button-skip-forward"
             >
-              <SkipForward className="h-5 w-5 text-white" fill="white" />
+              <SkipForward className="h-4 w-4 text-white" fill="white" />
             </button>
           </div>
 
           {/* Volume Control */}
-          <div className="flex items-center gap-3 px-4">
-            <Volume2 className="h-4 w-4 text-white/70" />
+          <div className="flex items-center gap-2 px-2">
+            <Volume2 className="h-3.5 w-3.5 text-white/70" />
             <input
               type="range"
               min="0"
@@ -342,13 +344,14 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
               className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
               data-testid="volume-slider"
             />
-            <span className="text-xs text-white/70 w-8">{volume}%</span>
+            <span className="text-[10px] text-white/70 w-6">{volume}%</span>
           </div>
 
           {/* Complete Button */}
           <Button
             onClick={handleComplete}
-            className="w-full bg-white/20 hover:bg-white/30 text-white font-semibold transition-all"
+            size="sm"
+            className="w-full bg-white/20 hover:bg-white/30 text-white font-semibold transition-all h-9"
             data-testid="button-complete-meditation"
           >
             {completeMeditationMutation.isPending ? "Saving..." : "Complete Meditation"}

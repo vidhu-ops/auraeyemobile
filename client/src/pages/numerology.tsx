@@ -834,14 +834,14 @@ With awareness and responsibility,
 
   const parseLifePathText = (text: string): Array<{heading: string; content: string}> => {
     const sections: Array<{heading: string; content: string}> = [];
-    const headingPatterns = /^(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/i;
+    const headingPatterns = /^(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI(positive psychology intervention)|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/i;
     
     // Split by heading keywords - look for "Keyword: content"
     let currentSection = '';
     let currentHeading = '';
     
     // Replace multiple spaces and split intelligently
-    const cleanText = text.replace(/(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/gi, '\n$1:').trim();
+    const cleanText = text.replace(/(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI(positive psychology intervention)|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/gi, '\n$1:').trim();
     const lines = cleanText.split('\n').filter(line => line.trim());
     
     for (const line of lines) {
