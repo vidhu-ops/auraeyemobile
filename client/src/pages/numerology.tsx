@@ -736,6 +736,7 @@ With awareness and responsibility,
         // Refresh healer readings query so dashboard updates immediately
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
         queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-pdfs'] });
       } catch (saveError) {
         console.error('Error during PDF save:', saveError);
         throw new Error(`PDF save failed: ${saveError}`);
