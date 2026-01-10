@@ -13,7 +13,7 @@ import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal"
 import { useBadgeContext } from "@/hooks/use-badge-context";
 import logoImage from "@assets/new-logo.jpeg";
 import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4";
-import demoPdfReport from "@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29.pdf_(4)_1768044410056.pdf";
+import demoPdfReport from "@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29.pdf_(8)_1768045427610.pdf";
 
 interface VibeResult {
   dominantColor: string;
