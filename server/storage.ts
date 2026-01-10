@@ -784,7 +784,7 @@ export class DatabaseStorage implements IStorage {
       // Week Warrior already done above
       
       // Healing Heart (5 healer replies/bookings)
-      const healerBookingsCount = await db.select().from(healerBookings).where(eq(healerBookings.userId, userId));
+      const healerBookingsCount = await db.select().from(healerBookings).where(eq(healerBookings.healerId, userId));
       if (healerBookingsCount.length >= 5 && !achievedTypes.includes("healing_heart")) {
         const achievement = await this.createUserAchievement({
           userId,
@@ -811,7 +811,7 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error checking and awarding achievements:", error);
     }
-    return newAchievements;
+    return { newBadges: newAchievements, allAchievements: await this.getUserAchievements(userId) };
   }
 
   async getHealerClientStats(healerId: number): Promise<any> {

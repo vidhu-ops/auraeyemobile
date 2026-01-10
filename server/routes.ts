@@ -5748,14 +5748,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Check and award achievements based on activity counts
   app.post("/api/check-badges", isAuthenticated, async (req, res) => {
     try {
-      const newBadges = await storage.checkAndAwardAchievements(req.user.id);
-      
-      // Also fetch all current achievements for profile update
-      const allAchievements = await db.query.achievements.findMany({
-        where: (achievements, { eq }) => eq(achievements.userId, req.user.id),
-        orderBy: (achievements, { desc }) => desc(achievements.unlockedAt),
-      });
-      
+      const { newBadges, allAchievements } = await storage.checkAndAwardAchievements(req.user.id);
       res.json({ 
         newBadges,
         allAchievements,

@@ -323,8 +323,8 @@ export default function ProfilePage() {
                           data-testid={`badge-achievement-${idx}`}
                         >
                           {/* Checkmark indicator for earned badge */}
-                          <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-lg">
-                            <CheckCircle className="w-4 h-4 text-white" />
+                          <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-lg z-10">
+                            <CheckCircle className="w-4 h-4 text-white fill-green-600" />
                           </div>
                           <div className="flex items-start gap-3 pr-8">
                             <span className="text-2xl">{achievement.icon}</span>
