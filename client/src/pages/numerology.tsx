@@ -840,25 +840,20 @@ With awareness and responsibility,
     let currentHeading = '';
     
     // Replace multiple spaces and split intelligently
-    const cleanText = text.replace(/([A-Z][a-z\s]+:)/g, '\n$1').trim();
-    const lines = cleanText.split('\n');
+    const cleanText = text.replace(/(Colour|COLOUR|Color|COLOR|CHAKRA|Chakra|Planet|PPI|Concept|Research|How to Use|Example Technique|Angel\/Archangel|Karmic Lesson|Healing Method|Remedies|Color Therapy|Mantra Chanting|Crystal Therapy|Aroma Therapy|Affirmations|Sacred Code|Bach Flower Remedies|Prayer to Archangel|Deity Connection|Self-Healing Technique|Rudraksha Remedy|Positive Psychology):/gi, '\n$1:').trim();
+    const lines = cleanText.split('\n').filter(line => line.trim());
     
     for (const line of lines) {
-      const match = line.match(headingPatterns);
-      if (match) {
-        // Found a heading
-        if (currentHeading && currentSection) {
+      const parts = line.split(':');
+      if (parts.length >= 2) {
+        const heading = parts[0].trim();
+        const content = parts.slice(1).join(':').trim();
+        
+        if (heading && content) {
           sections.push({
-            heading: currentHeading,
-            content: currentSection.trim().substring(0, 250)
+            heading: heading,
+            content: content.substring(0, 500)
           });
-        }
-        currentHeading = match[1];
-        currentSection = line.substring(match[0].length).trim();
-      } else {
-        // Continue with current section
-        if (currentHeading) {
-          currentSection += ' ' + line.trim();
         }
       }
     }
