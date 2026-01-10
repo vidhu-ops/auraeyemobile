@@ -94,7 +94,7 @@ export default function AuthPage() {
       } as any, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-          queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+          queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
           
           toast({
             title: "Account Created! 🎉",

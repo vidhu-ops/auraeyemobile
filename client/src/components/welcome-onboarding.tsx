@@ -30,7 +30,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
       
       // Show success toast with credits bonus
       toast({

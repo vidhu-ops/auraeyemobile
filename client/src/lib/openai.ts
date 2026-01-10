@@ -72,7 +72,7 @@ export async function analyzeAuraImage(imageBase64: string, name?: string): Prom
     const result = await response.json();
     
     // Invalidate credits cache to update the display immediately
-    queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
     queryClient.invalidateQueries({ queryKey: ['/api/user'] });
     
     return result;

@@ -1,9 +1,15 @@
-const CACHE_NAME = 'auraeye-v1';
+const CACHE_NAME = 'auraeye-v2';
+const STATIC_CACHE = 'auraeye-static-v2';
 const urlsToCache = [
   '/',
   '/manifest.json',
-  '/new-logo.jpeg'
+  '/new-logo.jpeg',
+  '/index.html'
 ];
+
+// API routes that should never be cached
+const API_ROUTES = ['/api/'];
+const EXCLUDED_PATHS = ['/api/', '/socket', '/ws'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -36,6 +42,35 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const requestUrl = new URL(event.request.url);
+  
+  // Never cache API requests or WebSocket connections - always go to network
+  if (EXCLUDED_PATHS.some(path => requestUrl.pathname.startsWith(path))) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
+  // Network-first strategy for navigation requests
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the new response
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if offline
+          return caches.match('/') || caches.match(event.request);
+        })
+    );
+    return;
+  }
+  
+  // Cache-first strategy for static assets
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
