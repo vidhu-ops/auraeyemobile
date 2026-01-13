@@ -40,6 +40,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import LightsActivation from "@/components/lights-activation";
 import Mascot from "@/components/mascot/mascot";
 import NotificationPrompt from "@/components/notification-prompt";
+import { InstallAppPrompt } from "@/components/install-app-prompt";
 import { useEffect, useState } from "react";
 
 function Router() {
@@ -150,6 +151,7 @@ function App() {
                 <BadgeProvider>
                   <TooltipProvider>
                     <Toaster />
+                    <InstallAppPrompt />
                     <div className="min-h-screen flex flex-col">
                       <AppContent />
                     </div>
