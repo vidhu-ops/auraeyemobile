@@ -108,6 +108,12 @@ export function setupAuth(app: Express) {
               });
             }
             
+            // Check if user account is active
+            if (userRecord.isActive === false) {
+              console.log(`[AUTH] Healer account is inactive: ${username}`);
+              return done(null, false);
+            }
+            
             const healerUser = {
               id: userRecord.id,
               username: healer.username,
@@ -128,6 +134,13 @@ export function setupAuth(app: Express) {
         const user = await storage.getUserByUsername(username);
         if (user) {
           console.log(`[AUTH] Found user account for: ${username}`);
+          
+          // Check if user account is active
+          if (user.isActive === false) {
+            console.log(`[AUTH] User account is inactive: ${username}`);
+            return done(null, false);
+          }
+          
           const passwordMatch = await comparePasswords(password, user.password, username);
           console.log(`[AUTH] User password match: ${passwordMatch}`);
           
