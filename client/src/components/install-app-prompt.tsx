@@ -39,6 +39,11 @@ export function InstallAppPrompt() {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
+    // Force show for development/testing if not in standalone mode
+    if (!isStandalone && !promptDismissedAt) {
+      setShowPrompt(true);
+    }
+
     // Check for iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
@@ -77,18 +82,18 @@ export function InstallAppPrompt() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 flex items-center justify-between shadow-md relative z-50">
+    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 flex items-center justify-between shadow-md sticky top-0 z-[100] w-full">
       <div className="flex items-center gap-2 overflow-hidden">
         <Smartphone className="h-4 w-4 flex-shrink-0" />
-        <span className="text-sm font-medium truncate">
-          Experience AuraEye as an app on your home screen
+        <span className="text-[10px] sm:text-xs font-medium truncate">
+          Download AuraEye App for the best experience
         </span>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
         <Button 
           onClick={handleInstall}
           size="sm" 
-          className="bg-white text-purple-600 hover:bg-white/90 font-bold h-8 text-xs rounded-full px-4"
+          className="bg-white text-purple-600 hover:bg-white/90 font-bold h-7 text-[10px] rounded-full px-3"
         >
           Download Now
         </Button>
