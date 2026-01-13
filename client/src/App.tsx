@@ -151,8 +151,8 @@ function App() {
                 <BadgeProvider>
                   <TooltipProvider>
                     <Toaster />
-                    <InstallAppPrompt />
                     <div className="min-h-screen flex flex-col">
+                      <InstallAppPrompt />
                       <AppContent />
                     </div>
                   </TooltipProvider>
