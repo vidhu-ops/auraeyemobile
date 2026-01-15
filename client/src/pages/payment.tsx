@@ -12,14 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const CREDIT_PACKS = [
   {
-    link: "https://buy.stripe.com/9B614od3JgoS9ICbbxgjC0b",
-    credits: 10,
-    price: 4152.69,
-    badge: "Best Value",
-  },
-  {
     link: "https://buy.stripe.com/5kQfZigfV1tY9IC5RdgjC0d",
-    credits: 10,
+    credits: 15,
     price: 4152.69,
     badge: "Quick Buy",
   },
@@ -66,25 +60,6 @@ export default function PaymentPage() {
     window.location.href = redirectUrl;
   };
 
-  const isHealer = user?.userType === "healer" || user?.userType === "semi-healer";
-
-  if (!isHealer) {
-    return (
-      <div className="min-h-screen flex flex-col bg-gradient-cosmic pb-20">
-        <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
-          <Card className="max-w-md w-full border-purple-200/50 glass-ethereal text-center p-8">
-            <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
-            <p className="text-purple-200 mb-6">Quick Buy is only available for Healer and Semi-Healer accounts.</p>
-            <Button onClick={() => window.location.href = '/'} className="w-full">Return Home</Button>
-          </Card>
-        </main>
-        <MobileNavigation />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-cosmic pb-20">
       <Navbar />
@@ -96,22 +71,14 @@ export default function PaymentPage() {
 
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Credit Packs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 align-center">
+          <div className="flex justify-center">
             {CREDIT_PACKS.map((pack, index) => (
               <Card 
                 key={index}
-                className={`border-2 glass-ethereal relative overflow-hidden transition-all ${
-                  pack.badge === "Best Value" 
-                    ? "border-purple-400/70 glow-cosmic md:col-span-2 md:w-1/2 mx-auto"
-                    : "border-purple-200/70"
-                }`}
+                className="border-2 glass-ethereal relative overflow-hidden transition-all border-purple-400/70 glow-cosmic max-w-md w-full"
               >
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className={`text-white px-4 py-1 ${
-                    pack.badge === "Best Value"
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600"
-                      : "bg-gradient-to-r from-blue-600 to-cyan-600"
-                  }`}>
+                  <Badge className="text-white px-4 py-1 bg-gradient-to-r from-blue-600 to-cyan-600">
                     <Sparkles className="w-3 h-3 mr-1" />
                     {pack.badge}
                   </Badge>
@@ -161,7 +128,7 @@ export default function PaymentPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-purple-200">Your Current Credits</span>
                   <Badge className="bg-purple-600/30 text-purple-100 text-lg px-4 py-1">
-                    {user.credits || 0} Credits
+                    {Number(user.credits) || 0} Credits
                   </Badge>
                 </div>
               </CardContent>
