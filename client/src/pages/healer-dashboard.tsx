@@ -2305,8 +2305,8 @@ export default function HealerDashboard() {
     'aura master': ['aura_master'],
     'aura legend': ['aura_legend'],
     // Numerology badges
-    'number seeker': ['first_numerology', 'number_seeker'],
-    'number vision': ['first_numerology'],
+    'number seeker': ['first_numerology', 'number_vision', 'number_seeker'],
+    'number vision': ['first_numerology', 'number_vision'],
     'numerology explorer': ['numerology_explorer'],
     'numerology master': ['numerology_master'],
     'numerology legend': ['numerology_sage', 'numerology_legend'],
@@ -2321,6 +2321,10 @@ export default function HealerDashboard() {
     'journal keeper': ['journal_keeper'],
     'journal master': ['journal_master'],
     'journal legend': ['journal_legend'],
+    'journal master ✍️': ['journal_master'],
+    'journal keeper 📚': ['journal_keeper'],
+    'thoughts flow 📖': ['first_journal', 'thoughts_flow'],
+    'thoughts flow 📝': ['first_journal', 'thoughts_flow'],
     // Object badges
     'object insight': ['first_object'],
     'object explorer': ['object_explorer'],
