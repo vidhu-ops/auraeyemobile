@@ -2291,21 +2291,23 @@ export default function HealerDashboard() {
   });
 
   // Helper function to check if a badge is earned (checks both healer badges and user achievements)
-  const isBadgeEarned = (badgeTitle: string): boolean => {
-    // Remove emoji from badge title for comparison
-    const cleanBadgeTitle = badgeTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+  const isBadgeEarned = (badgeIdentifier: string): boolean => {
+    const cleanId = badgeIdentifier.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
     
-    // Check healer badges
+    // Check healer badges by type or title
     const inHealerBadges = healerBadges.some(badge => {
-      const cleanEarned = badge.badgeTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return cleanEarned.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanEarned);
+      const badgeType = (badge.badgeType || '').toLowerCase();
+      const badgeTitle = (badge.badgeTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+      return badgeType.includes(cleanId) || cleanId.includes(badgeType) ||
+             badgeTitle.includes(cleanId) || cleanId.includes(badgeTitle);
     });
     
-    // Check user achievements (for journal, numerology, vibe badges) - support both title and achievementTitle
+    // Check user achievements by type or title
     const inAchievements = achievements.some((achievement: any) => {
-      const achievementTitle = achievement.title || achievement.achievementTitle || '';
-      const cleanAchievementTitle = achievementTitle.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return cleanAchievementTitle.includes(cleanBadgeTitle) || cleanBadgeTitle.includes(cleanAchievementTitle);
+      const type = (achievement.type || achievement.achievementType || '').toLowerCase();
+      const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
+      return type.includes(cleanId) || cleanId.includes(type) ||
+             title.includes(cleanId) || cleanId.includes(title);
     });
     
     return inHealerBadges || inAchievements;
