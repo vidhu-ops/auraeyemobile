@@ -3199,10 +3199,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       await storage.deleteExpiredBadges();
       
       const badges = await storage.getHealerBadges(req.user.id);
-      res.json(badges || []);
+      res.json({ badges: badges || [] });
     } catch (error) {
       console.error("Error fetching badges:", error);
-      res.status(500).json({ message: "Failed to fetch badges" });
+      res.status(500).json({ badges: [] });
     }
   });
 
