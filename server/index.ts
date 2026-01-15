@@ -29,20 +29,13 @@ app.get('/', (req, res, next) => {
   next();
 });
 
-// Credit pack configuration - maps payment links to credit amounts
-const CREDIT_PACKS = {
-  '9B614od3JgoS9ICbbxgjC0b': { credits: 10, priceInPaise: 49900 }, // ₹499 for 10 credits
-  '9B64gA7Jpb4y3ke3J5gjC0c': { credits: 1, priceInPaise: 9900 },    // ₹99 for 1 credit
-};
+// Quick Buy always gives 15 credits on successful payment
+const QUICK_BUY_CREDITS = 15;
 
-// Function to determine credits based on amount paid
+// Function to determine credits - always returns 15 for Quick Buy
 function determineCredits(amountInPaise: number): number {
-  // 99 paise = 1 credit pack
-  if (amountInPaise === 9900) return 1;
-  // 499 paise = 10 credit pack
-  if (amountInPaise === 49900) return 10;
-  // Fallback: estimate based on rough conversion (1 paise ≈ 0.02 credits)
-  return Math.max(1, Math.round(amountInPaise / 10000));
+  // Quick Buy always gives 15 credits regardless of amount
+  return QUICK_BUY_CREDITS;
 }
 
 // Stripe webhook endpoint - MUST be before JSON body parser
