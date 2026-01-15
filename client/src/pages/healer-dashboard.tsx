@@ -284,10 +284,10 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
         // Refresh the readings list and badge-related queries immediately
         queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
         queryClient.invalidateQueries({ queryKey: ['/api/user-achievements'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['/api/healer-badges'] });
         // Force immediate refetch
         await queryClient.refetchQueries({ queryKey: ['/api/user-achievements'] });
-        await queryClient.refetchQueries({ queryKey: ['/api/healer-badges', user?.id] });
+        await queryClient.refetchQueries({ queryKey: ['/api/healer-badges'] });
         
         // Show badges if returned from server
         if (data.newBadges && data.newBadges.length > 0) {
@@ -2281,7 +2281,7 @@ export default function HealerDashboard() {
   });
 
   // Fetch healer's earned badges - authenticated endpoint
-  const { data: healerBadges = [] } = useQuery<HealerBadge[]>({
+  const { data: healerBadgesData } = useQuery<{ badges: HealerBadge[] }>({
     queryKey: ["/api/healer-badges"],
     enabled: !!user?.id,
     staleTime: 0,
@@ -2289,25 +2289,68 @@ export default function HealerDashboard() {
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
+  const healerBadges = healerBadgesData?.badges || [];
+
+  // Canonical badge type map - maps display names to storage types
+  const BADGE_TYPE_MAP: Record<string, string[]> = {
+    // Healer-specific badges
+    'week warrior': ['seven_day_streak', 'week_warrior'],
+    'spiritual guardian': ['spiritual_guardian'],
+    'healing heart': ['healing_heart'],
+    'most trusted healer': ['most_trusted', 'trusted_healer'],
+    'best healer': ['best_healer'],
+    // Aura badges
+    'first glimpse': ['first_aura'],
+    'aura explorer': ['third_aura', 'aura_explorer'],
+    'aura master': ['aura_master'],
+    'aura legend': ['aura_legend'],
+    // Numerology badges
+    'number seeker': ['first_numerology', 'number_seeker'],
+    'number vision': ['first_numerology'],
+    'numerology explorer': ['numerology_explorer'],
+    'numerology master': ['numerology_master'],
+    'numerology legend': ['numerology_sage', 'numerology_legend'],
+    'numerology sage': ['numerology_sage'],
+    // Vibe badges
+    'vibe check': ['first_vibe', 'vibe_check'],
+    'vibe enthusiast': ['vibe_enthusiast'],
+    'vibe master': ['vibe_master'],
+    'vibe legend': ['vibe_legend'],
+    // Journal badges
+    'thoughts flow': ['first_journal', 'thoughts_flow'],
+    'journal keeper': ['journal_keeper'],
+    'journal master': ['journal_master'],
+    'journal legend': ['journal_legend'],
+    // Object badges
+    'object insight': ['first_object'],
+    'object explorer': ['object_explorer'],
+    'object master': ['object_master'],
+    'object sage': ['object_sage'],
+    // Meditation badges
+    'inner peace': ['first_meditation'],
+    'meditation seeker': ['meditation_seeker'],
+    'meditation master': ['meditation_master'],
+  };
 
   // Helper function to check if a badge is earned (checks both healer badges and user achievements)
   const isBadgeEarned = (badgeIdentifier: string): boolean => {
     const cleanId = badgeIdentifier.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
     
+    // Get canonical types for this badge
+    const canonicalTypes = BADGE_TYPE_MAP[cleanId] || [cleanId.replace(/\s+/g, '_')];
+    
     // Check healer badges by type or title
     const inHealerBadges = healerBadges.some(badge => {
       const badgeType = (badge.badgeType || '').toLowerCase();
       const badgeTitle = (badge.badgeTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return badgeType.includes(cleanId) || cleanId.includes(badgeType) ||
-             badgeTitle.includes(cleanId) || cleanId.includes(badgeTitle);
+      return canonicalTypes.includes(badgeType) || badgeTitle === cleanId;
     });
     
     // Check user achievements by type or title
     const inAchievements = achievements.some((achievement: any) => {
       const type = (achievement.type || achievement.achievementType || '').toLowerCase();
       const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return type.includes(cleanId) || cleanId.includes(type) ||
-             title.includes(cleanId) || cleanId.includes(title);
+      return canonicalTypes.includes(type) || title === cleanId;
     });
     
     return inHealerBadges || inAchievements;
