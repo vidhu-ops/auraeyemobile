@@ -18,9 +18,9 @@ const CREDIT_PACKS = [
     badge: "Best Value",
   },
   {
-    link: "https://buy.stripe.com/9B64gA7Jpb4y3ke3J5gjC0c",
-    credits: 1,
-    price: 125,
+    link: "https://buy.stripe.com/5kQfZigfV1tY9IC5RdgjC0d",
+    credits: 10,
+    price: 4152.69,
     badge: "Quick Buy",
   },
 ];
@@ -65,6 +65,25 @@ export default function PaymentPage() {
     
     window.location.href = redirectUrl;
   };
+
+  const isHealer = user?.userType === "healer" || user?.userType === "semi-healer";
+
+  if (!isHealer) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-cosmic pb-20">
+        <Navbar />
+        <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+          <Card className="max-w-md w-full border-purple-200/50 glass-ethereal text-center p-8">
+            <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
+            <p className="text-purple-200 mb-6">Quick Buy is only available for Healer and Semi-Healer accounts.</p>
+            <Button onClick={() => window.location.href = '/'} className="w-full">Return Home</Button>
+          </Card>
+        </main>
+        <MobileNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-cosmic pb-20">
