@@ -219,7 +219,6 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     const newBadges: BadgeReward[] = [];
     
     // Count activities for this user
-    // For aura readings: count both readings received (userId) and performed (performedBy) for healers
     const [auraCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(auraReadings)
       .where(or(
@@ -227,12 +226,13 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
         eq(auraReadings.performedBy, userId)
       ));
     
-    // For vibe readings: userId already represents the healer who performed it
     const [vibeCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(vibeReadings)
-      .where(eq(vibeReadings.userId, userId));
+      .where(or(
+        eq(vibeReadings.userId, userId),
+        eq(vibeReadings.performedBy, userId)
+      ));
     
-    // For numerology readings: count both readings received (userId) and performed (performedBy) for healers
     const [numerologyCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(numerologyReadings)
       .where(or(
@@ -240,17 +240,17 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
         eq(numerologyReadings.performedBy, userId)
       ));
     
-    // Object analyses: only tracked by userId (client activity)
     const [objectCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(objectAnalyses)
-      .where(eq(objectAnalyses.userId, userId));
+      .where(or(
+        eq(objectAnalyses.userId, userId),
+        eq(objectAnalyses.performedBy, userId)
+      ));
     
-    // Journals: personal activity tracked by userId
     const [journalCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(journals)
       .where(eq(journals.userId, userId));
     
-    // Meditation sessions: personal activity tracked by userId
     const [meditationCount] = await db.select({ count: db.raw("COUNT(*)::int") })
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
@@ -268,9 +268,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     for (const [badgeType, threshold] of Object.entries(BADGE_THRESHOLDS)) {
       const activityCount = counts[threshold.activity as keyof typeof counts];
       
-      // If user has reached the threshold
       if (activityCount >= threshold.count) {
-        // Check if they already have this badge
         const existing = await db.query.achievements.findFirst({
           where: (a, { and, eq: eqOp }) => and(
             eqOp(a.userId, userId),
@@ -278,18 +276,17 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
           ),
         });
         
-        // Award badge if they don't have it yet
         if (!existing) {
           const badgeInfo = BADGE_DEFINITIONS[badgeType];
           if (badgeInfo) {
-            const [newBadge] = await db.insert(achievements).values({
+            await db.insert(achievements).values({
               userId,
               achievementType: badgeType,
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
               badgeType: badgeInfo.level,
-            }).returning();
+            });
             
             newBadges.push(badgeInfo);
           }

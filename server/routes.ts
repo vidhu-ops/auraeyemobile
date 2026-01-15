@@ -1797,35 +1797,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           console.log("Aura reading saved successfully with ID:", savedReading.id);
           console.log("Analysis result now includes ID:", auraAnalysis.id);
           
-          // Award achievement for aura scans at different levels
+          // Check and award achievements
           try {
-            const auraCount = await db.query.auraReadings.findMany({
-              where: (readings, { eq }) => eq(readings.userId, req.user.id),
-            });
-            const milestones = [
-              { count: 1, type: 'first_aura', title: 'First Glimpse 👀', desc: 'Completed your first aura analysis', icon: '🎨' },
-              { count: 3, type: 'third_aura', title: 'Aura Explorer 🔍', desc: 'Completed 3 aura analyses', icon: '🔍' },
-              { count: 10, type: 'aura_master', title: 'Aura Master 🌟', desc: 'Completed 10 aura analyses', icon: '⭐' },
-              { count: 25, type: 'aura_legend', title: 'Aura Legend 👑', desc: 'Completed 25 aura analyses', icon: '👑' }
-            ];
-            for (const milestone of milestones) {
-              if (auraCount.length === milestone.count) {
-                const existing = await db.query.achievements.findFirst({
-                  where: (ach, { and, eq }) => and(eq(ach.userId, req.user.id), eq(ach.achievementType, milestone.type))
-                });
-                if (!existing) {
-                  await db.insert(achievements).values({
-                    userId: req.user.id,
-                    achievementType: milestone.type,
-                    title: milestone.title,
-                    description: milestone.desc,
-                    icon: milestone.icon,
-                  });
-                }
-              }
-            }
-          } catch (ach) {
-            console.log("Achievement update skipped:", ach);
+            await storage.checkAndAwardAchievements(req.user.id);
+          } catch (achievementError) {
+            console.error("Error awarding achievements for aura:", achievementError);
           }
         } catch (saveError) {
           console.error("Error saving aura reading:", saveError);
@@ -2040,19 +2016,26 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         console.log('Returning healer numerology profile:', numerologyProfile);
         
-        // Save the numerology reading for the healer
-        savedReading = await storage.saveNumerologyReading({
-          userId: req.user.id,
-          performedBy: req.user.userType === 'healer' ? req.user.id : null,
-          name,
-          birthDate,
-          lifePathNumber: numerologyProfile.lifePathNumber,
-          destinyNumber: numerologyProfile.destinyNumber,
-          soulUrgeNumber: numerologyProfile.soulUrgeNumber,
-          personalityNumber: numerologyProfile.personalityNumber,
-          personalYearNumber: numerologyProfile.personalYearNumber,
-          interpretation: numerologyProfile.interpretation
-        });
+          // Save the numerology reading for the healer
+          const savedReading = await storage.saveNumerologyReading({
+            userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
+            name,
+            birthDate,
+            lifePathNumber: numerologyProfile.lifePathNumber,
+            destinyNumber: numerologyProfile.destinyNumber,
+            soulUrgeNumber: numerologyProfile.soulUrgeNumber,
+            personalityNumber: numerologyProfile.personalityNumber,
+            personalYearNumber: numerologyProfile.personalYearNumber,
+            interpretation: numerologyProfile.interpretation
+          });
+
+          // Check and award achievements
+          try {
+            await storage.checkAndAwardAchievements(req.user.id);
+          } catch (achievementError) {
+            console.error("Error awarding achievements for numerology:", achievementError);
+          }
         
         // Award achievement for numerology readings at different levels
         try {
@@ -3680,6 +3663,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
           
           savedVibeReading = await storage.saveVibeReading({
             userId: req.user.id,
+            performedBy: req.user.userType === 'healer' ? req.user.id : null,
             personalityColor: personalityColor,
             colorMeaning: JSON.stringify(meaning),
             uploadedImage: uploadedImageBase64,
@@ -3688,6 +3672,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
             clientName: req.body.clientName || null,
             fullAnalysis: JSON.stringify(fullAnalysisData)
           });
+
+          // Check and award achievements
+          try {
+            await storage.checkAndAwardAchievements(req.user.id);
+          } catch (achievementError) {
+            console.error("Error awarding achievements for vibe:", achievementError);
+          }
 
           console.log(`✅ Vibe reading saved to dashboard for user ${req.user.id}, reading ID: ${savedVibeReading.id}`);
           console.log(`📊 Healer ${req.user.username} completed vibe reading - should appear in dashboard immediately`);
