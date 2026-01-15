@@ -26,92 +26,94 @@ export default function PricingPage() {
       highlight: true,
       features: [
         "5 Credits (Valid for 5 Days)",
-        "Free Personalized Numerology",
-        "How Are You Feeling (Psychological Feedback)",
-        "Free Breathwork Sessions",
-        "Lifestyle Suggestions",
-        "Affirmation Reminders (Optional)",
+        "Basic Personalized Numerology",
+        "What's My Vibe",
+        "Psychological Feedback",
+        "Breathwork Guidance Sessions",
+        "Meditation Library access",
+        "Personalized Journaling",
+        "Object / Space Scan",
+      ]
+    },
+    {
+      id: "seeker",
+      name: "Seeker Plan",
+      price: "£40",
+      period: "Top Up when needed",
+      credits: "10 Credits",
+      icon: Users,
+      popular: true,
+      highlight: false,
+      features: [
+        "10 Credits + Top Up when needed",
+        "10 credits for £40 GBP",
+        "What's My Vibe",
+        "Basic Personalized Numerology",
+        "Psychological Feedback",
+        "Breathwork Guidance Sessions",
+        "Meditation Library access",
+        "Personalized Journaling",
+        "Full Moon Meditation Circle Invitation",
+        "Object / Space Scan",
+        "Connect to Auraeye Healer",
       ]
     },
     {
       id: "starter",
-      name: "Seeker Plan",
-      price: "TBD",
-      period: "Flexible Billing",
-      credits: "TBD Credits",
-      icon: Users,
-      popular: true,
-      highlight: false,
-      billingOptions: true,
-      features: [
-        "What's My Vibe",
-        "Personalized Journaling",
-        "Personal Numerology (Based on DOB)",
-        "Personalized Meditation Recommendations",
-        "Activity-Based Meditation Suggestions",
-        "Monthly Full Moon Online Meditation Circle",
-        "Access to Super Elite Healers",
-      ]
-    },
-    {
-      id: "professional",
-      name: "Professional Healer",
-      price: "TBD",
-      period: "6 Months or Yearly",
-      credits: "TBD Credits",
-      icon: Award,
+      name: "Starter's Plan (40K)",
+      price: "£40",
+      period: "Yearly License",
+      credits: "40 Credits + 5/mo",
+      icon: Zap,
       popular: false,
       highlight: false,
       features: [
-        "Everything in Starter Plan",
-        "Object/Space Scan",
-        "Human Aura & Chakras Analysis",
-        "Dashboard Access for Client Records",
-        "AuraEye Certification Program",
-        "Learn to Read Aura Scientifically",
-        "Decode Aura Intuitively (Aurascope)",
-        "Learn + Earn Program Access",
-        "Ads, Webinars & Teaching Opportunities",
+        "Yearly License Cost",
+        "40 Credits Sign up bonus",
+        "5 Credits per Month",
+        "Advanced Personalized Numerology",
+        "Human Aura & Chakras",
+        "Client Records Dashboard",
+        "AuraEye Certification",
+        "Healer's work on their Own",
       ]
     },
     {
       id: "elite",
       name: "Elite Healer",
-      price: "TBD",
-      period: "Yearly",
-      credits: "TBD Credits",
+      price: "Yearly",
+      period: "By Selection Only",
+      credits: "Yearly License",
       icon: Globe,
       popular: false,
       highlight: false,
       elite: true,
       features: [
-        "Everything in Professional Plan",
-        "Listing to Global Audience",
-        "Recommended Healer on Mobile App",
-        "Recommended Healer on Web App",
-        "Premium Profile Placement",
-        "Priority Support & Consultation",
-        "Exclusive Elite Healer Community",
-        "Advanced Analytics Dashboard",
+        "India Listing",
+        "Everything in Starter Plan",
+        "Advanced Personalized Numerology",
+        "Learn + Earn Program",
+        "Recommended Healer Status",
+        "Connect to Auraeye Healer",
       ]
     },
     {
-      id: "credits",
-      name: "Credits Pack",
-      price: "TBD",
-      period: "One-Time Purchase",
-      credits: "Variable",
-      icon: Coins,
+      id: "super-elite",
+      name: "Super Elite",
+      price: "Yearly",
+      period: "By Selection Only",
+      credits: "Yearly License",
+      icon: Crown,
       popular: false,
       highlight: false,
+      elite: true,
       features: [
-        "Additional Credits Anytime",
-        "No Subscription Required",
-        "Credits Never Expire",
-        "Stackable with Any Plan",
-        "Instant Activation",
-        "All Services Included",
-        "Flexible Top-Up Options",
+        "India + International Listing",
+        "Advanced Personalized Numerology",
+        "Learn + Earn Program",
+        "Recommended Healer Status",
+        "Global Healer Listing",
+        "Connect to Auraeye Healer",
       ]
     }
   ];
@@ -289,128 +291,55 @@ export default function PricingPage() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px]">
                   <thead>
-                    <tr className="border-b-2 border-purple-200">
-                      <th className="text-left py-3 px-3 font-mystical text-purple-900 text-sm">Feature</th>
-                      <th className="text-center py-3 px-2 font-mystical text-purple-900 text-xs">Free Trial</th>
-                      <th className="text-center py-3 px-2 font-mystical text-purple-900 text-xs">Starter</th>
-                      <th className="text-center py-3 px-2 font-mystical text-purple-900 text-xs">Professional</th>
-                      <th className="text-center py-3 px-2 font-mystical text-purple-900 text-xs">Elite</th>
-                      <th className="text-center py-3 px-2 font-mystical text-purple-900 text-xs">Credits Pack</th>
+                    <tr className="border-b-2 border-purple-200 text-[10px] sm:text-xs">
+                      <th className="text-left py-3 px-3 font-mystical text-purple-900">Service</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900">Credit Needed</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900 bg-gray-50">Free Trial (5 credits)</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900">Seeker (10 credits)</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900">Starter's Plan (40K)</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900 bg-yellow-100">Elite (India Listing)</th>
+                      <th className="text-center py-3 px-2 font-mystical text-purple-900 bg-yellow-200">Super Elite (Global Listing)</th>
                     </tr>
                   </thead>
-                  <tbody className="font-cosmic text-sm">
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">What's My Vibe</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">With Credits</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Personalized Numerology</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">With Credits</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Psychological Feedback</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Breathwork Sessions</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Personalized Journaling</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Full Moon Meditation Circle</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Object/Space Scan</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">With Credits</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Human Aura & Chakras</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">With Credits</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Client Records Dashboard</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">AuraEye Certification</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Learn + Earn Program</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Global Healer Listing</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Recommended Healer Status</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                    </tr>
-                    <tr className="border-b border-purple-100">
-                      <td className="py-3 px-3 text-purple-700">Flexible Credit Top-Up</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2 text-purple-600">-</td>
-                      <td className="text-center py-3 px-2"><Check className="w-4 h-4 text-green-600 mx-auto" /></td>
-                    </tr>
+                  <tbody className="font-cosmic text-[11px] sm:text-xs">
+                    {[
+                      { service: "What's My Vibe", credit: "1", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Personalized Numerology", credit: "3", free: "Basic", seeker: "Basic", starter: "Advanced", elite: "Advanced", super: "Advanced" },
+                      { service: "Psychological Feedback", credit: "0", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Breathwork Guidance Sessions", credit: "0", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Meditation Library access", credit: "0", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Personalized Journaling", credit: "0", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Full Moon Meditation Circle Invitation", credit: "0", free: false, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Object / Space Scan", credit: "1", free: true, seeker: true, starter: true, elite: true, super: true },
+                      { service: "Human Aura & Chakras", credit: "5", free: false, seeker: false, starter: true, elite: true, super: true },
+                      { service: "Client Records Dashboard", credit: "NA", free: false, seeker: false, starter: true, elite: true, super: true },
+                      { service: "AuraEye Certification", credit: "NA", free: false, seeker: false, starter: true, elite: true, super: true },
+                      { service: "Learn + Earn Program", credit: "NA", free: false, seeker: false, starter: false, elite: true, super: true },
+                      { service: "India Listing on Mobile Apps", credit: "NA", free: false, seeker: false, starter: false, elite: true, super: true },
+                      { service: "Global Healer Listing", credit: "NA", free: false, seeker: false, starter: false, elite: false, super: true },
+                      { service: "Recommended Healer Status", credit: "NA", free: false, seeker: false, starter: false, elite: true, super: true },
+                      { service: "Connect to Auraeye Healer", credit: "NA", free: false, seeker: true, starter: true, elite: true, super: true },
+                    ].map((row, i) => (
+                      <tr key={i} className="border-b border-purple-100 hover:bg-purple-50/50">
+                        <td className="py-2 px-3 text-purple-900 font-medium">{row.service}</td>
+                        <td className="text-center py-2 px-2 text-purple-700">{row.credit}</td>
+                        <td className="text-center py-2 px-2 bg-gray-50/50">
+                          {typeof row.free === "boolean" ? (row.free ? <Check className="w-4 h-4 text-green-600 mx-auto" /> : <span className="text-red-500">✕</span>) : row.free}
+                        </td>
+                        <td className="text-center py-2 px-2">
+                          {typeof row.seeker === "boolean" ? (row.seeker ? <Check className="w-4 h-4 text-green-600 mx-auto" /> : <span className="text-red-500">✕</span>) : row.seeker}
+                        </td>
+                        <td className="text-center py-2 px-2">
+                          {typeof row.starter === "boolean" ? (row.starter ? <Check className="w-4 h-4 text-green-600 mx-auto" /> : <span className="text-red-500">✕</span>) : row.starter}
+                        </td>
+                        <td className="text-center py-2 px-2 bg-yellow-50/50">
+                          {typeof row.elite === "boolean" ? (row.elite ? <Check className="w-4 h-4 text-green-600 mx-auto" /> : <span className="text-red-500">✕</span>) : row.elite}
+                        </td>
+                        <td className="text-center py-2 px-2 bg-yellow-100/30">
+                          {typeof row.super === "boolean" ? (row.super ? <Check className="w-4 h-4 text-green-600 mx-auto" /> : <span className="text-red-500">✕</span>) : row.super}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
