@@ -3192,7 +3192,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Get healer badges endpoint
+  // Get healer badges for authenticated user (used by dashboard)
+  app.get("/api/healer-badges", isAuthenticated, async (req, res) => {
+    try {
+      // Clean up expired badges first
+      await storage.deleteExpiredBadges();
+      
+      const badges = await storage.getHealerBadges(req.user.id);
+      res.json(badges || []);
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+      res.status(500).json({ message: "Failed to fetch badges" });
+    }
+  });
+
+  // Get healer badges endpoint by ID
   app.get("/api/healer-badges/:healerId", async (req, res) => {
     try {
       const { healerId } = req.params;

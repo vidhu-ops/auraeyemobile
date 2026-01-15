@@ -2280,9 +2280,9 @@ export default function HealerDashboard() {
     refetchInterval: 10000,
   });
 
-  // Fetch healer's earned badges - use user as healer ID for now
+  // Fetch healer's earned badges - authenticated endpoint
   const { data: healerBadges = [] } = useQuery<HealerBadge[]>({
-    queryKey: ["/api/healer-badges", user?.id],
+    queryKey: ["/api/healer-badges"],
     enabled: !!user?.id,
     staleTime: 0,
     refetchInterval: 2000, // Refresh every 2 seconds for real-time badge updates
