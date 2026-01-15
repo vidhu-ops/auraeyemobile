@@ -229,10 +229,10 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl w-[95vw] max-w-sm mx-auto max-h-[90vh] overflow-y-auto p-4 sm:p-6 rounded-3xl`}>
+      <DialogContent className={`bg-gradient-to-b ${meditation.color} border-0 shadow-2xl w-[90vw] max-w-[90vw]-auto max-h-[90vh] p-4 sm:p-6 rounded-3xl`}>
         <DialogHeader className="mb-2">
-          <div className="flex items-center justify-between w-full">
-            <DialogTitle className="text-white text-base sm:text-lg truncate pr-2">{meditation.title}</DialogTitle>
+          <div className="flex items-center justify-between w-90[vw]">
+            <DialogTitle className="text-white text-base sm:text-sm pr-2">{meditation.title}</DialogTitle>
             <button
               onClick={onClose}
               className="rounded-full bg-white/20 hover:bg-white/30 p-1.5 flex-shrink-0"
@@ -243,11 +243,11 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
           </div>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 align-left w-90[vw] justify-left">
           {/* Media Player or Album Art */}
-          <div className="flex justify-center w-full">
+          <div className="flex justify-left w-[80vw]">
             {meditation.mediaType === 'youtube' && meditation.mediaUrl ? (
-              <div className="w-full rounded-2xl overflow-hidden aspect-video shadow-lg bg-black/20">
+              <div className="w-[90vw] rounded-2xl aspect-video shadow-lg bg-black/20">
                 <iframe
                   width="100%"
                   height="100%"
@@ -277,25 +277,25 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
                 </video>
               </div>
             ) : (
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
-                <div className="text-center">
+              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-left justify-left shadow-lg">
+                <div className="text-left">
                   <div className="text-4xl sm:text-5xl mb-2">🧘</div>
-                  <p className="text-white/80 text-[10px] sm:text-xs font-semibold px-2 truncate w-24 sm:w-32">{meditation.title}</p>
+                  <p className="text-white/80 text-[10px] sm:text-xs font-semibold px-2 truncate w-12 sm:w-32">{meditation.title}</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Info */}
-          <div className="text-center text-white">
-            <h2 className="text-xl font-bold leading-tight">{meditation.title}</h2>
-            <p className="text-xs text-white/70">{meditation.author}</p>
+          <div className="text-center w-70[vw] text-white">
+            <h2 className="text-xs font-bold leading-tight align-center">{meditation.title}</h2>
+            <p className="text-xs text-white/70 text-center">{meditation.author}</p>
           </div>
 
           {/* Progress Bar */}
-          <div className="space-y-1">
-            <Progress value={progress} className="h-1.5" data-testid="meditation-progress" />
-            <div className="flex justify-between text-[10px] text-white/70">
+          <div className="space-y-1 w-80[vw]">
+            
+            <div className="flex justify-center text-[10px] text-white/70">
               <span>{formatTime(elapsedTime)}</span>
               <span>{formatTime(actualDuration || meditation.duration * 60)}</span>
             </div>
@@ -334,7 +334,7 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
 
           {/* Volume Control */}
           <div className="flex items-center gap-2 px-2">
-            <Volume2 className="h-3.5 w-3.5 text-white/70" />
+            <Volume2 className="h-3.5 w-3 text-white/70" />
             <input
               type="range"
               min="0"

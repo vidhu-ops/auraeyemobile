@@ -39,7 +39,7 @@ import {
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import NotificationSettings from "@/components/notification-settings";
 import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone, energyMilestones, SOUL_ENERGY_PER_SCAN } from "@/lib/soul-energy-utils";
-import { BADGE_DEFINITIONS, getActivityBadges, getActivityColor, getActivityEmoji, getLevelColor } from "@/lib/badge-definitions";
+import * as badgeDefinitions from "@/lib/badge-definitions";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -203,9 +203,7 @@ export default function ClientDashboard() {
         {activeTab === "overview" && (
           <>
             {/* Physical Badges Showcase */}
-            <div className="mb-4">
-              <BadgeShowcase />
-            </div>
+            
 
             {/* Achievement Targets - Badge Progress */}
             <div className="mb-4">
@@ -225,7 +223,7 @@ export default function ClientDashboard() {
                       <span className="text-sm font-medium text-gray-700">Current Streak</span>
                       <span className="text-2xl">🔥</span>
                     </div>
-                    <div className="text-3xl font-bold text-orange-600">{streakData?.currentStreak || 0} days</div>
+                    <div className="text-3xl font-bold text-orange-300">{streakData?.currentStreak || 0} days</div>
                     <p className="text-xs text-gray-600 mt-1">Keep your momentum going!</p>
                   </CardContent>
                 </Card>
@@ -236,7 +234,7 @@ export default function ClientDashboard() {
                         <span className="text-xs font-medium text-gray-700">Longest Streak</span>
                         <span className="text-xl">⭐</span>
                       </div>
-                      <div className="text-2xl font-bold text-purple-600">{streakData?.longestStreak || 0} days</div>
+                      <div className="text-2xl font-bold text-purple-300">{streakData?.longestStreak || 0} days</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-sm">
@@ -245,7 +243,7 @@ export default function ClientDashboard() {
                         <span className="text-xs font-medium text-gray-700">This Week</span>
                         <span className="text-xl">📅</span>
                       </div>
-                      <div className="text-2xl font-bold text-green-600">{streakData?.weeklyActiveDates?.length || 0}/7</div>
+                      <div className="text-2xl font-bold text-green-300">{streakData?.weeklyActiveDates?.length || 0}/7</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -619,23 +617,23 @@ export default function ClientDashboard() {
                   <span className="text-2xl">🎨</span> Aura Scan Badges
                 </h3>
                 <div className="space-y-3">
-                  {getActivityBadges('aura').map((badge) => (
-                    <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
-                      <div className="flex items-start gap-3">
-                        <div className="text-3xl">{badge.icon}</div>
-                        <div className="flex-1">
-                          <p className="text-white font-bold">{badge.title}</p>
-                          <p className="text-white/90 text-sm">{badge.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
-                            <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                  {badgeDefinitions.getActivityBadges('aura').map((badge) => (
+                      <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
+                          <div className="flex items-start gap-3">
+                              <div className="text-3xl">{badge.icon}</div>
+                              <div className="flex-1">
+                                  <p className="text-white font-bold">{badge.title}</p>
+                                  <p className="text-white/90 text-sm">{badge.description}</p>
+                                  <div className="flex items-center gap-2 mt-2">
+                                      <span className="text-xs bg-white/20 px-2 py-1 rounded text-white/90 font-semibold">{badge.requirement}</span>
+                                      <span className={`text-xs px-2 py-1 rounded font-semibold ${badge.level === 'bronze' ? 'bg-amber-600/60 text-amber-100' : badge.level === 'silver' ? 'bg-slate-500/60 text-slate-100' : badge.level === 'gold' ? 'bg-yellow-500/60 text-yellow-100' : 'bg-cyan-400/60 text-cyan-100'}`}>{badge.level.toUpperCase()}</span>
+                                  </div>
+                              </div>
+                              {achievements.some((a): boolean => a.achievementType === badge.type) && (
+                                  <div className="text-2xl">✅</div>
+                              )}
                           </div>
-                        </div>
-                        {achievements.some(a => a.achievementType === badge.type) && (
-                          <div className="text-2xl">✅</div>
-                        )}
                       </div>
-                    </div>
                   ))}
                 </div>
               </CardContent>
@@ -648,7 +646,7 @@ export default function ClientDashboard() {
                   <span className="text-2xl">✨</span> Vibe Check Badges
                 </h3>
                 <div className="space-y-3">
-                  {getActivityBadges('vibe').map((badge) => (
+                  {badgeDefinitions.getActivityBadges('vibe').map((badge) => (
                     <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
                       <div className="flex items-start gap-3">
                         <div className="text-3xl">{badge.icon}</div>
@@ -677,7 +675,7 @@ export default function ClientDashboard() {
                   <span className="text-2xl">📖</span> Journal Entry Badges
                 </h3>
                 <div className="space-y-3">
-                  {getActivityBadges('journal').map((badge) => (
+                  {badgeDefinitions.getActivityBadges('journal').map((badge) => (
                     <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
                       <div className="flex items-start gap-3">
                         <div className="text-3xl">{badge.icon}</div>
@@ -706,7 +704,7 @@ export default function ClientDashboard() {
                   <span className="text-2xl">🔢</span> Numerology Reading Badges
                 </h3>
                 <div className="space-y-3">
-                  {getActivityBadges('numerology').map((badge) => (
+                  {badgeDefinitions.getActivityBadges('numerology').map((badge) => (
                     <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
                       <div className="flex items-start gap-3">
                         <div className="text-3xl">{badge.icon}</div>
@@ -735,7 +733,7 @@ export default function ClientDashboard() {
                   <span className="text-2xl">🏆</span> Special Badges
                 </h3>
                 <div className="space-y-3">
-                  {getActivityBadges('general').map((badge) => (
+                  {badgeDefinitions.getActivityBadges('general').map((badge) => (
                     <div key={badge.type} className={`bg-gradient-to-r ${badge.color} rounded-lg p-4 border-2 border-white/30`}>
                       <div className="flex items-start gap-3">
                         <div className="text-3xl">{badge.icon}</div>
