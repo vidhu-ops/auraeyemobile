@@ -301,7 +301,7 @@ export default function PricingPage() {
                       <th className="text-center py-3 px-2 font-mystical text-purple-900 bg-yellow-200">Super Elite (Global Listing)</th>
                     </tr>
                   </thead>
-                  <tbody className="font-cosmic text-[11px] sm:text-xs">
+                  <tbody className="font-cosmic text-[11px] sm:text-xs text-black">
                     {[
                       { service: "What's My Vibe", credit: "1", free: true, seeker: true, starter: true, elite: true, super: true },
                       { service: "Personalized Numerology", credit: "3", free: "Basic", seeker: "Basic", starter: "Advanced", elite: "Advanced", super: "Advanced" },
