@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import jsPDF from "jspdf";
-import coverImagePath from "../assets/numerology-cover.jpeg";
+import coverImagePath from "@/assets/numerology-cover.jpg";
 
 const numerologySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -314,13 +314,9 @@ export default function NumerologyPage() {
       const imgWidth = pageWidth;
       const imgHeight = (img.height * imgWidth) / img.width;
       
-      // If height exceeds page height, scale down
-      const finalHeight = imgHeight > 297 ? 297 : imgHeight;
-      const finalWidth = (img.width * finalHeight) / img.height;
-      const xOffset = (pageWidth - finalWidth) / 2;
-      const yOffset = (297 - finalHeight) / 2;
-      
-      pdf.addImage(img, 'JPEG', xOffset, yOffset, finalWidth, finalHeight);
+      // For the new cover, we want it to cover the whole page if possible
+      // standard A4 is 210x297
+      pdf.addImage(img, 'JPEG', 0, 0, 210, 297);
       pdf.addPage();
       
       let currentY = margin;
