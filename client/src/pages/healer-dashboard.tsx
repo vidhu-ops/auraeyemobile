@@ -2358,8 +2358,8 @@ export default function HealerDashboard() {
       return canonicalTypes.includes(badgeType) || badgeTitle === cleanId;
     });
     
-    // 3. Check user achievements (userAchievements from hook or achievements from query)
-    const achievementsList = userAchievements || achievements || [];
+    // 3. Check user achievements (achievements from query)
+    const achievementsList = achievements || [];
     const inAchievements = achievementsList.some((achievement: any) => {
       const type = (achievement.type || achievement.achievementType || '').toLowerCase();
       const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
