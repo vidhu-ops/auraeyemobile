@@ -2293,17 +2293,19 @@ export default function HealerDashboard() {
 
   // Canonical badge type map - maps display names to storage types
   const BADGE_TYPE_MAP: Record<string, string[]> = {
-    // Healer-specific badges
+    // Special badges
     'week warrior': ['seven_day_streak', 'week_warrior'],
     'spiritual guardian': ['spiritual_guardian'],
     'healing heart': ['healing_heart'],
     'most trusted healer': ['most_trusted', 'trusted_healer'],
     'best healer': ['best_healer'],
+    
     // Aura badges
     'first glimpse': ['first_aura'],
     'aura explorer': ['third_aura', 'aura_explorer'],
     'aura master': ['aura_master'],
     'aura legend': ['aura_legend'],
+    
     // Numerology badges
     'number seeker': ['first_numerology', 'number_vision', 'number_seeker'],
     'number vision': ['first_numerology', 'number_vision'],
@@ -2311,56 +2313,46 @@ export default function HealerDashboard() {
     'numerology master': ['numerology_master'],
     'numerology legend': ['numerology_sage', 'numerology_legend'],
     'numerology sage': ['numerology_sage'],
+    
     // Vibe badges
     'vibe check': ['first_vibe', 'vibe_check'],
     'vibe enthusiast': ['vibe_enthusiast'],
     'vibe master': ['vibe_master'],
     'vibe legend': ['vibe_legend'],
+    
     // Journal badges
     'thoughts flow': ['first_journal', 'thoughts_flow'],
     'journal keeper': ['journal_keeper'],
     'journal master': ['journal_master'],
     'journal legend': ['journal_legend'],
-    'journal master ✍️': ['journal_master'],
-    'journal keeper 📚': ['journal_keeper'],
-    'thoughts flow 📖': ['first_journal', 'thoughts_flow'],
-    'thoughts flow 📝': ['first_journal', 'thoughts_flow'],
-    'number vision 🔢': ['first_numerology'],
-    'numerology explorer 📊': ['numerology_explorer'],
-    'aura explorer 🔍': ['third_aura'],
-    'aura master 🌟': ['aura_master'],
-    'aura legend 👑': ['aura_legend'],
-    // Object badges
     'object insight': ['first_object'],
     'object explorer': ['object_explorer'],
     'object master': ['object_master'],
     'object sage': ['object_sage'],
-    // Meditation badges
     'inner peace': ['first_meditation'],
     'meditation seeker': ['meditation_seeker'],
     'meditation master': ['meditation_master'],
   };
 
-  // Helper function to check if a badge is earned (checks both healer badges and user achievements)
+  // Helper function to check if a badge is earned
   const isBadgeEarned = (badgeIdentifier: string): boolean => {
     if (!badgeIdentifier) return false;
     
     // Normalize display name for comparison - remove emojis and trim
     const cleanId = badgeIdentifier.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
     
-    // 1. Get canonical types for this badge from our map
+    // Get canonical types for this badge
     const canonicalTypes = BADGE_TYPE_MAP[cleanId] || [cleanId.replace(/\s+/g, '_')];
     
-    // 2. Check healer-specific badges (healerBadges query)
+    // Check healer-specific badges
     const inHealerBadges = (healerBadges || []).some(badge => {
       const badgeType = (badge.badgeType || '').toLowerCase();
       const badgeTitle = (badge.badgeTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return canonicalTypes.includes(badgeType) || badgeTitle === cleanId;
     });
     
-    // 3. Check user achievements (achievements from query)
-    const achievementsList = achievements || [];
-    const inAchievements = achievementsList.some((achievement: any) => {
+    // Check achievements from query
+    const inAchievements = (achievements || []).some((achievement: any) => {
       const type = (achievement.type || achievement.achievementType || '').toLowerCase();
       const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return canonicalTypes.includes(type) || title === cleanId;

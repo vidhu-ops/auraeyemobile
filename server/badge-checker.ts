@@ -219,52 +219,81 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     const newBadges: BadgeReward[] = [];
     
     // Count activities for this user
-    const [auraCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [auraCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(auraReadings)
       .where(or(
         eq(auraReadings.userId, userId),
         eq(auraReadings.performedBy, userId)
       ));
     
-    const [vibeCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [vibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
       .where(or(
         eq(vibeReadings.userId, userId),
         eq(vibeReadings.performedBy, userId)
       ));
     
-    const [numerologyCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [numerologyCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
       .where(or(
         eq(numerologyReadings.userId, userId),
         eq(numerologyReadings.performedBy, userId)
       ));
     
-    const [objectCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [objectCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(objectAnalyses)
       .where(or(
         eq(objectAnalyses.userId, userId),
         eq(objectAnalyses.performedBy, userId)
       ));
     
-    const [journalCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [journalCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(journals)
       .where(eq(journals.userId, userId));
     
-    const [meditationCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+    const [meditationCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
 
     const counts = {
-      aura: Number(auraCount?.count || 0),
-      vibe: Number(vibeCount?.count || 0),
-      numerology: Number(numerologyCount?.count || 0),
-      object: Number(objectCount?.count || 0),
-      journal: Number(journalCount?.count || 0),
-      meditation: Number(meditationCount?.count || 0),
+      aura: Number(auraCountResult?.count || 0),
+      vibe: Number(vibeCountResult?.count || 0),
+      numerology: Number(numerologyCountResult?.count || 0),
+      object: Number(objectCountResult?.count || 0),
+      journal: Number(journalCountResult?.count || 0),
+      meditation: Number(meditationCountResult?.count || 0),
     };
 
     console.log(`[BadgeCheck] Counts for user ${userId}:`, counts);
+
+    // Badge Type Normalization Map for Storage
+    const storageBadgeTypeMap: Record<string, string> = {
+      'first glimpse': 'first_aura',
+      'aura explorer': 'third_aura',
+      'aura master': 'aura_master',
+      'aura legend': 'aura_legend',
+      'number seeker': 'first_numerology',
+      'number vision': 'first_numerology',
+      'numerology explorer': 'numerology_explorer',
+      'numerology master': 'numerology_master',
+      'numerology legend': 'numerology_sage',
+      'numerology sage': 'numerology_sage',
+      'vibe check': 'first_vibe',
+      'vibe enthusiast': 'vibe_enthusiast',
+      'vibe master': 'vibe_master',
+      'vibe legend': 'vibe_legend',
+      'thoughts flow': 'first_journal',
+      'journal keeper': 'journal_keeper',
+      'journal master': 'journal_master',
+      'journal legend': 'journal_master', // Mapping to master as legend doesn't exist in thresholds
+      'object insight': 'first_object',
+      'object explorer': 'object_explorer',
+      'object master': 'object_master',
+      'object sage': 'object_sage',
+      'inner peace': 'first_meditation',
+      'meditation seeker': 'meditation_seeker',
+      'meditation master': 'meditation_master',
+    };
 
     
     // Check each badge threshold
