@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { achievements, auraReadings, vibeReadings, numerologyReadings, objectAnalyses, journals, meditationSessions } from "../shared/schema";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 
 export interface BadgeReward {
   type: string;
@@ -219,39 +219,39 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     const newBadges: BadgeReward[] = [];
     
     // Count activities for this user
-    const [auraCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [auraCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(auraReadings)
       .where(or(
         eq(auraReadings.userId, userId),
         eq(auraReadings.performedBy, userId)
       ));
     
-    const [vibeCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [vibeCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
       .where(or(
         eq(vibeReadings.userId, userId),
         eq(vibeReadings.performedBy, userId)
       ));
     
-    const [numerologyCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [numerologyCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
       .where(or(
         eq(numerologyReadings.userId, userId),
         eq(numerologyReadings.performedBy, userId)
       ));
     
-    const [objectCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [objectCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(objectAnalyses)
       .where(or(
         eq(objectAnalyses.userId, userId),
         eq(objectAnalyses.performedBy, userId)
       ));
     
-    const [journalCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [journalCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(journals)
       .where(eq(journals.userId, userId));
     
-    const [meditationCount] = await db.select({ count: db.raw("COUNT(*)::int") })
+    const [meditationCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
     
