@@ -29,7 +29,7 @@ export function MoodBanner({ variant = 'subtle', showIcon = true }: MoodBannerPr
   if (error || !prompt) {
     const defaultPrompts = {
       morning: { message: "Positive intentions matter the most, its the seed for a thought ✨", color: "#fbbf24", type: 'motivation' as const },
-      afternoon: { message: "Keep going! You're doing great 🌟", color: "#10b981", type: 'encouragement' as const },
+      afternoon: { message: "You're doing great 🌟", color: "#10b981", type: 'encouragement' as const },
       evening: { message: "Take a moment to reflect on your good deeds", color: "#a855f7", type: 'reflection' as const },
       night: { message: "Make the most of every moment 💫", color: "#06b6d4", type: 'calm' as const },
     };
