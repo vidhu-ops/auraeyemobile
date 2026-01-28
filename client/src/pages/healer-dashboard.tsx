@@ -2325,6 +2325,11 @@ export default function HealerDashboard() {
     'journal keeper 📚': ['journal_keeper'],
     'thoughts flow 📖': ['first_journal', 'thoughts_flow'],
     'thoughts flow 📝': ['first_journal', 'thoughts_flow'],
+    'number vision 🔢': ['first_numerology'],
+    'numerology explorer 📊': ['numerology_explorer'],
+    'aura explorer 🔍': ['third_aura'],
+    'aura master 🌟': ['aura_master'],
+    'aura legend 👑': ['aura_legend'],
     // Object badges
     'object insight': ['first_object'],
     'object explorer': ['object_explorer'],
