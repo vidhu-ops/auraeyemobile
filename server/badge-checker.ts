@@ -254,15 +254,16 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     const [meditationCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
-    
+
     const counts = {
-      aura: auraCount?.count || 0,
-      vibe: vibeCount?.count || 0,
-      numerology: numerologyCount?.count || 0,
-      object: objectCount?.count || 0,
-      journal: journalCount?.count || 0,
-      meditation: meditationCount?.count || 0,
+      aura: Number(auraCount?.count || 0),
+      vibe: Number(vibeCount?.count || 0),
+      numerology: Number(numerologyCount?.count || 0),
+      object: Number(objectCount?.count || 0),
+      journal: Number(journalCount?.count || 0),
+      meditation: Number(meditationCount?.count || 0),
     };
+
     
     // Check each badge threshold
     for (const [badgeType, threshold] of Object.entries(BADGE_THRESHOLDS)) {
