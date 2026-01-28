@@ -41,8 +41,12 @@ export function BadgeTargets() {
     badgeProgress.firstReading,
     badgeProgress.fiveReadings,
     badgeProgress.streakBadge,
+    badgeProgress.reflectionHour,
     badgeProgress.journalingTime,
     badgeProgress.mostRepliesHealer,
+    badgeProgress.journalingTenHours,
+    badgeProgress.mostTrustedHealer,
+    badgeProgress.bestHealer,
   ].filter(Boolean);
 
   return (

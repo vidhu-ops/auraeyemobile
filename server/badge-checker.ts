@@ -285,8 +285,9 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       'thoughts flow': 'first_journal',
       'journal keeper': 'journal_keeper',
       'journal master': 'journal_master',
-      'journal legend': 'journal_master', // Mapping to master as legend doesn't exist in thresholds
-      'object insight': 'first_object',
+      'journal legend': 'journal_master',
+      'reflection hour': 'reflection_hour',
+      'inner peace': 'first_meditation',
       'object explorer': 'object_explorer',
       'object master': 'object_master',
       'object sage': 'object_sage',
