@@ -107,7 +107,7 @@ const eveningPrompts = [
  */
 const nightPrompts = [
   {
-    message: "Rest well, beautiful soul. 🌟 Tomorrow brings new light and possibilities.",
+    message: "Rest well, beautiful soul. Tomorrow brings new light and possibilities. 🌟",
     color: "#6366f1", // Deep indigo for rest
     type: "calm" as const,
     suggestedGradient: "calming"
