@@ -50,21 +50,21 @@ export default function ClientDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
-  const { data: streakData } = useQuery({ queryKey: ["/api/streaks"] });
-  const { data: achievements = [], refetch: refetchAchievements } = useQuery({
+  const { data: streakData } = useQuery<any>({ queryKey: ["/api/streaks"] });
+  const { data: achievements = [] as any[], refetch: refetchAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
     refetchInterval: 1000, // Auto-refetch every 1 second for immediate feedback
   });
 
   // Fetch numerology readings for upgrade prompt check
-  const { data: numerologyReadings = [] } = useQuery({
+  const { data: numerologyReadings = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/numerology-readings"],
     enabled: !!user && user.userType === "client",
   });
   
   // Fetch credit transactions for activity log
-  const { data: creditTransactions = [] } = useQuery({
+  const { data: creditTransactions = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/credit-transactions"],
     enabled: !!user,
   });
@@ -99,6 +99,9 @@ export default function ClientDashboard() {
   const treeGrowth = calculateTreeGrowth(soulEnergy);
   const milestoneProgress = getProgressToNextMilestone(soulEnergy);
 
+  const statsTyped = stats as any;
+  const userTyped = user as any;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       <Navbar />
@@ -115,13 +118,13 @@ export default function ClientDashboard() {
                   {profilePictureUrl ? (
                     <img
                       src={profilePictureUrl}
-                      alt={user?.username}
+                      alt={userTyped.name || userTyped.username}
                       className="w-full h-full rounded-full object-cover"
                       data-testid="img-profile-picture"
                     />
                   ) : (
                     <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center text-2xl font-bold text-purple-700">
-                      {user?.username?.charAt(0).toUpperCase() || 'V'}
+                      {(userTyped.name || userTyped.username || 'V').charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -136,10 +139,10 @@ export default function ClientDashboard() {
               
               <div className="flex-1 pb-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-white text-xl font-bold">{user?.username || 'vidhu.gupta'}</h2>
+                  <h2 className="text-white text-xl font-bold">{userTyped.name || userTyped.username || 'Guest User'}</h2>
                   
                 </div>
-                <p className="text-black-600 text-sm">{user?.email || 'vidhu.gupta@gmail.com'}</p>
+                <p className="text-white/80 text-sm font-medium">{userTyped.email || 'No email provided'}</p>
               </div>
             </div>
 
@@ -247,11 +250,11 @@ export default function ClientDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-                {streakData?.weeklyActiveDates && streakData.weeklyActiveDates.length > 0 && (
+                {streakData?.weeklyActiveDates && (streakData.weeklyActiveDates as any[]).length > 0 && (
                   <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-sm">
                     <CardContent className="p-4">
                       <p className="text-xs text-cyan-200 mb-2">Active Days:</p>
-                      <p className="text-sm text-white">{streakData.weeklyActiveDates.join(', ')}</p>
+                      <p className="text-sm text-white">{(streakData.weeklyActiveDates as any[]).join(', ')}</p>
                     </CardContent>
                   </Card>
                 )}
@@ -271,16 +274,16 @@ export default function ClientDashboard() {
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
                       <div className="text-2xl font-bold text-purple-400 mb-1">
-                        {statsLoading ? '...' : `${stats.meditationHours}h`}
+                        {statsLoading ? '...' : `${statsTyped.meditationHours}h`}
                       </div>
-                      <Progress value={stats.meditationHours > 0 ? Math.min((stats.meditationHours / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={statsTyped.meditationHours > 0 ? Math.min((statsTyped.meditationHours / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
                       <div className="text-2xl font-bold text-cyan-400 mb-1">
-                        {statsLoading ? '...' : stats.healersConsulted}
+                        {statsLoading ? '...' : statsTyped.healersConsulted}
                       </div>
-                      <Progress value={stats.healersConsulted > 0 ? Math.min((stats.healersConsulted / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={statsTyped.healersConsulted > 0 ? Math.min((statsTyped.healersConsulted / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                   </div>
 
@@ -288,13 +291,13 @@ export default function ClientDashboard() {
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Aura Scans</div>
                       <div className="text-2xl font-bold text-indigo-400">
-                        {statsLoading ? '...' : stats.auraScans}
+                        {statsLoading ? '...' : statsTyped.auraScans}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Total Sessions</div>
                       <div className="text-2xl font-bold text-pink-400">
-                        {statsLoading ? '...' : stats.totalSessions}
+                        {statsLoading ? '...' : statsTyped.totalSessions}
                       </div>
                     </div>
                   </div>
@@ -313,8 +316,8 @@ export default function ClientDashboard() {
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div className="bg-purple-900/30 rounded-lg p-3 border border-purple-400/30">
                       <div className="text-2xl font-bold text-purple-300 mb-1 text-center">
-                        {user.lifePathNumber || (() => {
-                          const dateStr = user.birthDate.replace(/\D/g, '');
+                        {userTyped.lifePathNumber || (() => {
+                          const dateStr = user.birthDate!.replace(/\D/g, '');
                           let sum = 0;
                           for (const digit of dateStr) sum += parseInt(digit);
                           while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) sum = sum.toString().split('').reduce((a, b) => a + parseInt(b), 0);
@@ -325,9 +328,9 @@ export default function ClientDashboard() {
                     </div>
                     <div className="bg-indigo-900/30 rounded-lg p-3 border border-indigo-400/30">
                       <div className="text-2xl font-bold text-indigo-300 mb-1 text-center">
-                        {user.destinyNumber || (() => {
+                        {userTyped.destinyNumber || (() => {
                           let sum = 0;
-                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
+                          for (const char of (userTyped.username || '').replace(/[^a-zA-Z]/g, '')) {
                             const letterMap: Record<string, number> = {
                               'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
                               'B': 2, 'K': 2, 'R': 2,
@@ -350,10 +353,10 @@ export default function ClientDashboard() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-pink-900/30 rounded-lg p-3 border border-pink-400/30">
                       <div className="text-2xl font-bold text-pink-300 mb-1 text-center">
-                        {user.soulUrgeNumber || (() => {
+                        {userTyped.soulUrgeNumber || (() => {
                           let sum = 0;
                           const vowels = ['A', 'E', 'I', 'O', 'U'];
-                          for (const char of (user.username || '').replace(/[^a-zA-Z]/g, '')) {
+                          for (const char of (userTyped.username || '').replace(/[^a-zA-Z]/g, '')) {
                             if (vowels.includes(char.toUpperCase())) {
                               const letterMap: Record<string, number> = {
                                 'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
@@ -375,8 +378,8 @@ export default function ClientDashboard() {
                     </div>
                     <div className="bg-amber-900/30 rounded-lg p-3 border border-amber-400/30">
                       <div className="text-2xl font-bold text-amber-300 mb-1 text-center">
-                        {user.personalYearNumber || (() => {
-                          const date = new Date(user.birthDate);
+                        {userTyped.personalYearNumber || (() => {
+                          const date = new Date(userTyped.birthDate!);
                           const day = date.getDate();
                           const month = date.getMonth() + 1;
                           const currentYear = new Date().getFullYear();
