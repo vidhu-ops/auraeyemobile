@@ -770,7 +770,8 @@ export class DatabaseStorage implements IStorage {
     if (!user) return 1;
 
     const costs: Record<string, any> = {
-      'aura_reading': { client: 3, healer: 1, semi_healer: 2, free_trial: 0 },
+      'aura_reading': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
+      'aura_analysis': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
       'vibe_check': { client: 1, healer: 0, semi_healer: 0, free_trial: 0 },
       'numerology': { client: 2, healer: 0, semi_healer: 1, free_trial: 0 },
       'object_analysis': { client: 2, healer: 0, semi_healer: 1, free_trial: 0 }
