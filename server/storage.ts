@@ -772,9 +772,9 @@ export class DatabaseStorage implements IStorage {
     const costs: Record<string, any> = {
       'aura_reading': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
       'aura_analysis': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
-      'vibe_check': { client: 1, healer: 0, semi_healer: 0, free_trial: 0 },
-      'numerology': { client: 2, healer: 0, semi_healer: 1, free_trial: 0 },
-      'object_analysis': { client: 2, healer: 0, semi_healer: 1, free_trial: 0 }
+      'vibe_check': { client: 1, healer: 1, semi_healer: 1, free_trial: 1 },
+      'numerology': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 },
+      'object_analysis': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 }
     };
 
     const type = user.userType || 'client';
