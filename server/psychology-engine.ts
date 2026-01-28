@@ -35,19 +35,19 @@ function getTimeOfDay(): 'morning' | 'afternoon' | 'evening' | 'night' {
  */
 const morningPrompts = [
   {
-    message: "Good morning! ✨ Today is a fresh canvas - what beautiful energy will you create?",
+    message: "Today is a fresh canvas - what beautiful energy will you create? ✨",
     color: "#fbbf24", // Golden yellow for optimism
     type: "motivation" as const,
     suggestedGradient: "uplifting"
   },
   {
-    message: "Rise and shine! 🌅 Your spiritual journey awaits. Let's set a positive intention for today.",
+    message: "Your spiritual journey awaits. Let's set a positive intention for today. 🌅",
     color: "#f59e0b", // Warm orange for energy
     type: "motivation" as const,
     suggestedGradient: "energizing"
   },
   {
-    message: "Morning blessings! 🙏 Take a deep breath and center yourself. What wisdom does your soul seek today?",
+    message: "Take a deep breath and center yourself. What wisdom does your soul seek today? 🙏",
     color: "#8b5cf6", // Purple for spirituality
     type: "reflection" as const,
     suggestedGradient: "healing"
@@ -59,13 +59,13 @@ const morningPrompts = [
  */
 const afternoonPrompts = [
   {
-    message: "Afternoon check-in! 💚 How is your energy flowing? Remember to take mindful breaks.",
+    message: "How is your energy flowing? Remember to take mindful breaks. 💚",
     color: "#10b981", // Green for balance
     type: "calm" as const,
     suggestedGradient: "balanced"
   },
   {
-    message: "You're doing great! ⭐ Keep that positive energy flowing through the rest of your day.",
+    message: "You're doing great! Keep that positive energy flowing through the rest of your day. ⭐",
     color: "#14b8a6", // Teal for progress
     type: "encouragement" as const,
     suggestedGradient: "balanced"
@@ -83,7 +83,7 @@ const afternoonPrompts = [
  */
 const eveningPrompts = [
   {
-    message: "Evening peace to you! 🌙 What are three things that brought you joy today?",
+    message: "What are three things that brought you joy today? 🌙",
     color: "#a855f7", // Soft purple for reflection
     type: "reflection" as const,
     suggestedGradient: "healing"

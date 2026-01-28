@@ -28,10 +28,10 @@ export function MoodBanner({ variant = 'subtle', showIcon = true }: MoodBannerPr
   // If there's an error or no prompt, use a default based on time of day
   if (error || !prompt) {
     const defaultPrompts = {
-      morning: { message: "Good morning! Start your day with positive intentions ✨", color: "#fbbf24", type: 'motivation' as const },
-      afternoon: { message: "Keep going! You're doing great today 🌟", color: "#10b981", type: 'encouragement' as const },
-      evening: { message: "Take a moment to reflect on your day's journey 🌙", color: "#a855f7", type: 'reflection' as const },
-      night: { message: "Rest well and recharge your spiritual energy 💫", color: "#06b6d4", type: 'calm' as const },
+      morning: { message: "Positive intentions matter the most, its the seed for a thought ✨", color: "#fbbf24", type: 'motivation' as const },
+      afternoon: { message: "Keep going! You're doing great 🌟", color: "#10b981", type: 'encouragement' as const },
+      evening: { message: "Take a moment to reflect on your good deeds", color: "#a855f7", type: 'reflection' as const },
+      night: { message: "Make the most of every moment 💫", color: "#06b6d4", type: 'calm' as const },
     };
     const defaultPrompt = defaultPrompts[timeOfDay];
     
@@ -161,10 +161,10 @@ export function PsychologicalGreeting({ username }: { username: string }) {
   const color = getPsychologicalColor(timeOfDay);
 
   const greetings = {
-    morning: `Good morning, ${username}! 🌅`,
-    afternoon: `Good afternoon, ${username}! ☀️`,
-    evening: `Good evening, ${username}! 🌆`,
-    night: `Good night, ${username}! 🌙`
+    morning: `Hello, ${username}! `,
+    afternoon: `How are you?, ${username}! `,
+    evening: `Hi There, ${username}! `,
+    night: `How was your day?, ${username}! `
   };
 
   return (
@@ -173,7 +173,7 @@ export function PsychologicalGreeting({ username }: { username: string }) {
       style={{ color }}
       data-testid="psychological-greeting"
     >
-      {greetings[timeOfDay]}
+      {}
     </h2>
   );
 }
