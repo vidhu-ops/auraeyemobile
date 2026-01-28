@@ -4116,7 +4116,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
   // Record completed meditation session
   app.post("/api/meditation-sessions", isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       
       if (!userId || typeof userId !== 'number') {
         return res.status(400).json({ message: "Invalid user session" });
@@ -4142,6 +4142,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const soulEnergyAmount = energyGained || 25;
       await storage.addSoulEnergy(userId, soulEnergyAmount, 'meditation', `Completed meditation: ${meditationTitle}`);
       
+      // Update psychological profile meditation minutes
+      try {
+        const stats = await storage.getUserStats(userId);
+        if (stats) {
+          await db.update(psychologicalProfiles)
+            .set({ 
+              meditationMinutes: (stats.meditationMinutes || 0) + durationMinutes,
+              updatedAt: new Date() 
+            })
+            .where(eq(psychologicalProfiles.userId, userId));
+        }
+      } catch (err) {
+        console.error("Error updating meditation minutes:", err);
+      }
+
       // Check and award achievements for meditation
       try {
         await storage.checkAndAwardAchievements(userId);
