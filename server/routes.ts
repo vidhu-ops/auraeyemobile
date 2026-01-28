@@ -5897,12 +5897,21 @@ function calculateDominantSoulChakra(birthDate: string): number {
         },
         // Best healer (highest rated healer)
         bestHealer: {
-          type: 'best_healer_rating',
-          title: 'Best Healer ⭐',
-          current: 0, // Will be calculated if user is healer
+          type: 'best_healer',
+          title: 'Best Healer 🌟',
+          current: 0,
           target: 1,
-          earned: earnedTypes.has('best_healer_rating'),
-          icon: '⭐'
+          earned: earnedTypes.has('best_healer'),
+          icon: '🌟'
+        },
+        // Reflection Hour (journaling progress)
+        reflectionHour: {
+          type: 'reflection_hour',
+          title: 'Reflection Hour ⌛',
+          current: Math.min(journals.length, 10),
+          target: 10,
+          earned: earnedTypes.has('reflection_hour'),
+          icon: '⌛'
         },
         // Streak badge
         streakBadge: {
