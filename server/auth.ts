@@ -117,6 +117,8 @@ export function setupAuth(app: Express) {
             const healerUser = {
               id: userRecord.id,
               username: healer.username,
+              name: healer.name,
+              email: healer.email,
               password: healer.password,
               userType: "healer" as const,
               birthDate: userRecord.birthDate,
@@ -176,6 +178,8 @@ export function setupAuth(app: Express) {
             const healerUser = {
               id: userRecord.id, // Use user record ID
               username: userRecord.username,
+              name: healer.name,
+              email: healer.email,
               password: userRecord.password,
               userType: "healer" as const,
               birthDate: userRecord.birthDate,
@@ -188,6 +192,8 @@ export function setupAuth(app: Express) {
             const backendHealerUser = {
               id: userRecord.id,
               username: userRecord.username,
+              name: userRecord.name,
+              email: userRecord.email,
               password: userRecord.password,
               userType: "healer" as const,
               birthDate: userRecord.birthDate,
