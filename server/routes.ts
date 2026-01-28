@@ -4132,7 +4132,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         userId,
         meditationId,
         meditationTitle,
-        durationMinutes,
+        durationMinutes: Math.floor(Number(durationMinutes)),
         category,
         energyGained: Math.floor(Number(energyGained || 25)),
         completed: true,
