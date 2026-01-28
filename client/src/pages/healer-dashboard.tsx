@@ -2502,7 +2502,7 @@ export default function HealerDashboard() {
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white-900 mb-2">Healer Dashboard</h1>
-            <p className="text-white-600">Welcome back, {user?.username}! Manage your practice and connect with clients.</p>
+            <p className="text-white-600">Welcome back, {user?.name || user?.username}! Manage your practice and connect with clients.</p>
           </div>
           <div className="flex flex-col gap-3 items-start">
             <Button
@@ -2566,7 +2566,8 @@ export default function HealerDashboard() {
                     </button>
                   </div>
                   <div className="text-center md:text-left">
-                    <h2 className="text-2xl font-bold text-white-900">{user?.username}</h2>
+                    <h2 className="text-2xl font-bold text-white-900">{user?.name || user?.username}</h2>
+                    <p className="text-white/80 text-sm font-medium">{user?.email || 'No email provided'}</p>
                     <p className="text-purple-200 font-medium">Professional Healer</p>
                     <Badge className="mt-2 bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
