@@ -274,6 +274,13 @@ export default function MeditationsPage() {
     },
   });
 
+  const onComplete = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/meditation-sessions"] });
+  };
+
   const handlePlayMeditation = (meditation: typeof meditations[0]) => {
     if (!user) {
       toast({
@@ -552,11 +559,7 @@ export default function MeditationsPage() {
         meditation={selectedMeditation}
         isOpen={isPlayerOpen}
         onClose={() => setIsPlayerOpen(false)}
-        onComplete={() => {
-          if (selectedMeditation) {
-            completeMeditationMutation.mutate(selectedMeditation);
-          }
-        }}
+        onComplete={onComplete}
       />
     </div>
   );

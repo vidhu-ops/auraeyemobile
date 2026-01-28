@@ -1,7 +1,11 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Wind } from "lucide-react";
+import { ChevronLeft, ChevronRight, Wind, Heart } from "lucide-react";
 import { MeditationPlayerModal } from "./meditation-player-modal";
+import { useAuth } from "@/hooks/use-auth";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import etherealDawnImg from "@assets/generated_images/ethereal_dawn_meditation_visualization.png";
 import cosmicFocusImg from "@assets/generated_images/cosmic_focus_meditation_visualization.png";
 import sereneWatersImg from "@assets/generated_images/serene_waters_meditation_visualization.png";
@@ -168,10 +172,53 @@ const meditations: Meditation[] = [
     }
 ];
 
-export function MeditationCarousel() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedMeditation, setSelectedMeditation] = useState<Meditation | null>(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+
+  // Fetch favorite meditations
+  const { data: favoriteMeditations = [] } = useQuery<any[]>({
+    queryKey: ["/api/favorite-meditations"],
+    enabled: !!user,
+  });
+
+  const onComplete = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+  };
+
+  // Mutations for managing favorites
+  const addFavoriteMutation = useMutation({
+    mutationFn: async (meditation: Meditation) => {
+      const response = await apiRequest("POST", "/api/favorite-meditations", {
+        meditationId: meditation.id,
+        meditationTitle: meditation.title,
+        category: meditation.category,
+        durationMinutes: meditation.duration,
+        author: meditation.author,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
+      toast({ title: "Added to favorites!", description: "Meditation bookmarked" });
+    },
+  });
+
+  const removeFavoriteMutation = useMutation({
+    mutationFn: async (meditationId: number) => {
+      const response = await apiRequest("DELETE", `/api/favorite-meditations/${meditationId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/favorite-meditations"] });
+      toast({ title: "Removed from favorites", description: "Meditation unbookmarked" });
+    },
+  });
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -181,6 +228,13 @@ export function MeditationCarousel() {
         behavior: "smooth",
       });
     }
+  };
+
+  const onComplete = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/meditation-sessions"] });
   };
 
   const handleMeditationClick = (meditation: Meditation) => {
@@ -256,6 +310,31 @@ export function MeditationCarousel() {
                         </svg>
                       </div>
                     </div>
+                    {/* Favorite Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) {
+                          toast({ title: "Please login", description: "You need to be logged in to favorite meditations", variant: "destructive" });
+                          return;
+                        }
+                        const isFav = favoriteMeditations.some(f => f.meditationId === meditation.id);
+                        if (isFav) {
+                          removeFavoriteMutation.mutate(meditation.id);
+                        } else {
+                          addFavoriteMutation.mutate(meditation);
+                        }
+                      }}
+                      className="absolute top-3 right-3 z-20 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-all"
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${
+                          favoriteMeditations.some(f => f.meditationId === meditation.id)
+                            ? "fill-red-500 text-red-500"
+                            : "text-white/70"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
 
@@ -281,6 +360,7 @@ export function MeditationCarousel() {
         meditation={selectedMeditation}
         isOpen={isPlayerOpen}
         onClose={handlePlayerClose}
+        onComplete={onComplete}
       />
     </>
   );

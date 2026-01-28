@@ -211,12 +211,9 @@ export function MeditationPlayerModal({ meditation, isOpen, onClose, onComplete 
   };
 
   const handleComplete = () => {
+    if (completeMeditationMutation.isPending) return;
     setIsPlaying(false);
     completeMeditationMutation.mutate(meditation!);
-    // Close the modal after completing meditation
-    setTimeout(() => {
-      onClose();
-    }, 500);
   };
 
   const formatTime = (seconds: number) => {
