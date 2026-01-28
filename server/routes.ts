@@ -4134,12 +4134,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         meditationTitle,
         durationMinutes,
         category,
-        energyGained: energyGained || 25,
+        energyGained: Math.floor(Number(energyGained || 25)),
         completed: true,
       });
 
       // Award soul energy for completing meditation
-      const soulEnergyAmount = energyGained || 25;
+      const soulEnergyAmount = Math.floor(Number(energyGained || 25));
       await storage.addSoulEnergy(userId, soulEnergyAmount, 'meditation', `Completed meditation: ${meditationTitle}`);
       
       // Update psychological profile meditation minutes
