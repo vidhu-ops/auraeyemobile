@@ -2343,20 +2343,24 @@ export default function HealerDashboard() {
 
   // Helper function to check if a badge is earned (checks both healer badges and user achievements)
   const isBadgeEarned = (badgeIdentifier: string): boolean => {
+    if (!badgeIdentifier) return false;
+    
+    // Normalize display name for comparison - remove emojis and trim
     const cleanId = badgeIdentifier.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
     
-    // Get canonical types for this badge
+    // 1. Get canonical types for this badge from our map
     const canonicalTypes = BADGE_TYPE_MAP[cleanId] || [cleanId.replace(/\s+/g, '_')];
     
-    // Check healer badges by type or title
-    const inHealerBadges = healerBadges.some(badge => {
+    // 2. Check healer-specific badges (healerBadges query)
+    const inHealerBadges = (healerBadges || []).some(badge => {
       const badgeType = (badge.badgeType || '').toLowerCase();
       const badgeTitle = (badge.badgeTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return canonicalTypes.includes(badgeType) || badgeTitle === cleanId;
     });
     
-    // Check user achievements by type or title
-    const inAchievements = achievements.some((achievement: any) => {
+    // 3. Check user achievements (userAchievements from hook or achievements from query)
+    const achievementsList = userAchievements || achievements || [];
+    const inAchievements = achievementsList.some((achievement: any) => {
       const type = (achievement.type || achievement.achievementType || '').toLowerCase();
       const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
       return canonicalTypes.includes(type) || title === cleanId;
