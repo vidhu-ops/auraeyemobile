@@ -264,6 +264,8 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       meditation: Number(meditationCount?.count || 0),
     };
 
+    console.log(`[BadgeCheck] Counts for user ${userId}:`, counts);
+
     
     // Check each badge threshold
     for (const [badgeType, threshold] of Object.entries(BADGE_THRESHOLDS)) {

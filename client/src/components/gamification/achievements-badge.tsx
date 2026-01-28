@@ -54,7 +54,7 @@ export function AchievementsBadges() {
             <h4 className="font-semibold text-sm text-yellow-300">{achievement.title}</h4>
             <p className="text-xs text-purple-200 mt-1">{achievement.description}</p>
             <p className="text-xs text-purple-400 mt-2">
-              {new Date(achievement.unlockedAt).toLocaleDateString()}
+              {achievement.unlockedAt ? new Date(achievement.unlockedAt).toLocaleDateString() : 'Just now'}
             </p>
           </div>
         ))}
