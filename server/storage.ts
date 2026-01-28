@@ -860,6 +860,7 @@ export class DatabaseStorage implements IStorage {
 
   // User stats
   async getUserStats(userId: number): Promise<any> {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
     const [auraReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(auraReadings).where(eq(auraReadings.userId, userId));
     const [numerologyReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
     const [vibeReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(vibeReadings).where(eq(vibeReadings.userId, userId));
@@ -868,12 +869,17 @@ export class DatabaseStorage implements IStorage {
     const [meditationSessionsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(meditationSessions).where(eq(meditationSessions.userId, userId));
 
     return {
+      name: user?.name,
+      email: user?.email,
       auraReadings: auraReadingsCount?.count || 0,
       numerologyReadings: numerologyReadingsCount?.count || 0,
       vibeReadings: vibeReadingsCount?.count || 0,
       journals: journalsCount?.count || 0,
       objectAnalyses: objectAnalysesCount?.count || 0,
-      meditationSessions: meditationSessionsCount?.count || 0
+      meditationSessions: meditationSessionsCount?.count || 0,
+      // Compatibility fields for some dashboard views
+      auraScans: auraReadingsCount?.count || 0,
+      totalSessions: (auraReadingsCount?.count || 0) + (meditationSessionsCount?.count || 0)
     };
   }
 
