@@ -172,6 +172,7 @@ const meditations: Meditation[] = [
     }
 ];
 
+export function MeditationCarousel() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -189,6 +190,7 @@ const meditations: Meditation[] = [
     queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
     queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
     queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/meditation-sessions"] });
   };
 
   // Mutations for managing favorites
@@ -228,13 +230,6 @@ const meditations: Meditation[] = [
         behavior: "smooth",
       });
     }
-  };
-
-  const onComplete = () => {
-    queryClient.invalidateQueries({ queryKey: ["/api/soul-energy"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/user-stats"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/home-stats"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/meditation-sessions"] });
   };
 
   const handleMeditationClick = (meditation: Meditation) => {
