@@ -524,11 +524,18 @@
     width: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    position: relative;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 html {
   height: -webkit-fill-available;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 /* CSS for custom animations */
