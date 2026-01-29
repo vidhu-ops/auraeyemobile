@@ -41,6 +41,7 @@ import LightsActivation from "@/components/lights-activation";
 import Mascot from "@/components/mascot/mascot";
 import NotificationPrompt from "@/components/notification-prompt";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
+import { CookieConsent } from "@/components/legal/cookie-consent";
 import { useEffect, useState } from "react";
 
 function Router() {
@@ -153,9 +154,10 @@ function App() {
                 <BadgeProvider>
                   <TooltipProvider>
                     <Toaster />
-                    <div className="min-h-screen flex flex-col">
+                    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
                       <InstallAppPrompt />
                       <AppContent />
+                      <CookieConsent />
                     </div>
                   </TooltipProvider>
                 </BadgeProvider>
