@@ -154,7 +154,7 @@ function App() {
                 <BadgeProvider>
                   <TooltipProvider>
                     <Toaster />
-                    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
+                    <div className="fixed inset-0 flex flex-col w-full overflow-x-hidden overflow-y-auto scrolling-touch">
                       <InstallAppPrompt />
                       <AppContent />
                       <CookieConsent />
