@@ -4705,6 +4705,22 @@ function calculateDominantSoulChakra(birthDate: string): number {
   });
 
   // Get healer's vibe readings (for healers, userId IS the healer who performed the reading)
+  app.post("/api/healer-vibe-reading", isAuthenticated, async (req, res) => {
+    try {
+      if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {
+        return res.status(403).json({ message: "Access denied: Not a healer" });
+      }
+      const reading = await storage.saveVibeReading({
+        ...req.body,
+        userId: req.user.id,
+      });
+      res.json(reading);
+    } catch (error: any) {
+      console.error("Error creating healer vibe reading:", error);
+      res.status(500).json({ message: "Failed to create healer vibe reading" });
+    }
+  });
+
   app.get("/api/healer-vibe-readings", isAuthenticated, async (req, res) => {
     try {
       if (req.user.userType !== 'healer' && req.user.userType !== 'semi-healer') {

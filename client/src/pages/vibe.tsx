@@ -332,6 +332,29 @@ export default function VibePage() {
       
       const data = await response.json();
       
+      // Save the reading immediately for healers/semi-healers
+      if (user?.userType === 'healer' || user?.userType === 'semi_healer') {
+        try {
+          // Use imagePreview if available, otherwise just send the analysis
+          const base64Image = imagePreview;
+          
+          await apiRequest('POST', '/api/healer-vibe-reading', {
+            userId: user.id,
+            personalityColor: data.dominantColor,
+            colorMeaning: JSON.stringify(data.colorMeaning),
+            uploadedImage: base64Image,
+            visualizedImage: null,
+            clientName: "Quick Scan Client",
+            fullAnalysis: JSON.stringify(data)
+          });
+          console.log("✅ Vibe reading saved to healer history");
+          // Invalidate vibe readings query to update dashboard immediately
+          queryClient.invalidateQueries({ queryKey: ['/api/healer-vibe-readings'] });
+        } catch (saveError) {
+          console.error("❌ Failed to save vibe reading to history:", saveError);
+        }
+      }
+      
       setVibeResult({
         dominantColor: data.dominantColor,
         colorMeaning: data.colorMeaning,
