@@ -126,8 +126,6 @@ const processImageWithVibeAuraEffect = (
     
     // LAYER 1: Ultra-dense background smoke
     ctx.save();
-    // Use shadow for extra glow effect
-    ctx.shadowBlur = 15;
     ctx.globalCompositeOperation = 'multiply';
     for (let i = 0; i < 300; i++) {
       const x = seededRandom() * canvas.width;
@@ -139,22 +137,19 @@ const processImageWithVibeAuraEffect = (
       const radius = 30 + seededRandom() * 150;
       const opacity = 0.35 + seededRandom() * 0.45;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.8;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 2: Dense medium smoke particles
     ctx.save();
-    ctx.shadowBlur = 10;
     ctx.globalCompositeOperation = 'soft-light';
     for (let i = 0; i < 400; i++) {
       const x = seededRandom() * canvas.width;
@@ -166,22 +161,19 @@ const processImageWithVibeAuraEffect = (
       const radius = 20 + seededRandom() * 80;
       const opacity = 0.25 + seededRandom() * 0.35;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.6;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.15})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 3: Super dense small particles
     ctx.save();
-    ctx.shadowBlur = 8;
     ctx.globalCompositeOperation = 'overlay';
     for (let i = 0; i < 500; i++) {
       const x = seededRandom() * canvas.width;
@@ -193,22 +185,19 @@ const processImageWithVibeAuraEffect = (
       const radius = 8 + seededRandom() * 40;
       const opacity = 0.2 + seededRandom() * 0.3;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.5;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 4: Fine smoke wisps
     ctx.save();
-    ctx.shadowBlur = 5;
     ctx.globalCompositeOperation = 'color-dodge';
     for (let i = 0; i < 600; i++) {
       const x = seededRandom() * canvas.width;
@@ -220,22 +209,19 @@ const processImageWithVibeAuraEffect = (
       const radius = 4 + seededRandom() * 20;
       const opacity = 0.15 + seededRandom() * 0.25;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.4;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 5: Perimeter concentrated smoke
     ctx.save();
-    ctx.shadowBlur = 10;
     ctx.globalCompositeOperation = 'multiply';
     for (let i = 0; i < 400; i++) {
       const angle = seededRandom() * Math.PI * 2;
@@ -248,22 +234,19 @@ const processImageWithVibeAuraEffect = (
       const radius = 15 + seededRandom() * 60;
       const opacity = 0.2 + seededRandom() * 0.35;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.5;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 6: Ultra-fine atmospheric mist
     ctx.save();
-    ctx.shadowBlur = 12;
     ctx.globalCompositeOperation = 'screen';
     for (let i = 0; i < 200; i++) {
       const x = seededRandom() * canvas.width;
@@ -275,16 +258,14 @@ const processImageWithVibeAuraEffect = (
       const radius = 60 + seededRandom() * 120;
       const opacity = 0.08 + seededRandom() * 0.12;
       
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
-      gradient.addColorStop(0.2, `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`);
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-      
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
-      ctx.fillStyle = gradient;
+      ctx.save();
+      ctx.shadowBlur = radius * 0.3;
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
     
