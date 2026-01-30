@@ -318,7 +318,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
-              badgeType: badgeInfo.level,
+              tier: badgeInfo.level.toUpperCase(), // Map "bronze" to "BRONZE" etc.
             });
             
             newBadges.push(badgeInfo);

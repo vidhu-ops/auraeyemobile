@@ -36,7 +36,7 @@ export function BadgeShowcase() {
   const earnedTypes = new Set<string>();
   if (Array.isArray(earnedBadgesData)) {
     earnedBadgesData.forEach((badge: any) => {
-      const type = badge.type || badge.achievementType;
+      const type = (badge.achievementType || badge.type || "").toLowerCase().trim();
       if (type) earnedTypes.add(type);
     });
   }
@@ -58,7 +58,8 @@ export function BadgeShowcase() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {ALL_BADGES.map((badge) => {
-          const isEarned = earnedTypes.has(badge.type);
+          const badgeType = badge.type.toLowerCase().trim();
+          const isEarned = earnedTypes.has(badgeType);
           return (
             <div key={badge.type} data-testid={`badge-${badge.type}`}>
               <PhysicalBadge
