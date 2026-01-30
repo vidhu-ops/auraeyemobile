@@ -88,6 +88,22 @@ function AppContent() {
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const { currentBadge, closeBadge } = useBadgeContext();
 
+  // Force reset zoom on every route change
+  useEffect(() => {
+    const resetZoom = () => {
+      document.documentElement.style.zoom = "1";
+      document.body.style.zoom = "1";
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+      }
+    };
+    resetZoom();
+    // Re-run after a short delay to catch layout shifts
+    const timer = setTimeout(resetZoom, 100);
+    return () => clearTimeout(timer);
+  }, [location]);
+
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
