@@ -525,8 +525,9 @@ html {
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
-  text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100% !important;
+  -webkit-text-size-adjust: 100% !important;
+  zoom: 100% !important;
 }
 
 body {
@@ -539,7 +540,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden !important;
   overflow-y: visible !important;
-  font-size: 16px; /* Base size to prevent scaling issues */
+  font-size: 16px;
+  zoom: 1 !important;
 }
 
 /* CSS for custom animations */

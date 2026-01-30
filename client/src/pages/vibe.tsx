@@ -127,7 +127,7 @@ const processImageWithVibeAuraEffect = (
     // LAYER 1: Ultra-dense background smoke
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 500; i++) {
       const x = seededRandom() * canvas.width;
       const y = seededRandom() * canvas.height;
       
@@ -135,23 +135,24 @@ const processImageWithVibeAuraEffect = (
       if (distanceFromCenter < personRadius * 1.5) continue;
       
       const radius = 30 + seededRandom() * 150;
-      const opacity = 0.35 + seededRandom() * 0.45;
+      const opacity = 0.4 + seededRandom() * 0.5;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.8;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.6})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 2: Dense medium smoke particles
     ctx.save();
     ctx.globalCompositeOperation = 'soft-light';
-    for (let i = 0; i < 400; i++) {
+    for (let i = 0; i < 600; i++) {
       const x = seededRandom() * canvas.width;
       const y = seededRandom() * canvas.height;
       
@@ -159,23 +160,24 @@ const processImageWithVibeAuraEffect = (
       if (distanceFromCenter < personRadius * 1.4) continue;
       
       const radius = 20 + seededRandom() * 80;
-      const opacity = 0.25 + seededRandom() * 0.35;
+      const opacity = 0.3 + seededRandom() * 0.4;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.6;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.15})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 3: Super dense small particles
     ctx.save();
     ctx.globalCompositeOperation = 'overlay';
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 800; i++) {
       const x = seededRandom() * canvas.width;
       const y = seededRandom() * canvas.height;
       
@@ -183,23 +185,24 @@ const processImageWithVibeAuraEffect = (
       if (distanceFromCenter < personRadius * 1.3) continue;
       
       const radius = 8 + seededRandom() * 40;
-      const opacity = 0.2 + seededRandom() * 0.3;
+      const opacity = 0.25 + seededRandom() * 0.35;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.5;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 4: Fine smoke wisps
     ctx.save();
     ctx.globalCompositeOperation = 'color-dodge';
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < 900; i++) {
       const x = seededRandom() * canvas.width;
       const y = seededRandom() * canvas.height;
       
@@ -207,23 +210,24 @@ const processImageWithVibeAuraEffect = (
       if (distanceFromCenter < personRadius * 1.3) continue;
       
       const radius = 4 + seededRandom() * 20;
-      const opacity = 0.15 + seededRandom() * 0.25;
+      const opacity = 0.2 + seededRandom() * 0.3;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.4;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 5: Perimeter concentrated smoke
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
-    for (let i = 0; i < 400; i++) {
+    for (let i = 0; i < 600; i++) {
       const angle = seededRandom() * Math.PI * 2;
       const distance = personRadius * 1.6 + seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
       const x = centerX + Math.cos(angle) * distance;
@@ -232,23 +236,24 @@ const processImageWithVibeAuraEffect = (
       if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
       
       const radius = 15 + seededRandom() * 60;
-      const opacity = 0.2 + seededRandom() * 0.35;
+      const opacity = 0.25 + seededRandom() * 0.4;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.5;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.4})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
     // LAYER 6: Ultra-fine atmospheric mist
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 400; i++) {
       const x = seededRandom() * canvas.width;
       const y = seededRandom() * canvas.height;
       
@@ -256,16 +261,17 @@ const processImageWithVibeAuraEffect = (
       if (distanceFromCenter < personRadius * 1.2) continue;
       
       const radius = 60 + seededRandom() * 120;
-      const opacity = 0.08 + seededRandom() * 0.12;
+      const opacity = 0.1 + seededRandom() * 0.15;
       
-      ctx.save();
-      ctx.shadowBlur = radius * 0.3;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`;
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.2, x, y, radius);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity})`);
+      gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
     ctx.restore();
     
