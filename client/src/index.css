@@ -527,7 +527,9 @@ html {
   -webkit-overflow-scrolling: touch;
   text-size-adjust: 100% !important;
   -webkit-text-size-adjust: 100% !important;
-  zoom: 100% !important;
+  zoom: 1 !important;
+  -moz-transform: scale(1);
+  -moz-transform-origin: 0 0;
 }
 
 body {
@@ -536,7 +538,7 @@ body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
   position: relative;
-  touch-action: auto;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden !important;
   overflow-y: visible !important;
