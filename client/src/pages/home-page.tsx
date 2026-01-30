@@ -187,32 +187,32 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold text-white mb-6 text-center">Explore Our Services</h2>
           
           {/* Three main category buttons */}
-          <div className="grid grid-cols-3 grid-rows-2 gap-4 items-center align-center justify-center max-w-auto mx-2 px-2">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center justify-center max-w-full mx-auto px-2">
             <button 
               onClick={() => setActiveCategory('scan')}
-              className="flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-purple-700/80 to-purple-200/80 hover:from-purple-400/90 hover:to-purple-600/90 transition-all shadow-lg p-4"
+              className="flex flex-col items-center justify-center rounded-2xl sm:rounded-full bg-gradient-to-br from-purple-700/80 to-purple-200/80 hover:from-purple-400/90 hover:to-purple-600/90 transition-all shadow-lg p-3 sm:p-4 aspect-square sm:aspect-auto"
               data-testid="button-scan-category"
             >
-              <Scan className="h-5 w-5 text-purple-200 mb-2" />
-              <span className="text-base text-xs text-purple-100 font-bold uppercase">Scan</span>
+              <Scan className="h-5 w-5 sm:h-6 sm:w-6 text-purple-200 mb-1 sm:mb-2" />
+              <span className="text-[10px] sm:text-xs text-purple-100 font-bold uppercase text-center leading-tight">Scan</span>
             </button>
             
             <button 
               onClick={() => setActiveCategory('heal')}
-              className="flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-green-900/80 to-green-700/80 hover:from-green-800/90 hover:to-green-600/90 transition-all shadow-lg p-4"
+              className="flex flex-col items-center justify-center rounded-2xl sm:rounded-full bg-gradient-to-br from-green-900/80 to-green-700/80 hover:from-green-800/90 hover:to-green-600/90 transition-all shadow-lg p-3 sm:p-4 aspect-square sm:aspect-auto"
               data-testid="button-heal-category"
             >
-              <Heart className="h-5 w-5 text-green-200 mb-2" />
-              <span className="text-base text-xs text-green-100 font-bold uppercase">Heal</span>
+              <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-green-200 mb-1 sm:mb-2" />
+              <span className="text-[10px] sm:text-xs text-green-100 font-bold uppercase text-center leading-tight">Heal</span>
             </button>
             
             <button 
               onClick={() => setActiveCategory('connect')}
-              className="flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-rose-900/80 to-rose-700/80 hover:from-rose-800/90 hover:to-rose-600/90 transition-all shadow-lg p-4"
+              className="flex flex-col items-center justify-center rounded-2xl sm:rounded-full bg-gradient-to-br from-rose-900/80 to-rose-700/80 hover:from-rose-800/90 hover:to-rose-600/90 transition-all shadow-lg p-3 sm:p-4 aspect-square sm:aspect-auto"
               data-testid="button-connect-category"
             >
-              <Users className="h-5 w-5 text-rose-200 mb-2" />
-              <span className="text-base text-xs text-rose-100 font-bold uppercase">Connect</span>
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-rose-200 mb-1 sm:mb-2" />
+              <span className="text-[10px] sm:text-xs text-rose-100 font-bold uppercase text-center leading-tight">Connect</span>
             </button>
           </div>
         </div>
