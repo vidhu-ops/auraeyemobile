@@ -3,6 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      // Force 100% zoom on load
+      (function() {
+        function resetZoom() {
+          const viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport) {
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          }
+          document.documentElement.style.zoom = "100%";
+          document.body.style.zoom = "100%";
+        }
+        window.addEventListener('load', resetZoom);
+        window.addEventListener('orientationchange', resetZoom);
+        // Also prevent pinch to zoom
+        document.addEventListener('touchstart', function (event) {
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      })();
+    </script>
     <title>AuraEye - Your Energy Made Visible</title>
     <meta name="description" content="Discover your spiritual energy through mystical aura readings, cosmic numerology, and divine guidance. Connect with your higher self and unlock spiritual transformation." />
     
