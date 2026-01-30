@@ -4,24 +4,57 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <script>
-      // Force 100% zoom on load
+      // Ultimate 100% zoom enforcement
       (function() {
-        function resetZoom() {
-          const viewport = document.querySelector('meta[name="viewport"]');
-          if (viewport) {
-            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+        function forceOneHundredZoom() {
+          // 1. Viewport Meta enforcement
+          let viewport = document.querySelector('meta[name="viewport"]');
+          const viewportContent = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            document.head.appendChild(viewport);
           }
-          document.documentElement.style.zoom = "100%";
-          document.body.style.zoom = "100%";
+          if (viewport.content !== viewportContent) {
+            viewport.content = viewportContent;
+          }
+          
+          // 2. CSS Zoom Property (WebKit/Blink)
+          if (document.documentElement.style.zoom !== "1") {
+            document.documentElement.style.zoom = "1";
+          }
+          if (document.body && document.body.style.zoom !== "1") {
+            document.body.style.zoom = "1";
+          }
+
+          // 3. Text Size Adjust
+          document.documentElement.style.webkitTextSizeAdjust = "100%";
+          document.documentElement.style.textSizeAdjust = "100%";
         }
-        window.addEventListener('load', resetZoom);
-        window.addEventListener('orientationchange', resetZoom);
-        // Also prevent pinch to zoom
+
+        // Run immediately and on every possible event
+        forceOneHundredZoom();
+        window.addEventListener('load', forceOneHundredZoom);
+        window.addEventListener('resize', forceOneHundredZoom);
+        window.addEventListener('orientationchange', forceOneHundredZoom);
+        
+        // Use MutationObserver to catch SPA route changes and dynamic injections
+        const observer = new MutationObserver(forceOneHundredZoom);
+        observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+
+        // Prevent pinch to zoom strictly
         document.addEventListener('touchstart', function (event) {
           if (event.touches.length > 1) {
             event.preventDefault();
           }
         }, { passive: false });
+        
+        document.addEventListener('gesturestart', function (e) {
+          e.preventDefault();
+        });
+
+        // Continuous enforcement
+        setInterval(forceOneHundredZoom, 500);
       })();
     </script>
     <title>AuraEye - Your Energy Made Visible</title>
