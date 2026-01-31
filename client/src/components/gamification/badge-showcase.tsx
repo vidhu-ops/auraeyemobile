@@ -36,7 +36,7 @@ export function BadgeShowcase() {
 
   const earnedTypes = new Set<string>();
   if (Array.isArray(earnedBadgesData)) {
-      achievementsData.forEach((badge: any) => {
+      earnedBadgesData.forEach((badge: any) => {
         // Normalize achievementType and badgeType
         const type = (badge.achievementType || badge.badgeType || badge.type || "").toLowerCase().trim();
         const title = (badge.badgeTitle || badge.title || "").toLowerCase().trim();
