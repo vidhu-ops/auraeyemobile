@@ -2090,9 +2090,10 @@ export default function HealerDashboard() {
     queryKey: ["/api/streaks"],
   });
 
-  const { data: achievementsData = [] } = useQuery<any[]>({
+  const { data: achievementsData = [], isLoading: isLoadingAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
+    refetchInterval: 3000,
   });
   const achievements = Array.isArray(achievementsData) ? achievementsData : [];
 
@@ -2101,10 +2102,21 @@ export default function HealerDashboard() {
     if (Array.isArray(achievements)) {
       achievements.forEach((a: any) => {
         const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+        const title = (a.badgeTitle || a.title || "").toLowerCase().trim();
+        const titleNoEmoji = title.replace(/\s*[^\w\s]/g, '').trim();
+
         if (type) {
           types.add(type);
           types.add(type.replace(/_/g, " "));
           types.add(type.replace(/ /g, "_"));
+        }
+        if (title) {
+          types.add(title);
+          types.add(title.replace(/ /g, "_"));
+        }
+        if (titleNoEmoji) {
+          types.add(titleNoEmoji);
+          types.add(titleNoEmoji.replace(/ /g, "_"));
         }
       });
     }
@@ -2113,10 +2125,19 @@ export default function HealerDashboard() {
 
   const isBadgeEarned = (badgeTitle: string) => {
     const normalizedTitle = badgeTitle.toLowerCase().trim();
-    return Array.isArray(achievements) && achievements.some(a => 
-      (a.badgeTitle || "").toLowerCase().trim() === normalizedTitle ||
-      (a.achievementType || "").toLowerCase().trim() === normalizedTitle.replace(/ /g, "_")
-    );
+    const normalizedTitleUnder = normalizedTitle.replace(/ /g, "_");
+    const normalizedTitleNoEmoji = normalizedTitle.replace(/\s*[^\w\s]/g, '').trim();
+    const normalizedTitleNoEmojiUnder = normalizedTitleNoEmoji.replace(/ /g, "_");
+
+    return Array.isArray(achievements) && achievements.some(a => {
+      const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+      const title = (a.badgeTitle || a.title || "").toLowerCase().trim();
+      return title === normalizedTitle || 
+             type === normalizedTitleUnder ||
+             type === normalizedTitle ||
+             title === normalizedTitleNoEmoji ||
+             type === normalizedTitleNoEmojiUnder;
+    });
   };
 
   function FilteredBadgeShowcase({ category, earnedTypes }: { category: string; earnedTypes: Set<string> }) {
@@ -2162,10 +2183,17 @@ export default function HealerDashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {categoryBadges.map((badge) => {
           const badgeType = badge.type.toLowerCase().trim();
+          const badgeTitle = badge.title.toLowerCase().trim();
+          const badgeTitleNoEmoji = badgeTitle.replace(/\s*[^\w\s]/g, '').trim();
+          
           const isEarned =
             earnedTypes.has(badgeType) ||
             earnedTypes.has(badgeType.replace(/_/g, " ")) ||
-            earnedTypes.has(badgeType.replace(/ /g, "_"));
+            earnedTypes.has(badgeType.replace(/ /g, "_")) ||
+            earnedTypes.has(badgeTitle) ||
+            earnedTypes.has(badgeTitle.replace(/ /g, "_")) ||
+            earnedTypes.has(badgeTitleNoEmoji) ||
+            earnedTypes.has(badgeTitleNoEmoji.replace(/ /g, "_"));
           return (
             <div key={badge.type}>
               <PhysicalBadge
