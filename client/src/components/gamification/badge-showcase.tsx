@@ -36,8 +36,14 @@ export function BadgeShowcase() {
   const earnedTypes = new Set<string>();
   if (Array.isArray(earnedBadgesData)) {
     earnedBadgesData.forEach((badge: any) => {
-      const type = (badge.achievementType || badge.type || "").toLowerCase().trim();
-      if (type) earnedTypes.add(type);
+      // Try multiple possible field names for badge type
+      const type = (badge.achievementType || badge.badgeType || badge.type || "").toLowerCase().trim();
+      if (type) {
+        earnedTypes.add(type);
+        // Also add versions with underscores/spaces swapped to be safe
+        earnedTypes.add(type.replace(/_/g, ' '));
+        earnedTypes.add(type.replace(/ /g, '_'));
+      }
     });
   }
 
@@ -59,7 +65,9 @@ export function BadgeShowcase() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {ALL_BADGES.map((badge) => {
           const badgeType = badge.type.toLowerCase().trim();
-          const isEarned = earnedTypes.has(badgeType);
+          const isEarned = earnedTypes.has(badgeType) || 
+                          earnedTypes.has(badgeType.replace(/_/g, ' ')) || 
+                          earnedTypes.has(badgeType.replace(/ /g, '_'));
           return (
             <div key={badge.type} data-testid={`badge-${badge.type}`}>
               <PhysicalBadge
