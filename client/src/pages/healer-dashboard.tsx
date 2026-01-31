@@ -66,6 +66,7 @@ import { ChakraMastery } from "@/components/gamification/chakra-mastery";
 import { HealerLeaderboard } from "@/components/gamification/healer-leaderboard";
 import { BadgeTargets } from "@/components/gamification/badge-targets";
 import { BadgeShowcase } from "@/components/gamification/badge-showcase";
+import { PhysicalBadge } from "@/components/gamification/physical-badge";
 import { ProfilePictureUploadDialog } from "@/components/profile/profile-picture-upload";
 import { useBadgeContext } from "@/hooks/use-badge-context";
 
