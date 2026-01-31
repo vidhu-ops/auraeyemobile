@@ -221,31 +221,19 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     // Count activities for this user
     const [auraCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(auraReadings)
-      .where(or(
-        eq(auraReadings.userId, userId),
-        eq(auraReadings.performedBy, userId)
-      ));
+      .where(eq(auraReadings.userId, userId));
     
     const [vibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
-      .where(or(
-        eq(vibeReadings.userId, userId),
-        eq(vibeReadings.performedBy, userId)
-      ));
+      .where(eq(vibeReadings.userId, userId));
     
     const [numerologyCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
-      .where(or(
-        eq(numerologyReadings.userId, userId),
-        eq(numerologyReadings.performedBy, userId)
-      ));
+      .where(eq(numerologyReadings.userId, userId));
     
     const [objectCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(objectAnalyses)
-      .where(or(
-        eq(objectAnalyses.userId, userId),
-        eq(objectAnalyses.performedBy, userId)
-      ));
+      .where(eq(objectAnalyses.userId, userId));
     
     const [journalCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(journals)
@@ -288,10 +276,6 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       'journal legend': 'journal_master',
       'reflection hour': 'reflection_hour',
       'inner peace': 'first_meditation',
-      'object explorer': 'object_explorer',
-      'object master': 'object_master',
-      'object sage': 'object_sage',
-      'inner peace': 'first_meditation',
       'meditation seeker': 'meditation_seeker',
       'meditation master': 'meditation_master',
     };
@@ -318,8 +302,8 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
-              tier: badgeInfo.level.toUpperCase(), // Map "bronze" to "BRONZE" etc.
-            });
+              tier: badgeInfo.level.toUpperCase(),
+            } as any);
             
             newBadges.push(badgeInfo);
           }

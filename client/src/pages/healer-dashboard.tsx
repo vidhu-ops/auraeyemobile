@@ -2102,7 +2102,7 @@ export default function HealerDashboard() {
     if (Array.isArray(achievements)) {
       achievements.forEach((a: any) => {
         const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
-        const title = (a.badgeTitle || a.title || "").toLowerCase().trim();
+        const title = (a.achievementTitle || a.badgeTitle || a.title || "").toLowerCase().trim();
         const titleNoEmoji = title.replace(/\s*[^\w\s]/g, '').trim();
 
         if (type) {
@@ -2193,7 +2193,18 @@ export default function HealerDashboard() {
             earnedTypes.has(badgeTitle) ||
             earnedTypes.has(badgeTitle.replace(/ /g, "_")) ||
             earnedTypes.has(badgeTitleNoEmoji) ||
-            earnedTypes.has(badgeTitleNoEmoji.replace(/ /g, "_"));
+            earnedTypes.has(badgeTitleNoEmoji.replace(/ /g, "_")) ||
+            achievements.some(a => {
+              const aType = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+              const aTitle = (a.achievementTitle || a.badgeTitle || a.title || "").toLowerCase().trim();
+              const aTitleNoEmoji = aTitle.replace(/\s*[^\w\s]/g, '').trim();
+              return aType === badgeType || 
+                     aType === badgeType.replace(/_/g, " ") ||
+                     aType === badgeType.replace(/ /g, "_") ||
+                     aTitle === badgeTitle ||
+                     aTitle === badgeTitleNoEmoji ||
+                     aTitleNoEmoji === badgeTitleNoEmoji;
+            });
           return (
             <div key={badge.type}>
               <PhysicalBadge
