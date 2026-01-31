@@ -2095,13 +2095,27 @@ export default function HealerDashboard() {
     enabled: !!user,
     refetchInterval: 3000,
   });
-  const achievements = Array.isArray(achievementsData) ? achievementsData : [];
+
+  // Also fetch the standard achievements (user_achievements table)
+  const { data: userAchievementsData = [] } = useQuery<any[]>({
+    queryKey: ["/api/user-achievements"],
+    enabled: !!user,
+    refetchInterval: 3000,
+  });
+
+  const achievements = useMemo(() => {
+    const list = Array.isArray(achievementsData) ? [...achievementsData] : [];
+    if (Array.isArray(userAchievementsData)) {
+      list.push(...userAchievementsData);
+    }
+    return list;
+  }, [achievementsData, userAchievementsData]);
 
   const earnedTypes = useMemo(() => {
     const types = new Set<string>();
     if (Array.isArray(achievements)) {
       achievements.forEach((a: any) => {
-        const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+        const type = (a.achievementType || a.badgeType || a.type || "").toLowerCase().trim();
         const title = (a.achievementTitle || a.badgeTitle || a.title || "").toLowerCase().trim();
         const titleNoEmoji = title.replace(/\s*[^\w\s]/g, '').trim();
 
@@ -2195,7 +2209,7 @@ export default function HealerDashboard() {
             earnedTypes.has(badgeTitleNoEmoji) ||
             earnedTypes.has(badgeTitleNoEmoji.replace(/ /g, "_")) ||
             achievements.some(a => {
-              const aType = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+              const aType = (a.achievementType || a.badgeType || a.type || "").toLowerCase().trim();
               const aTitle = (a.achievementTitle || a.badgeTitle || a.title || "").toLowerCase().trim();
               const aTitleNoEmoji = aTitle.replace(/\s*[^\w\s]/g, '').trim();
               return aType === badgeType || 
