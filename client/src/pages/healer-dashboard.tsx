@@ -2084,19 +2084,97 @@ export default function HealerDashboard() {
   const { credits } = useCredits();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { checkBadges } = useBadgeContext();
-  
-  // Fetch login streaks
+
   const { data: streakData } = useQuery<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }>({
     queryKey: ["/api/streaks"],
   });
-  
-  // Fetch achievements with real-time updates for badge notifications
+
   const { data: achievementsData = [] } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
-    refetchInterval: 2000, // Auto-refetch every 2 seconds for immediate feedback
   });
   const achievements = Array.isArray(achievementsData) ? achievementsData : [];
+
+  const earnedTypes = useMemo(() => {
+    const types = new Set<string>();
+    if (Array.isArray(achievements)) {
+      achievements.forEach((a: any) => {
+        const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
+        if (type) {
+          types.add(type);
+          types.add(type.replace(/_/g, " "));
+          types.add(type.replace(/ /g, "_"));
+        }
+      });
+    }
+    return types;
+  }, [achievements]);
+
+  const isBadgeEarned = (badgeTitle: string) => {
+    const normalizedTitle = badgeTitle.toLowerCase().trim();
+    return Array.isArray(achievements) && achievements.some(a => 
+      (a.badgeTitle || "").toLowerCase().trim() === normalizedTitle ||
+      (a.achievementType || "").toLowerCase().trim() === normalizedTitle.replace(/ /g, "_")
+    );
+  };
+
+  function FilteredBadgeShowcase({ category, earnedTypes }: { category: string; earnedTypes: Set<string> }) {
+    const categoryBadges = useMemo(() => {
+      const auraTypes = ["first_aura", "third_aura", "aura_master", "aura_legend"];
+      const vibeTypes = ["first_vibe", "vibe_enthusiast", "vibe_master"];
+      const numerologyTypes = ["first_numerology", "numerology_explorer"];
+      const specialTypes = ["seven_day_streak", "first_journal", "journal_keeper", "journal_master", "first_meditation", "meditation_seeker"];
+
+      let filter: string[] = [];
+      if (category === "aura") filter = auraTypes;
+      else if (category === "vibe") filter = vibeTypes;
+      else if (category === "numerology") filter = numerologyTypes;
+      else if (category === "special") filter = specialTypes;
+
+      const ALL_BADGES = [
+        { type: "first_aura", title: "First Glimpse 👀", level: "bronze", description: "Completed your first aura analysis", icon: "🎨" },
+        { type: "third_aura", title: "Aura Explorer 🔍", level: "silver", description: "Completed 3 aura analyses", icon: "🔍" },
+        { type: "aura_master", title: "Aura Master 🌟", level: "gold", description: "Completed 10 aura analyses", icon: "⭐" },
+        { type: "aura_legend", title: "Aura Legend 👑", level: "platinum", description: "Completed 25 aura analyses", icon: "👑" },
+        { type: "first_vibe", title: "Vibe Check ✨", level: "bronze", description: "Completed your first vibe scan", icon: "✨" },
+        { type: "vibe_enthusiast", title: "Vibe Enthusiast 💫", level: "silver", description: "Completed 5 vibe checks", icon: "💫" },
+        { type: "vibe_master", title: "Vibe Master 🎯", level: "gold", description: "Completed 15 vibe checks", icon: "🎯" },
+        { type: "first_numerology", title: "Number Vision 🔢", level: "bronze", description: "Completed your first numerology reading", icon: "🔢" },
+        { type: "numerology_explorer", title: "Numerology Explorer 📊", level: "silver", description: "Completed 3 numerology readings", icon: "📊" },
+        { type: "first_journal", title: "Thoughts Flow 📖", level: "bronze", description: "Wrote your first journal entry", icon: "📝" },
+        { type: "journal_keeper", title: "Journal Keeper 📚", level: "silver", description: "Wrote 5 journal entries", icon: "📚" },
+        { type: "journal_master", title: "Journal Master ✍️", level: "gold", description: "Wrote 20 journal entries", icon: "✍️" },
+        { type: "seven_day_streak", title: "Week Warrior 🔥", level: "bronze", description: "Maintained a 7-day login streak", icon: "🔥" },
+        { type: "first_meditation", title: "Inner Peace 🧘", level: "bronze", description: "Completed your first meditation", icon: "🧘" },
+        { type: "meditation_seeker", title: "Meditation Seeker 🌸", level: "silver", description: "Completed 5 meditation sessions", icon: "🌸" },
+      ];
+
+      return ALL_BADGES.filter((b) => filter.includes(b.type));
+    }, [category]);
+
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {categoryBadges.map((badge) => {
+          const badgeType = badge.type.toLowerCase().trim();
+          const isEarned =
+            earnedTypes.has(badgeType) ||
+            earnedTypes.has(badgeType.replace(/_/g, " ")) ||
+            earnedTypes.has(badgeType.replace(/ /g, "_"));
+          return (
+            <div key={badge.type}>
+              <PhysicalBadge
+                title={badge.title}
+                level={badge.level as any}
+                description={badge.description}
+                icon={badge.icon}
+                isEarned={isEarned}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
   
   const [activeTab, setActiveTab] = useState("overview");
@@ -2334,32 +2412,6 @@ export default function HealerDashboard() {
     'meditation master': ['meditation_master'],
   };
 
-  // Helper function to check if a badge is earned
-  const isBadgeEarned = (badgeIdentifier: string): boolean => {
-    if (!badgeIdentifier) return false;
-    
-    // Normalize display name for comparison - remove emojis and trim
-    const cleanId = badgeIdentifier.replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-    
-    // Get canonical types for this badge
-    const canonicalTypes = BADGE_TYPE_MAP[cleanId] || [cleanId.replace(/\s+/g, '_')];
-    
-    // Check healer-specific badges
-    const inHealerBadges = (healerBadges || []).some(badge => {
-      const badgeType = (badge.badgeType || '').toLowerCase();
-      const badgeTitle = (badge.badgeTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return canonicalTypes.includes(badgeType) || badgeTitle === cleanId;
-    });
-    
-    // Check achievements from query
-    const inAchievements = (achievements || []).some((achievement: any) => {
-      const type = (achievement.type || achievement.achievementType || '').toLowerCase();
-      const title = (achievement.title || achievement.achievementTitle || '').replace(/\s*[^\w\s]/g, '').trim().toLowerCase();
-      return canonicalTypes.includes(type) || title === cleanId;
-    });
-    
-    return inHealerBadges || inAchievements;
-  };
 
   // State for live numerology calculator
   // Removed numerology state variables as numerology analysis was removed from Spiritual Tools tab
@@ -4042,397 +4094,52 @@ export default function HealerDashboard() {
         </TabsContent>
 
         {/* Badges Tab */}
-        <TabsContent value="badges" className="space-y-6">
-          {/* Healer Performance Badges */}
-          <Card>
-            
-            <CardContent>
-              {healerBadges.length === 0 ? (
-                <div className="text-center py-12">
-                  <Award className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-500 mb-4 text-lg">No badges earned yet</p>
-                  
+        <TabsContent value="badges" className="mt-0">
+          <Card className="bg-white/5 border-white/10 shadow-xl backdrop-blur-sm overflow-hidden">
+            <CardHeader className="border-b border-white/10 bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-yellow-500/20 rounded-lg">
+                  <Trophy className="h-6 w-6 text-yellow-500" />
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {healerBadges.map((badge: HealerBadge) => (
-                    <div key={badge.id} className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6 border-2 border-yellow-200 shadow-lg hover:shadow-xl transition-shadow text-center">
-                      <div className="text-6xl mb-3">{badge.badgeIcon}</div>
-                      <h3 className="font-bold text-lg text-yellow-900 mb-2">{badge.badgeTitle}</h3>
-                      <div className="space-y-1 mb-3">
-                        <p className="text-xs text-yellow-700">
-                          Awarded: {new Date(badge.awardedAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-xs text-orange-600">
-                          Expires: {new Date(badge.expiresAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="w-full h-1 bg-yellow-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"
-                          style={{
-                            width: `${Math.max(0, (new Date(badge.expiresAt).getTime() - Date.now()) / (30 * 24 * 60 * 60 * 1000)) * 100}%`
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Special Badges */}
-          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <span className="text-2xl">🏆</span> Special Badges
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {/* Week Warrior */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Week Warrior") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🔥</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Week Warrior 🔥</h3>
-                        {isBadgeEarned("Week Warrior") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-yellow-100 mb-2">Maintained a 7-day login streak</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">7-day streak</span>
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Spiritual Guardian */}
-                <div className={`p-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Spiritual Guardian") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🙏</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Spiritual Guardian 🙏</h3>
-                        {isBadgeEarned("Spiritual Guardian") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-blue-100 mb-2">Completed 50 total spiritual services</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">50 services</span>
-                        <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Healing Heart */}
-                <div className={`p-4 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg border-2 border-green-300 shadow-lg ${isBadgeEarned("Healing Heart") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">💚</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Healing Heart 💚</h3>
-                        {isBadgeEarned("Healing Heart") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-green-100 mb-2">Provided 5 healing replies as a healer</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-green-700 text-white text-xs font-semibold rounded">5 healing replies</span>
-                        <span className="px-3 py-1 bg-green-700 text-white text-xs font-semibold rounded">SILVER</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Most Trusted Healer */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Most Trusted Healer") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">👑</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Most Trusted Healer 👑</h3>
-                        {isBadgeEarned("Most Trusted Healer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-yellow-100 mb-2">Become the top healer with most replies</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">Most healer replies</span>
-                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Best Healer */}
-                <div className={`p-4 bg-gradient-to-br from-pink-400 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Best Healer") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">⭐</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Best Healer ⭐</h3>
-                        {isBadgeEarned("Best Healer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-pink-100 mb-2">Achieved the highest healer rating</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-pink-700 text-white text-xs font-semibold rounded">Highest rating</span>
-                        <span className="px-3 py-1 bg-pink-700 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  <CardTitle className="text-2xl text-white">Spiritual Achievements</CardTitle>
+                  <CardDescription className="text-white/60">Track your growth and unlocked mystical honors</CardDescription>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Numerology Reading Badges */}
-          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <span className="text-2xl">🔢</span> Numerology Reading Badges
-              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {/* Number Seeker */}
-                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Number Seeker") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🔢</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Number Seeker 🔢</h3>
-                        {isBadgeEarned("Number Seeker") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-purple-100 mb-2">Completed your first numerology reading</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded">Read 1 numerology</span>
-                        <span className="px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <CardContent className="p-6">
+              <Tabs defaultValue="all" className="w-full">
+                <TabsList className="grid grid-cols-5 mb-8 bg-white/5 border border-white/10 p-1">
+                  <TabsTrigger value="all" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-black text-white/70">All</TabsTrigger>
+                  <TabsTrigger value="aura" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white text-white/70">Aura</TabsTrigger>
+                  <TabsTrigger value="vibe" className="data-[state=active]:bg-pink-500 data-[state=active]:text-white text-white/70">Vibe</TabsTrigger>
+                  <TabsTrigger value="numerology" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white text-white/70">Numbers</TabsTrigger>
+                  <TabsTrigger value="special" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white text-white/70">Special</TabsTrigger>
+                </TabsList>
 
-                {/* Numerology Explorer */}
-                <div className={`p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg ${isBadgeEarned("Numerology Explorer") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">📚</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Numerology Explorer 📚</h3>
-                        {isBadgeEarned("Numerology Explorer") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-slate-100 mb-2">Completed 5 numerology readings</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">Read 5 numerologies</span>
-                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
-                      </div>
-                    </div>
+                <TabsContent value="all" className="space-y-8 animate-in fade-in duration-500">
+                  <BadgeShowcase />
+                  <div className="pt-4 border-t border-white/10">
+                    <BadgeTargets />
                   </div>
-                </div>
+                </TabsContent>
 
-                {/* Numerology Master */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Numerology Master") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🎲</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Numerology Master 🎲</h3>
-                        {isBadgeEarned("Numerology Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-yellow-100 mb-2">Completed 15 numerology readings</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Read 15 numerologies</span>
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TabsContent value="aura" className="animate-in slide-in-from-left-4 duration-500">
+                  <FilteredBadgeShowcase category="aura" earnedTypes={earnedTypes} />
+                </TabsContent>
 
-                {/* Numerology Legend */}
-                <div className={`p-4 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Numerology Legend") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🔮</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Numerology Legend 🔮</h3>
-                        {isBadgeEarned("Numerology Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-blue-100 mb-2">Completed 30+ numerology readings</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Read 30+ numerologies</span>
-                        <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                <TabsContent value="vibe" className="animate-in slide-in-from-left-4 duration-500">
+                  <FilteredBadgeShowcase category="vibe" earnedTypes={earnedTypes} />
+                </TabsContent>
 
-          {/* Vibe Check Badges */}
-          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <span className="text-2xl">✨</span> Vibe Check Badges
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {/* Vibe Check */}
-                <div className={`p-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg border-2 border-pink-300 shadow-lg ${isBadgeEarned("Vibe Check") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">✨</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Vibe Check ✨</h3>
-                        {isBadgeEarned("Vibe Check") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-pink-100 mb-2">Completed your first vibe scan</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded">Check vibe 1x</span>
-                        <span className="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded">BRONZE</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TabsContent value="numerology" className="animate-in slide-in-from-left-4 duration-500">
+                  <FilteredBadgeShowcase category="numerology" earnedTypes={earnedTypes} />
+                </TabsContent>
 
-                {/* Vibe Enthusiast */}
-                <div className={`p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg border-2 border-purple-300 shadow-lg ${isBadgeEarned("Vibe Enthusiast") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🌙</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Vibe Enthusiast 🌙</h3>
-                        {isBadgeEarned("Vibe Enthusiast") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-purple-100 mb-2">Completed 5 vibe checks</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded">Check vibe 5x</span>
-                        <span className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded">SILVER</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vibe Master */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Vibe Master") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🎯</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Vibe Master 🎯</h3>
-                        {isBadgeEarned("Vibe Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-yellow-100 mb-2">Completed 15 vibe checks</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Check vibe 15x</span>
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vibe Legend */}
-                <div className={`p-4 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg border-2 border-cyan-300 shadow-lg ${isBadgeEarned("Vibe Legend") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">🌈</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Vibe Legend 🌈</h3>
-                        {isBadgeEarned("Vibe Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-cyan-100 mb-2">Completed 30 vibe checks</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Check vibe 30x</span>
-                        <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Journal Entry Badges */}
-          <Card className="bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <span className="text-2xl">📓</span> Journal Entry Badges
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {/* Thoughts Flow */}
-                <div className={`p-4 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg border-2 border-orange-300 shadow-lg ${isBadgeEarned("Thoughts Flow") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">📝</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Thoughts Flow 📝</h3>
-                        {isBadgeEarned("Thoughts Flow") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-orange-100 mb-2">Wrote your first journal entry</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-orange-700 text-white text-xs font-semibold rounded">Write 1 entry</span>
-                        <span className="px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded">BRONZE</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Journal Keeper */}
-                <div className={`p-4 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg border-2 border-slate-300 shadow-lg ${isBadgeEarned("Journal Keeper") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">📚</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Journal Keeper 📚</h3>
-                        {isBadgeEarned("Journal Keeper") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-slate-100 mb-2">Wrote 5 journal entries</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded">Write 5 entries</span>
-                        <span className="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded">SILVER</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Journal Master */}
-                <div className={`p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg border-2 border-yellow-300 shadow-lg ${isBadgeEarned("Journal Master") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">✒️</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Journal Master ✒️</h3>
-                        {isBadgeEarned("Journal Master") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-yellow-100 mb-2">Wrote 20 journal entries</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">Write 20 entries</span>
-                        <span className="px-3 py-1 bg-yellow-700 text-white text-xs font-semibold rounded">GOLD</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Journal Legend */}
-                <div className={`p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 shadow-lg ${isBadgeEarned("Journal Legend") ? "ring-4 ring-green-500" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">📖</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white mb-1">Journal Legend 📖</h3>
-                        {isBadgeEarned("Journal Legend") && <div className="bg-white rounded-full p-1"><CheckCircle className="w-6 h-6 text-green-600 fill-green-100" /></div>}
-                      </div>
-                      <p className="text-sm text-blue-100 mb-2">Wrote 50 journal entries</p>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-blue-700 text-white text-xs font-semibold rounded">Write 50 entries</span>
-                        <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded">PLATINUM</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                <TabsContent value="special" className="animate-in slide-in-from-left-4 duration-500">
+                  <FilteredBadgeShowcase category="special" earnedTypes={earnedTypes} />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>

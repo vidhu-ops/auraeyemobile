@@ -31,20 +31,28 @@ const ALL_BADGES: EarnedBadge[] = [
 export function BadgeShowcase() {
   const { data: earnedBadgesData, isLoading } = useQuery({
     queryKey: ["/api/achievements"],
+    refetchInterval: 3000, // Frequent refresh for badge sync
   });
 
   const earnedTypes = new Set<string>();
   if (Array.isArray(earnedBadgesData)) {
-    earnedBadgesData.forEach((badge: any) => {
-      // Try multiple possible field names for badge type
-      const type = (badge.achievementType || badge.badgeType || badge.type || "").toLowerCase().trim();
-      if (type) {
-        earnedTypes.add(type);
-        // Also add versions with underscores/spaces swapped to be safe
-        earnedTypes.add(type.replace(/_/g, ' '));
-        earnedTypes.add(type.replace(/ /g, '_'));
-      }
-    });
+      achievementsData.forEach((badge: any) => {
+        // Normalize achievementType and badgeType
+        const type = (badge.achievementType || badge.badgeType || badge.type || "").toLowerCase().trim();
+        const title = (badge.badgeTitle || badge.title || "").toLowerCase().trim();
+        
+        if (type) {
+          earnedTypes.add(type);
+          earnedTypes.add(type.replace(/_/g, ' '));
+          earnedTypes.add(type.replace(/ /g, '_'));
+        }
+        
+        // Also track by title as a fallback for some legacy badges
+        if (title) {
+          const titleType = title.replace(/\s*[^\w\s]/g, '').replace(/\s+/g, '_');
+          earnedTypes.add(titleType);
+        }
+      });
   }
 
   const earnedCount = earnedTypes.size;
