@@ -2122,9 +2122,9 @@ export default function HealerDashboard() {
   function FilteredBadgeShowcase({ category, earnedTypes }: { category: string; earnedTypes: Set<string> }) {
     const categoryBadges = useMemo(() => {
       const auraTypes = ["first_aura", "third_aura", "aura_master", "aura_legend"];
-      const vibeTypes = ["first_vibe", "vibe_enthusiast", "vibe_master"];
-      const numerologyTypes = ["first_numerology", "numerology_explorer"];
-      const specialTypes = ["seven_day_streak", "first_journal", "journal_keeper", "journal_master", "first_meditation", "meditation_seeker"];
+      const vibeTypes = ["first_vibe", "vibe_enthusiast", "vibe_master", "vibe_legend"];
+      const numerologyTypes = ["first_numerology", "numerology_explorer", "numerology_master", "numerology_legend"];
+      const specialTypes = ["seven_day_streak", "first_journal", "journal_keeper", "journal_master", "journal_legend", "first_meditation", "meditation_seeker", "meditation_master"];
 
       let filter: string[] = [];
       if (category === "aura") filter = auraTypes;
@@ -2140,14 +2140,19 @@ export default function HealerDashboard() {
         { type: "first_vibe", title: "Vibe Check ✨", level: "bronze", description: "Completed your first vibe scan", icon: "✨" },
         { type: "vibe_enthusiast", title: "Vibe Enthusiast 💫", level: "silver", description: "Completed 5 vibe checks", icon: "💫" },
         { type: "vibe_master", title: "Vibe Master 🎯", level: "gold", description: "Completed 15 vibe checks", icon: "🎯" },
+        { type: "vibe_legend", title: "Vibe Legend 👑", level: "platinum", description: "Completed 30 vibe checks", icon: "👑" },
         { type: "first_numerology", title: "Number Vision 🔢", level: "bronze", description: "Completed your first numerology reading", icon: "🔢" },
         { type: "numerology_explorer", title: "Numerology Explorer 📊", level: "silver", description: "Completed 3 numerology readings", icon: "📊" },
+        { type: "numerology_master", title: "Numerology Master 🌟", level: "gold", description: "Completed 10 numerology readings", icon: "⭐" },
+        { type: "numerology_legend", title: "Numerology Legend 👑", level: "platinum", description: "Completed 25 numerology readings", icon: "👑" },
         { type: "first_journal", title: "Thoughts Flow 📖", level: "bronze", description: "Wrote your first journal entry", icon: "📝" },
         { type: "journal_keeper", title: "Journal Keeper 📚", level: "silver", description: "Wrote 5 journal entries", icon: "📚" },
         { type: "journal_master", title: "Journal Master ✍️", level: "gold", description: "Wrote 20 journal entries", icon: "✍️" },
+        { type: "journal_legend", title: "Journal Legend 🏆", level: "platinum", description: "Wrote 50 journal entries", icon: "🏆" },
         { type: "seven_day_streak", title: "Week Warrior 🔥", level: "bronze", description: "Maintained a 7-day login streak", icon: "🔥" },
         { type: "first_meditation", title: "Inner Peace 🧘", level: "bronze", description: "Completed your first meditation", icon: "🧘" },
         { type: "meditation_seeker", title: "Meditation Seeker 🌸", level: "silver", description: "Completed 5 meditation sessions", icon: "🌸" },
+        { type: "meditation_master", title: "Meditation Master 💎", level: "gold", description: "Completed 15 meditation sessions", icon: "💎" },
       ];
 
       return ALL_BADGES.filter((b) => filter.includes(b.type));
