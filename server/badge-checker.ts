@@ -239,19 +239,24 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     // Count activities for this user
     const [auraCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(auraReadings)
-      .where(eq(auraReadings.userId, userId));
+      .where(or(eq(auraReadings.userId, userId), eq(auraReadings.performedBy, userId)));
     
     const [vibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
       .where(eq(vibeReadings.userId, userId));
     
+    // Also check vibe_readings performed by healers for healers
+    const [healerVibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
+      .from(vibeReadings)
+      .where(eq(vibeReadings.userId, userId)); // userId in vibeReadings is the healer who performed it
+    
     const [numerologyCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
-      .where(eq(numerologyReadings.userId, userId));
+      .where(or(eq(numerologyReadings.userId, userId), eq(numerologyReadings.performedBy, userId)));
     
     const [objectCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(objectAnalyses)
-      .where(eq(objectAnalyses.userId, userId));
+      .where(or(eq(objectAnalyses.userId, userId), eq(objectAnalyses.performedBy, userId)));
     
     const [journalCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(journals)
