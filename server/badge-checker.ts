@@ -243,12 +243,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     
     const [vibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
-      .where(eq(vibeReadings.userId, userId));
-    
-    // Also check vibe_readings performed by healers for healers
-    const [healerVibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
-      .from(vibeReadings)
-      .where(eq(vibeReadings.userId, userId)); // userId in vibeReadings is the healer who performed it
+      .where(or(eq(vibeReadings.userId, userId), eq(vibeReadings.performedBy, userId)));
     
     const [numerologyCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
