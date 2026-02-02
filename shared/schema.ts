@@ -21,6 +21,8 @@ export const users = pgTable("users", {
   browserNotificationsEnabled: boolean("browser_notifications_enabled").default(false),
   emailNotificationsEnabled: boolean("email_notifications_enabled").default(true),
   healerSessionCount: integer("healer_session_count").default(0), // Total sessions healed (for healers)
+  currentStreak: integer("current_streak").default(0), // Tracking login streak
+  longestStreak: integer("longest_streak").default(0), // Tracking longest login streak
   isActive: boolean("is_active").default(true), // Whether the user account is active
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

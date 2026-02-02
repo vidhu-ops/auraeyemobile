@@ -261,6 +261,9 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
 
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    const currentStreak = user?.currentStreak || 0;
+
     const counts = {
       aura: Number(auraCountResult?.count || 0),
       vibe: Number(vibeCountResult?.count || 0),
@@ -268,7 +271,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       object: Number(objectCountResult?.count || 0),
       journal: Number(journalCountResult?.count || 0),
       meditation: Number(meditationCountResult?.count || 0),
-      login_streak: 1, // Default to 1 if streak tracking isn't in schema yet
+      login_streak: currentStreak,
     };
 
     console.log(`[BadgeCheck] Counts for user ${userId}:`, counts);
