@@ -5709,7 +5709,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Map badgeType to level for component compatibility
       const mappedAchievements = achievementsList.map((achievement: any) => ({
         ...achievement,
-        level: achievement.badgeType || 'bronze',
+        level: achievement.badgeType || achievement.tier?.toLowerCase() || 'bronze',
         type: achievement.achievementType
       }));
       

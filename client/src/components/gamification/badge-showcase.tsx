@@ -48,14 +48,21 @@ export function BadgeShowcase() {
         
         if (type) {
           earnedTypes.add(type);
+          earnedTypes.add(type.toLowerCase().trim());
           earnedTypes.add(type.replace(/_/g, ' '));
           earnedTypes.add(type.replace(/ /g, '_'));
+          // Handle cases like "Journal Master ✍️" by stripping emojis and extra spaces
+          const cleanType = type.replace(/[^\w\s]/g, '').trim().replace(/\s+/g, '_').toLowerCase();
+          earnedTypes.add(cleanType);
         }
         
-        // Also track by title as a fallback for some legacy badges
+        // Also track by title as a fallback
         if (title) {
-          const titleType = title.replace(/\s*[^\w\s]/g, '').replace(/\s+/g, '_');
+          earnedTypes.add(title);
+          const titleType = title.replace(/[^\w\s]/g, '').trim().replace(/\s+/g, '_').toLowerCase();
           earnedTypes.add(titleType);
+          // Add the raw title words joined by space
+          earnedTypes.add(title.replace(/[^\w\s]/g, '').trim().toLowerCase());
         }
       });
   }

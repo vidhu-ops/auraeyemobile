@@ -315,13 +315,15 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
         if (!existing) {
           const badgeInfo = BADGE_DEFINITIONS[badgeType];
           if (badgeInfo) {
+            console.log(`[BadgeAward] Awarding badge ${badgeType} to user ${userId}`);
             await db.insert(achievements).values({
               userId,
-              achievementType: badgeType,
+              achievementType: badgeType, // This must be the normalized key (e.g., 'first_aura')
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
               tier: badgeInfo.level.toUpperCase(),
+              badgeType: badgeInfo.level, // Also store for backward compatibility
             } as any);
             
             newBadges.push(badgeInfo);
