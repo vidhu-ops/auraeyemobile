@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, healerBadges, type HealerBadge, type InsertHealerBadge, userAchievements, type InsertUserAchievement, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation, achievements, type Achievement, type InsertAchievement } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, healerBadges, type HealerBadge, type InsertHealerBadge, userAchievements, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation, achievements, type Achievement, type InsertAchievement } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc, or, gte, lt, sql, count } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -7,7 +7,7 @@ import connectPg from "connect-pg-simple";
 
 // Create appropriate session store based on environment
 const createSessionStore = () => {
-  if (process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
+  if (process.env.DATABASE_URL && (process.env.NODE_ENV === "production" || process.env.REPLIT_ENVIRONMENT === "production")) {
     const PostgreSQLStore = connectPg(session);
     return new PostgreSQLStore({
       conString: process.env.DATABASE_URL,
@@ -104,9 +104,9 @@ export interface IStorage {
   deleteExpiredBadges(): Promise<void>;
   
   // User achievements
-  createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
-  getUserAchievements(userId: number): Promise<UserAchievement[]>;
-  checkAndAwardAchievements(userId: number): Promise<UserAchievement[]>;
+  createUserAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  getUserAchievements(userId: number): Promise<Achievement[]>;
+  checkAndAwardAchievements(userId: number): Promise<Achievement[]>;
   
   // Healer analytics
   getHealerClientStats(healerId: number): Promise<any>;
@@ -296,6 +296,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user || undefined;
+  }
+
+  async updateUserCredits(userId: number, newCredits: number): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ credits: newCredits })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateUserEmail(userId: number, newEmail: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ email: newEmail })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async getAllPushSubscriptions(): Promise<PushSubscription[]> {
+    return await db.select().from(pushSubscriptions);
+  }
+
+  async savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription> {
+    const [newSub] = await db
+      .insert(pushSubscriptions)
+      .values(subscription)
+      .returning();
+    return newSub;
+  }
+
+  async getPushSubscriptionsByUser(userId: number): Promise<PushSubscription[]> {
+    return await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
+  }
+
+  async deletePushSubscription(endpoint: string): Promise<boolean> {
+    await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
+    return true;
   }
 
   // Aura readings
@@ -548,7 +587,7 @@ export class DatabaseStorage implements IStorage {
   async updateBookingStatusWithResponse(bookingId: number, status: string, healerResponse?: string): Promise<HealerBooking | undefined> {
     const [updatedBooking] = await db
       .update(healerBookings)
-      .set({ status, healerResponse })
+      .set({ status, healerResponse, respondedAt: new Date() })
       .where(eq(healerBookings.id, bookingId))
       .returning();
     return updatedBooking;
@@ -556,10 +595,7 @@ export class DatabaseStorage implements IStorage {
 
   // Healer ratings
   async createHealerRating(rating: InsertHealerRating): Promise<HealerRating> {
-    const [newRating] = await db
-      .insert(healerRatings)
-      .values(rating)
-      .returning();
+    const [newRating] = await db.insert(healerRatings).values(rating).returning();
     return newRating;
   }
 
@@ -569,7 +605,7 @@ export class DatabaseStorage implements IStorage {
 
   async getHealerAverageRating(healerId: number): Promise<number> {
     const ratings = await this.getHealerRatings(healerId);
-    if (ratings.length === 0) return 0;
+    if (ratings.length === 0) return 5;
     const sum = ratings.reduce((acc, r) => acc + r.rating, 0);
     return sum / ratings.length;
   }
@@ -589,16 +625,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // User achievements
-  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
-    const [newAchievement] = await db.insert(userAchievements).values(achievement).returning();
-    return newAchievement;
+  async createUserAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const [newAchievement] = await db.insert(userAchievements).values(achievement as any).returning();
+    return newAchievement as Achievement;
   }
 
-  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
-    return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId));
+  async getUserAchievements(userId: number): Promise<Achievement[]> {
+    return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId)) as Achievement[];
   }
 
-  async checkAndAwardAchievements(userId: number): Promise<UserAchievement[]> {
+  async checkAndAwardAchievements(userId: number): Promise<Achievement[]> {
     try {
       const { checkAndAwardBadges } = await import("./badge-checker");
       await checkAndAwardBadges(userId);
@@ -668,9 +704,9 @@ export class DatabaseStorage implements IStorage {
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
     return await db.transaction(async (tx) => {
       const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
-      if (!user || user.credits < amount) return false;
+      if (!user || (user.credits || 0) < amount) return false;
 
-      const newCredits = user.credits - amount;
+      const newCredits = (user.credits || 0) - amount;
       await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
       await tx.insert(creditTransactions).values({
         userId,
@@ -689,7 +725,7 @@ export class DatabaseStorage implements IStorage {
       const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
       if (!user) return false;
 
-      const newCredits = user.credits + amount;
+      const newCredits = (user.credits || 0) + amount;
       await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
       await tx.insert(creditTransactions).values({
         userId,
@@ -770,7 +806,6 @@ export class DatabaseStorage implements IStorage {
     if (!user) return 1;
 
     const costs: Record<string, any> = {
-      'aura_reading': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
       'aura_analysis': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
       'vibe_check': { client: 1, healer: 1, semi_healer: 1, free_trial: 1 },
       'numerology': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 },
@@ -803,11 +838,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]> {
-    return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.createdAt));
+    return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.timestamp));
   }
 
   async getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]> {
-    return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.createdAt)).limit(limit);
+    return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.timestamp)).limit(limit);
   }
 
   // Meditation sessions
@@ -824,7 +859,7 @@ export class DatabaseStorage implements IStorage {
     const sessions = await this.getUserMeditationSessions(userId);
     return {
       sessionsCount: sessions.length,
-      totalMinutes: sessions.reduce((acc, s) => acc + s.duration, 0),
+      totalMinutes: sessions.reduce((acc, s) => acc + (s.durationMinutes || 0), 0),
       totalEnergy: sessions.reduce((acc, s) => acc + (s.energyGained || 0), 0)
     };
   }

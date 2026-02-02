@@ -159,14 +159,14 @@ export async function sendBiHourlyReminders() {
 
         for (const sub of subs) {
           try {
-            const pushSubscription: PushSubscriptionJSON = {
+            const pushSubscription: any = {
               endpoint: sub.endpoint,
               keys: JSON.parse(sub.keys)
             };
 
             // sendPushNotification already handles 410 cleanup internally
             const success = await sendPushNotification(
-              pushSubscription,
+              pushSubscription as any,
               notification.title,
               notification.body,
               notification.url
