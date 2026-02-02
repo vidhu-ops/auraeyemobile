@@ -22,7 +22,7 @@ const ALL_BADGES: EarnedBadge[] = [
   { type: 'first_numerology', title: 'Number Vision 🔢', level: 'bronze', description: 'Completed your first numerology reading', icon: '🔢' },
   { type: 'numerology_explorer', title: 'Numerology Explorer 📊', level: 'silver', description: 'Completed 3 numerology readings', icon: '📊' },
   { type: 'numerology_master', title: 'Numerology Master 🌟', level: 'gold', description: 'Completed 10 numerology readings', icon: '⭐' },
-  { type: 'numerology_legend', title: 'Numerology Legend 👑', level: 'platinum', description: 'Completed 25 numerology readings', icon: '👑' },
+  { type: 'numerology_sage', title: 'Numerology Legend 👑', level: 'platinum', description: 'Completed 20 numerology readings', icon: '👑' },
   { type: 'first_journal', title: 'Thoughts Flow 📖', level: 'bronze', description: 'Wrote your first journal entry', icon: '📝' },
   { type: 'journal_keeper', title: 'Journal Keeper 📚', level: 'silver', description: 'Wrote 5 journal entries', icon: '📚' },
   { type: 'journal_master', title: 'Journal Master ✍️', level: 'gold', description: 'Wrote 20 journal entries', icon: '✍️' },

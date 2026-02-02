@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { achievements, auraReadings, vibeReadings, numerologyReadings, objectAnalyses, journals, meditationSessions } from "../shared/schema";
+import { achievements, auraReadings, vibeReadings, numerologyReadings, objectAnalyses, journals, meditationSessions, users } from "../shared/schema";
 import { eq, or, sql } from "drizzle-orm";
 
 export interface BadgeReward {
@@ -39,11 +39,15 @@ const BADGE_THRESHOLDS = {
   first_journal: { count: 1, activity: "journal" },
   journal_keeper: { count: 5, activity: "journal" },
   journal_master: { count: 20, activity: "journal" },
+  journal_legend: { count: 50, activity: "journal" },
   
   // Meditation badges
   first_meditation: { count: 1, activity: "meditation" },
   meditation_seeker: { count: 5, activity: "meditation" },
-  meditation_master: { count: 25, activity: "meditation" },
+  meditation_master: { count: 15, activity: "meditation" },
+  
+  // Streaks (These need separate logic but we'll include thresholds for consistency)
+  seven_day_streak: { count: 7, activity: "login_streak" },
 };
 
 const BADGE_DEFINITIONS: Record<string, BadgeReward> = {
@@ -101,9 +105,9 @@ const BADGE_DEFINITIONS: Record<string, BadgeReward> = {
   },
   vibe_legend: {
     type: "vibe_legend",
-    title: "Vibe Legend 🌈",
+    title: "Vibe Legend 👑",
     description: "Completed 30 vibe checks",
-    icon: "🌈",
+    icon: "👑",
     level: "platinum",
   },
   
@@ -189,6 +193,13 @@ const BADGE_DEFINITIONS: Record<string, BadgeReward> = {
     icon: "✍️",
     level: "gold",
   },
+  journal_legend: {
+    type: "journal_legend",
+    title: "Journal Legend 🏆",
+    description: "Wrote 50 journal entries",
+    icon: "🏆",
+    level: "platinum",
+  },
   
   // Meditation badges
   first_meditation: {
@@ -207,10 +218,17 @@ const BADGE_DEFINITIONS: Record<string, BadgeReward> = {
   },
   meditation_master: {
     type: "meditation_master",
-    title: "Meditation Master 🕉️",
-    description: "Completed 25 meditation sessions",
-    icon: "🕉️",
+    title: "Meditation Master 💎",
+    description: "Completed 15 meditation sessions",
+    icon: "💎",
     level: "gold",
+  },
+  seven_day_streak: {
+    type: "seven_day_streak",
+    title: "Week Warrior 🔥",
+    description: "Maintained a 7-day login streak",
+    icon: "🔥",
+    level: "bronze",
   },
 };
 
@@ -243,6 +261,9 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       .from(meditationSessions)
       .where(eq(meditationSessions.userId, userId));
 
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    const currentStreak = user?.currentStreak || 0;
+
     const counts = {
       aura: Number(auraCountResult?.count || 0),
       vibe: Number(vibeCountResult?.count || 0),
@@ -250,6 +271,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
       object: Number(objectCountResult?.count || 0),
       journal: Number(journalCountResult?.count || 0),
       meditation: Number(meditationCountResult?.count || 0),
+      login_streak: currentStreak,
     };
 
     console.log(`[BadgeCheck] Counts for user ${userId}:`, counts);
