@@ -2090,26 +2090,11 @@ export default function HealerDashboard() {
     queryKey: ["/api/streaks"],
   });
 
-  const { data: achievementsData = [], isLoading: isLoadingAchievements } = useQuery<any[]>({
+  const { data: achievements = [], isLoading: isLoadingAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
     refetchInterval: 3000,
   });
-
-  // Also fetch the standard achievements (user_achievements table)
-  const { data: userAchievementsData = [] } = useQuery<any[]>({
-    queryKey: ["/api/user-achievements"],
-    enabled: !!user,
-    refetchInterval: 3000,
-  });
-
-  const achievements = useMemo(() => {
-    const list = Array.isArray(achievementsData) ? [...achievementsData] : [];
-    if (Array.isArray(userAchievementsData)) {
-      list.push(...userAchievementsData);
-    }
-    return list;
-  }, [achievementsData, userAchievementsData]);
 
   const earnedTypes = useMemo(() => {
     const types = new Set<string>();
@@ -2137,28 +2122,23 @@ export default function HealerDashboard() {
     return types;
   }, [achievements]);
 
-  const isBadgeEarned = (badgeTitle: string) => {
-    const normalizedTitle = badgeTitle.toLowerCase().trim();
-    const normalizedTitleUnder = normalizedTitle.replace(/ /g, "_");
-    const normalizedTitleNoEmoji = normalizedTitle.replace(/\s*[^\w\s]/g, '').trim();
-    const normalizedTitleNoEmojiUnder = normalizedTitleNoEmoji.replace(/ /g, "_");
+  const isBadgeEarned = (badge: any) => {
+    const type = badge.type.toLowerCase().trim();
+    const title = badge.title.toLowerCase().trim();
+    const titleNoEmoji = title.replace(/\s*[^\w\s]/g, '').trim();
 
-    return Array.isArray(achievements) && achievements.some(a => {
-      const type = (a.achievementType || a.badgeType || "").toLowerCase().trim();
-      const title = (a.badgeTitle || a.title || "").toLowerCase().trim();
-      return title === normalizedTitle || 
-             type === normalizedTitleUnder ||
-             type === normalizedTitle ||
-             title === normalizedTitleNoEmoji ||
-             type === normalizedTitleNoEmojiUnder;
-    });
+    return earnedTypes.has(type) || 
+           earnedTypes.has(type.replace(/_/g, " ")) ||
+           earnedTypes.has(type.replace(/ /g, "_")) ||
+           earnedTypes.has(title) ||
+           earnedTypes.has(titleNoEmoji);
   };
 
   function FilteredBadgeShowcase({ category, earnedTypes }: { category: string; earnedTypes: Set<string> }) {
     const categoryBadges = useMemo(() => {
       const auraTypes = ["first_aura", "third_aura", "aura_master", "aura_legend"];
       const vibeTypes = ["first_vibe", "vibe_enthusiast", "vibe_master", "vibe_legend"];
-      const numerologyTypes = ["first_numerology", "numerology_explorer", "numerology_master", "numerology_legend"];
+      const numerologyTypes = ["first_numerology", "numerology_explorer", "numerology_master", "numerology_sage"];
       const specialTypes = ["seven_day_streak", "first_journal", "journal_keeper", "journal_master", "journal_legend", "first_meditation", "meditation_seeker", "meditation_master"];
 
       let filter: string[] = [];
@@ -2178,8 +2158,8 @@ export default function HealerDashboard() {
         { type: "vibe_legend", title: "Vibe Legend 👑", level: "platinum", description: "Completed 30 vibe checks", icon: "👑" },
         { type: "first_numerology", title: "Number Vision 🔢", level: "bronze", description: "Completed your first numerology reading", icon: "🔢" },
         { type: "numerology_explorer", title: "Numerology Explorer 📊", level: "silver", description: "Completed 3 numerology readings", icon: "📊" },
-        { type: "numerology_master", title: "Numerology Master 🌟", level: "gold", description: "Completed 10 numerology readings", icon: "⭐" },
-        { type: "numerology_legend", title: "Numerology Legend 👑", level: "platinum", description: "Completed 25 numerology readings", icon: "👑" },
+        { type: "numerology_master", title: "Numerology Master 🧮", level: "gold", description: "Completed 10 numerology readings", icon: "🧮" },
+        { type: "numerology_sage", title: "Numerology Sage 🔮", level: "platinum", description: "Completed 20 numerology readings", icon: "🔮" },
         { type: "first_journal", title: "Thoughts Flow 📖", level: "bronze", description: "Wrote your first journal entry", icon: "📝" },
         { type: "journal_keeper", title: "Journal Keeper 📚", level: "silver", description: "Wrote 5 journal entries", icon: "📚" },
         { type: "journal_master", title: "Journal Master ✍️", level: "gold", description: "Wrote 20 journal entries", icon: "✍️" },
@@ -2226,7 +2206,7 @@ export default function HealerDashboard() {
                 level={badge.level as any}
                 description={badge.description}
                 icon={badge.icon}
-                isEarned={isEarned}
+                isEarned={isBadgeEarned(badge)}
               />
             </div>
           );

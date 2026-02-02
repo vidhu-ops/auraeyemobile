@@ -243,7 +243,7 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
     
     const [vibeCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(vibeReadings)
-      .where(or(eq(vibeReadings.userId, userId), eq(vibeReadings.performedBy, userId)));
+      .where(or(eq(vibeReadings.userId, userId), eq(vibeReadings.userId, userId))); // Healer actions are in vibeReadings.userId
     
     const [numerologyCountResult] = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(numerologyReadings)
@@ -276,30 +276,29 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
 
     console.log(`[BadgeCheck] Counts for user ${userId}:`, counts);
 
-    // Badge Type Normalization Map for Storage
-    const storageBadgeTypeMap: Record<string, string> = {
-      'first glimpse': 'first_aura',
-      'aura explorer': 'third_aura',
-      'aura master': 'aura_master',
-      'aura legend': 'aura_legend',
-      'number seeker': 'first_numerology',
-      'number vision': 'first_numerology',
-      'numerology explorer': 'numerology_explorer',
-      'numerology master': 'numerology_master',
-      'numerology legend': 'numerology_sage',
-      'numerology sage': 'numerology_sage',
-      'vibe check': 'first_vibe',
-      'vibe enthusiast': 'vibe_enthusiast',
-      'vibe master': 'vibe_master',
-      'vibe legend': 'vibe_legend',
-      'thoughts flow': 'first_journal',
-      'journal keeper': 'journal_keeper',
-      'journal master': 'journal_master',
-      'journal legend': 'journal_master',
-      'reflection hour': 'reflection_hour',
-      'inner peace': 'first_meditation',
-      'meditation seeker': 'meditation_seeker',
-      'meditation master': 'meditation_master',
+    // Normalize badge types to match frontend definitions
+    const badgeTypeNormalization: Record<string, string> = {
+      'first_aura': 'first_aura',
+      'third_aura': 'third_aura',
+      'aura_master': 'aura_master',
+      'aura_legend': 'aura_legend',
+      'first_vibe': 'first_vibe',
+      'vibe_enthusiast': 'vibe_enthusiast',
+      'vibe_master': 'vibe_master',
+      'vibe_legend': 'vibe_legend',
+      'first_numerology': 'first_numerology',
+      'numerology_explorer': 'numerology_explorer',
+      'numerology_master': 'numerology_master',
+      'numerology_sage': 'numerology_sage',
+      'numerology_legend': 'numerology_sage',
+      'first_journal': 'first_journal',
+      'journal_keeper': 'journal_keeper',
+      'journal_master': 'journal_master',
+      'journal_legend': 'journal_legend',
+      'first_meditation': 'first_meditation',
+      'meditation_seeker': 'meditation_seeker',
+      'meditation_master': 'meditation_master',
+      'seven_day_streak': 'seven_day_streak'
     };
 
     
@@ -319,14 +318,15 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
           const badgeInfo = BADGE_DEFINITIONS[badgeType];
           if (badgeInfo) {
             console.log(`[BadgeAward] Awarding badge ${badgeType} to user ${userId}`);
+            const normalizedType = badgeTypeNormalization[badgeType] || badgeType;
             await db.insert(achievements).values({
               userId,
-              achievementType: badgeType, // This must be the normalized key (e.g., 'first_aura')
+              achievementType: normalizedType,
               title: badgeInfo.title,
               description: badgeInfo.description,
               icon: badgeInfo.icon,
               tier: badgeInfo.level.toUpperCase(),
-              badgeType: badgeInfo.level, // Also store for backward compatibility
+              badgeType: badgeInfo.level,
             } as any);
             
             newBadges.push(badgeInfo);
