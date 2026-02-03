@@ -47,6 +47,14 @@ export function BadgeTargets() {
     badgeProgress.journalingTenHours,
     badgeProgress.mostTrustedHealer,
     badgeProgress.bestHealer,
+    (badgeProgress as any).first_vibe,
+    (badgeProgress as any).vibe_enthusiast,
+    (badgeProgress as any).vibe_master,
+    (badgeProgress as any).vibe_legend,
+    (badgeProgress as any).first_numerology,
+    (badgeProgress as any).numerology_explorer,
+    (badgeProgress as any).numerology_master,
+    (badgeProgress as any).numerology_sage,
   ].filter(Boolean);
 
   return (

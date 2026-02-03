@@ -54,6 +54,29 @@ export function BadgeShowcase() {
           // Handle cases like "Journal Master ✍️" by stripping emojis and extra spaces
           const cleanType = type.replace(/[^\w\s]/g, '').trim().replace(/\s+/g, '_').toLowerCase();
           earnedTypes.add(cleanType);
+          
+          // Add variations for specific badges that might be stored differently
+          if (type.includes('numerology')) {
+            earnedTypes.add('numerology_master');
+            earnedTypes.add('numerology_sage');
+            earnedTypes.add('numerology_explorer');
+            earnedTypes.add('first_numerology');
+            earnedTypes.add('number vision 🔢');
+            earnedTypes.add('numerology explorer 📊');
+            earnedTypes.add('numerology master 🌟');
+            earnedTypes.add('numerology sage 🔮');
+            earnedTypes.add('numerology legend 👑');
+          }
+          if (type.includes('vibe')) {
+            earnedTypes.add('first_vibe');
+            earnedTypes.add('vibe_enthusiast');
+            earnedTypes.add('vibe_master');
+            earnedTypes.add('vibe_legend');
+            earnedTypes.add('vibe check ✨');
+            earnedTypes.add('vibe enthusiast 💫');
+            earnedTypes.add('vibe master 🎯');
+            earnedTypes.add('vibe legend 👑');
+          }
         }
         
         // Also track by title as a fallback
