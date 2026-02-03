@@ -1,14 +1,31 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, BellOff, Settings as SettingsIcon, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Bell, BellOff, Settings as SettingsIcon, Check, Lock, Loader2 } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type PasswordData = z.infer<typeof passwordSchema>;
 
 interface NotificationPreferences {
   browserEnabled: boolean;
@@ -16,6 +33,7 @@ interface NotificationPreferences {
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { 
     isSupported, 
     permission, 
@@ -24,6 +42,37 @@ export default function SettingsPage() {
     subscribeToPush,
     unsubscribeFromPush
   } = useNotifications();
+
+  const passwordForm = useForm<PasswordData>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: PasswordData) => {
+      const res = await apiRequest("POST", "/api/user/password", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Updated",
+        description: "Your password has been changed successfully.",
+      });
+      passwordForm.reset();
+      setIsChangingPassword(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const { data: preferences, isLoading } = useQuery<NotificationPreferences>({
     queryKey: ["/api/notification-preferences"],
@@ -207,6 +256,185 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-6">
+          {/* Password Settings Card */}
+          <Card className="border-purple-200/50 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Lock className="w-6 h-6 text-purple-600" />
+                <div>
+                  <CardTitle>Security</CardTitle>
+                  <CardDescription>
+                    Manage your account password
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!isChangingPassword ? (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsChangingPassword(true)}
+                  className="w-full sm:w-auto"
+                >
+                  Change Password
+                </Button>
+              ) : (
+                <Form {...passwordForm}>
+                  <form onSubmit={passwordForm.handleSubmit((data) => changePasswordMutation.mutate(data))} className="space-y-4">
+                    <FormField
+                      control={passwordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        type="submit" 
+                        disabled={changePasswordMutation.isPending}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        {changePasswordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Update Password
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        onClick={() => {
+                          setIsChangingPassword(false);
+                          passwordForm.reset();
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-purple-200/50 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Lock className="w-6 h-6 text-purple-600" />
+                <div>
+                  <CardTitle>Security</CardTitle>
+                  <CardDescription>
+                    Manage your account password
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!isChangingPassword ? (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsChangingPassword(true)}
+                  className="w-full sm:w-auto"
+                >
+                  Change Password
+                </Button>
+              ) : (
+                <Form {...passwordForm}>
+                  <form onSubmit={passwordForm.handleSubmit((data) => changePasswordMutation.mutate(data))} className="space-y-4">
+                    <FormField
+                      control={passwordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        type="submit" 
+                        disabled={changePasswordMutation.isPending}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        {changePasswordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Update Password
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        onClick={() => {
+                          setIsChangingPassword(false);
+                          passwordForm.reset();
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Push Notifications Card */}
           <Card className="border-purple-200/50 shadow-lg">
             <CardHeader>
