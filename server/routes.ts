@@ -5877,8 +5877,20 @@ function calculateDominantSoulChakra(birthDate: string): number {
         where: (a, { eq }) => eq(a.userId, userId),
       });
       
-      const earnedTypes = new Set(earnedAchievements.map(a => a.achievementType));
+      const earnedTypes = new Set(earnedAchievements.map(a => a.achievementType.toLowerCase().trim()));
       
+      // Get counts for progress calculation
+      const { checkAndAwardBadges } = await import('./badge-checker');
+      // We don't want to award here, just get counts, but checkAndAwardBadges is async and might have side effects
+      // Let's manually count to be safe or use a helper
+      const [vibeCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(vibeReadings).where(or(eq(vibeReadings.userId, userId), sql`${vibeReadings.userId} = ${userId}`));
+      const [numCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(numerologyReadings).where(or(eq(numerologyReadings.userId, userId), eq(numerologyReadings.performedBy, userId)));
+      
+      const counts = {
+        vibe: Number(vibeCount?.count || 0),
+        numerology: Number(numCount?.count || 0)
+      };
+
       // Get login streak
       const streakData = await storage.getLoginStreak(userId);
       
@@ -5901,6 +5913,72 @@ function calculateDominantSoulChakra(birthDate: string): number {
           target: 5,
           earned: earnedTypes.has('third_aura'),
           icon: '🔍'
+        },
+        // Vibe badges
+        first_vibe: {
+          type: 'first_vibe',
+          title: 'Vibe Check ✨',
+          current: Math.min(counts.vibe, 1),
+          target: 1,
+          earned: earnedTypes.has('first_vibe'),
+          icon: '✨'
+        },
+        vibe_enthusiast: {
+          type: 'vibe_enthusiast',
+          title: 'Vibe Enthusiast 💫',
+          current: Math.min(counts.vibe, 5),
+          target: 5,
+          earned: earnedTypes.has('vibe_enthusiast'),
+          icon: '💫'
+        },
+        vibe_master: {
+          type: 'vibe_master',
+          title: 'Vibe Master 🎯',
+          current: Math.min(counts.vibe, 15),
+          target: 15,
+          earned: earnedTypes.has('vibe_master'),
+          icon: '🎯'
+        },
+        vibe_legend: {
+          type: 'vibe_legend',
+          title: 'Vibe Legend 👑',
+          current: Math.min(counts.vibe, 30),
+          target: 30,
+          earned: earnedTypes.has('vibe_legend'),
+          icon: '👑'
+        },
+        // Numerology badges
+        first_numerology: {
+          type: 'first_numerology',
+          title: 'Number Navigator 🔢',
+          current: Math.min(counts.numerology, 1),
+          target: 1,
+          earned: earnedTypes.has('first_numerology'),
+          icon: '🔢'
+        },
+        numerology_explorer: {
+          type: 'numerology_explorer',
+          title: 'Numerology Explorer 📊',
+          current: Math.min(counts.numerology, 3),
+          target: 3,
+          earned: earnedTypes.has('numerology_explorer'),
+          icon: '📊'
+        },
+        numerology_master: {
+          type: 'numerology_master',
+          title: 'Numerology Master 🧮',
+          current: Math.min(counts.numerology, 10),
+          target: 10,
+          earned: earnedTypes.has('numerology_master'),
+          icon: '🧮'
+        },
+        numerology_sage: {
+          type: 'numerology_sage',
+          title: 'Numerology Sage 🔮',
+          current: Math.min(counts.numerology, 20),
+          target: 20,
+          earned: earnedTypes.has('numerology_sage'),
+          icon: '🔮'
         },
         // Most replies as healer (accepted bookings)
         mostRepliesHealer: {
