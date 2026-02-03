@@ -73,8 +73,15 @@ export default function AuthPage() {
   });
 
   const onLoginSubmit = (data: LoginData) => {
-    loginMutation.mutate(data);
-    // Component will automatically redirect after user state updates
+    loginMutation.mutate(data, {
+      onSuccess: (user) => {
+        if (user.userType === "healer" || user.userType === "semi-healer") {
+          setLocation("/healer-dashboard");
+        } else {
+          setLocation("/");
+        }
+      }
+    });
   };
 
   const onRegisterSubmit = (data: RegisterData) => {
