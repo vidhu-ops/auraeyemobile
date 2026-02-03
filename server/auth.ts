@@ -309,6 +309,31 @@ export function setupAuth(app: Express) {
       res.json(userWithoutPassword);
     }
   });
+
+  // Password update endpoint
+  app.post("/api/user/password", isAuthenticated, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const user = await storage.getUser(req.user!.id);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isMatch = await comparePasswords(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid current password" });
+      }
+
+      const hashedPassword = await hashPassword(newPassword);
+      await storage.updateUserPassword(user.id, hashedPassword);
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Password update error:", error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
+  });
 }
 
 // Authentication middleware
