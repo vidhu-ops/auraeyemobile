@@ -2077,8 +2077,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
         
         // Deduct credits for successful numerology reading
-        // Healers pay 3 credits, clients pay 2
-        const numerologyCost = req.user.userType === 'healer' ? 3 : 2;
+        // All users pay 3 credits for numerology
+        const numerologyCost = 3;
         const deductionResult = await storage.deductCredits(req.user.id, numerologyCost, 'numerology', `Numerology reading for ${name}`);
         if (!deductionResult) {
           return res.status(402).json({ error: "Insufficient credits" });
@@ -2199,8 +2199,8 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         });
         
         // Deduct credits for successful numerology reading
-        // Healers pay 3 credits, clients pay 2
-        const numerologyCost = req.user.userType === 'healer' ? 3 : 2;
+        // All users pay 3 credits for numerology
+        const numerologyCost = 3;
         const deductionResult = await storage.deductCredits(req.user.id, numerologyCost, 'numerology', `Numerology reading for ${name}`);
         if (!deductionResult) {
           return res.status(402).json({ error: "Insufficient credits" });
