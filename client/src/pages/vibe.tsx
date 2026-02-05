@@ -412,6 +412,8 @@ export default function VibePage() {
       
       // Invalidate queries to refresh vibe readings and achievements
       queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });

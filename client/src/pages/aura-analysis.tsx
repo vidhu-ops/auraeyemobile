@@ -6724,7 +6724,11 @@ Team AuraEye™
               console.log('⚠️ No ID in analysis result, will retry later');
             }
             
-            setResult(analysisResult);
+            // Deduct credits and invalidate query
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
+      setResult(analysisResult);
             
             // Save last scan color for mascot
             if (analysisResult.dominantColor) {

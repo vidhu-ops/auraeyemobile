@@ -686,7 +686,8 @@ export default function ObjectAnalysis() {
       
       // Invalidate queries to refresh user's reading history immediately
       queryClient.invalidateQueries({ queryKey: ['/api/object-analyses'] });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       
