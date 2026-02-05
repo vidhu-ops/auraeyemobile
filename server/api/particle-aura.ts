@@ -51,6 +51,35 @@ export async function generateParticleAuraEffect(
     const darkerG = Math.max(0, color.g - 40);
     const darkerB = Math.max(0, color.b - 40);
 
+    // Helper for seeded random in SVG generation
+    let seed = width + height + color.r + color.g + color.b;
+    const seededRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+
+    let particleGradients = '';
+    let particles = '';
+
+    // Generate 600-1200 particles with soft diffused glows
+    const particleCount = 800;
+    for (let i = 0; i < particleCount; i++) {
+      const x = seededRandom() * width;
+      const y = seededRandom() * height;
+      const radius = 5 + seededRandom() * 30;
+      const opacity = 0.1 + seededRandom() * 0.3;
+      const gradId = `grad_${i}`;
+      
+      particleGradients += `
+        <radialGradient id="${gradId}" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:${opacity}" />
+          <stop offset="70%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:${opacity * 0.3}" />
+          <stop offset="100%" style="stop-color:rgb(${color.r}, ${color.g}, ${color.b});stop-opacity:0" />
+        </radialGradient>`;
+      
+      particles += `<circle cx="${x}" cy="${y}" r="${radius}" fill="url(#${gradId})" filter="url(#particleBlur)" />`;
+    }
+
     const svgContent = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -65,19 +94,20 @@ export async function generateParticleAuraEffect(
           <stop offset="100%" style="stop-color:rgb(${darkerR}, ${darkerG}, ${darkerB});stop-opacity:1" />
         </radialGradient>
         
-        <filter id="noise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/>
-          <feColorMatrix type="saturate" values="0" result="mono"/>
-          <feBlend in="SourceGraphic" in2="mono" mode="overlay"/>
+        <filter id="particleBlur">
+          <feGaussianBlur stdDeviation="3" />
         </filter>
-        
+
         <filter id="softBlur">
           <feGaussianBlur in="SourceGraphic" stdDeviation="30" />
         </filter>
+        ${particleGradients}
       </defs>
       
       <rect width="100%" height="100%" fill="url(#mainGradient)" />
       <rect width="100%" height="100%" fill="url(#centerGlow)" />
+      
+      ${particles}
       
       <ellipse cx="${width * 0.2}" cy="${height * 0.3}" rx="${width * 0.4}" ry="${height * 0.4}" 
                fill="rgb(${lighterR}, ${lighterG}, ${lighterB})" opacity="0.4" filter="url(#softBlur)" />
