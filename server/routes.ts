@@ -1341,6 +1341,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Deduct credits for successful analysis
           const creditDeducted = await storage.deductCredits(req.user!.id, req.creditCost!, 'object_analysis', `Object analysis for ${analysisName}`);
+          if (!creditDeducted) {
+            return res.status(402).json({ error: "Insufficient credits" });
+          }
           console.log('Object analysis credit deduction result:', creditDeducted);
           
           // Add soul energy (credits * 100) for completing object analysis
@@ -1815,9 +1818,14 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       if (req.user && req.user.id && req.creditCost > 0) {
         try {
           const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'aura_analysis', `Aura analysis for ${analysisName}`);
+          if (!deductionResult) {
+            console.log(`Credit deduction failed for user ${req.user.id}: insufficient credits`);
+            return res.status(402).json({ error: "Insufficient credits", message: "You do not have enough credits for this service." });
+          }
           console.log(`Credit deduction result: ${deductionResult}, deducted ${req.creditCost} credits for aura analysis`);
         } catch (creditError) {
           console.error("Error deducting credits:", creditError);
+          return res.status(500).json({ error: "Internal server error during credit processing" });
         }
       } else {
         console.log(`Credit deduction skipped: unauthenticated user or no credit cost`);
@@ -2069,7 +2077,10 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
         
         // Deduct credits for successful numerology reading
-        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        if (!deductionResult) {
+          return res.status(402).json({ error: "Insufficient credits" });
+        }
         
         // Check and award achievements
         let newBadges: any[] = [];
@@ -2186,7 +2197,10 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         });
         
         // Deduct credits for successful numerology reading
-        await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Numerology reading for ${name}`);
+        if (!deductionResult) {
+          return res.status(402).json({ error: "Insufficient credits" });
+        }
       }
       
       // Create comprehensive response structure for healer dashboard
@@ -2279,7 +2293,10 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         numerologyProfile.readingId = savedReading.id;
         
         // Deduct credits
-        await storage.deductCredits(req.user!.id, req.creditCost!, 'numerology', `Numerology reading for ${name}`);
+        const deductionResult = await storage.deductCredits(req.user!.id, req.creditCost!, 'numerology', `Numerology reading for ${name}`);
+        if (!deductionResult) {
+          return res.status(402).json({ error: "Insufficient credits" });
+        }
         
         // Add soul energy (credits * 100) for completing numerology analysis
         try {
@@ -3688,7 +3705,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
         }
         
         // Deduct credits for successful analysis
-        await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
+        const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'vibe_check', 'Quick vibe analysis');
+        if (!deductionResult) {
+          return res.status(402).json({ error: "Insufficient credits" });
+        }
         
         // Add soul energy (credits * 100) for completing vibe scan
         const vibeSoulEnergyAmount = (req.creditCost || 1) * 100;
@@ -4975,7 +4995,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.log(`Live numerology result:`, JSON.stringify(result, null, 2));
 
       // Deduct credits for live numerology reading
-      await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
+      const deductionResult = await storage.deductCredits(req.user.id, req.creditCost, 'numerology', `Live numerology reading for ${name}`);
+      if (!deductionResult) {
+        return res.status(402).json({ error: "Insufficient credits" });
+      }
       
       // Check and award achievements for numerology readings
       let newBadges: any[] = [];
