@@ -818,7 +818,7 @@ export class DatabaseStorage implements IStorage {
     const costs: Record<string, any> = {
       'aura_analysis': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
       'vibe_check': { client: 1, healer: 1, semi_healer: 1, free_trial: 1 },
-      'numerology': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 },
+      'numerology': { client: 3, healer: 3, semi_healer: 3, free_trial: 3 },
       'object_analysis': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 }
     };
 

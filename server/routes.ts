@@ -2426,6 +2426,18 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
       if (!name || !birthDate) {
         return res.status(400).json({ message: "Name and birth date are required" });
       }
+
+      // Check if user is authenticated
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // New users (default client) with 0 credits cannot use numerology until they buy credits/upgrade
+      if (req.user.userType === 'client' && req.user.credits === 0 && !req.user.isPremium) {
+        return res.status(403).json({ 
+          message: "Numerology is a premium feature. Please buy credits and upgrade your account to access your spiritual blueprint." 
+        });
+      }
       
       let numerologyProfile: NumerologyResult;
       
