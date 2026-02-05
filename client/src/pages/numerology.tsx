@@ -780,11 +780,11 @@ With awareness and responsibility,
       return;
     }
 
-    // New users or users with 0 credits cannot use numerology until they buy credits
-    if (user.credits === 0 || !user.isPremium) {
+    // Check if user is a new user (default client) and has 0 credits
+    if (user.userType === 'client' && user.credits === 0 && !user.isPremium) {
       toast({
-        title: "Access Restricted",
-        description: "Please upgrade your account or buy credits to access numerology analysis.",
+        title: "Upgrade Required",
+        description: "Numerology is a premium feature. Please buy credits and upgrade your account to access your spiritual blueprint.",
         variant: "destructive",
       });
       return;
