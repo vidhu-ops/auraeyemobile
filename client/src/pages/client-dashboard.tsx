@@ -42,7 +42,7 @@ import { getSoulEnergyMilestone, calculateTreeGrowth, getProgressToNextMilestone
 import * as badgeDefinitions from "@/lib/badge-definitions";
 
 export default function ClientDashboard() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [location] = useLocation();
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { credits, isLoading: creditsLoading } = useCredits();

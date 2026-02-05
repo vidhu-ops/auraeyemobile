@@ -48,7 +48,7 @@ type NumerologyFormData = z.infer<typeof numerologySchema>;
       Reallifereadability: "Imagine you’ve been stuck in the same job for months but always dreamt of starting your own business. This month nudges you to take that leap of faith. You’ll notice doors opening—an investor might show interest, or you may stumble upon the resources you need. However, fear might creep in, making you doubt your capabilities.",
       adviceforbalance: "Focus on building a strong foundation for the future. This is a month to prioritize action but also to ensure you don’t burn out. Balance is key. Practice mindfulness to stay grounded and avoid overextending yourself. Use affirmations like “I am confident, capable, and ready to lead” to align your Solar Plexus Chakra.",
       practicalsteps: "1.Set clear, achievable goals. Break them into smaller tasks to maintain focus. 2.Say yes to opportunities but evaluate them carefully—don’t spread yourself too thin. 3.Take care of your health; physical vitality will fuel your drive.",
-     Chakrainsights: ["The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy."]
+      Chakrainsights: ["The Solar Plexus Chakra governs self-esteem and personal power. To maintain balance, practice yellow light meditations and chant the mantra RAM daily. Visualize your goals while basking in this radiant energy."]
     },
     2: {
       color: "Green/Pink (Heart)",
@@ -776,12 +776,12 @@ With awareness and responsibility,
         variant: "destructive",
       });
       // Redirect to login page
-      window.location.href = "/api/login";
+      window.location.href = "/auth";
       return;
     }
 
     // Check if user is a new user (default client) and has 0 credits
-    if (user.userType === 'client' && user.credits === 0 && !user.isPremium) {
+    if (user.userType === 'client' && (user.credits || 0) === 0) {
       toast({
         title: "Upgrade Required",
         description: "Numerology is a premium feature. Please buy credits and upgrade your account to access your spiritual blueprint.",
