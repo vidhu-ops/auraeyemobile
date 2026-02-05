@@ -319,6 +319,10 @@ export async function checkAndAwardBadges(userId: number): Promise<BadgeReward[]
           if (badgeInfo) {
             console.log(`[BadgeAward] Awarding badge ${badgeType} to user ${userId}`);
             const normalizedType = badgeTypeNormalization[badgeType] || badgeType;
+            
+            // Normalize title for lookup (strip emojis)
+            const baseTitle = badgeInfo.title.replace(/\s*[^\w\s]/g, '').trim();
+            
             await db.insert(achievements).values({
               userId,
               achievementType: normalizedType,
