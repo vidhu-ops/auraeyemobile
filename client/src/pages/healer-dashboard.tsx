@@ -2305,8 +2305,8 @@ export default function HealerDashboard() {
   // Fetch healer's bookings with real-time updates
   const { data: bookings = [], isLoading: isLoadingBookings, refetch } = useQuery<HealerBooking[]>({
     queryKey: ["/api/healer-bookings"],
-    refetchInterval: 5000, // Real-time updates every 5 seconds
-    staleTime: 30000,
+    refetchInterval: 10000,
+    staleTime: 60000,
     retry: 2,
     refetchOnWindowFocus: false,
   });
@@ -2314,8 +2314,8 @@ export default function HealerDashboard() {
   // Fetch healer analytics
   const { data: analytics } = useQuery<HealerAnalytics>({
     queryKey: ["/api/healer-analytics"],
-    refetchInterval: 30000, // Refresh every 30 seconds
-    staleTime: 60000,
+    refetchInterval: 120000,
+    staleTime: 120000,
     retry: 1,
     refetchOnWindowFocus: false,
   });
@@ -2323,21 +2323,19 @@ export default function HealerDashboard() {
   // Fetch booking trends
   const { data: trends = [] } = useQuery<BookingTrend[]>({
     queryKey: ["/api/healer-trends"],
-    refetchInterval: 60000, // Refresh every minute
-    staleTime: 60000,
+    refetchInterval: 300000,
+    staleTime: 300000,
     retry: 1,
     refetchOnWindowFocus: false,
   });
 
-  // Login streak data is already fetched via streakData query above
-
-  // Fetch healer's own aura readings with immediate updates
+  // Fetch healer's own aura readings
   const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings, refetch: refetchAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
-    staleTime: 30000,
-    gcTime: 1000 * 60 * 15,
-    refetchInterval: 10000,
+    staleTime: 60000,
+    gcTime: 1000 * 60 * 60,
+    refetchInterval: 60000,
     refetchOnWindowFocus: false,
     retry: 2,
   });
