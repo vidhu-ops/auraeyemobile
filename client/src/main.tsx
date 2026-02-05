@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { StrictMode } from "react";
 import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "next-themes";
@@ -21,8 +22,13 @@ if (!lastVisit || (now - parseInt(lastVisit)) > 300000) {
 
 registerServiceWorker();
 
-createRoot(document.getElementById("root")!).render(
-  <ThemeProvider attribute="class" defaultTheme="light">
-    <App />
-  </ThemeProvider>
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Failed to find the root element");
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <App />
+    </ThemeProvider>
+  </StrictMode>
 );

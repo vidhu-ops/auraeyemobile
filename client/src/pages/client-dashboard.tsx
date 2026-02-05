@@ -54,19 +54,29 @@ export default function ClientDashboard() {
   const { data: achievements = [] as any[], refetch: refetchAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
-    refetchInterval: 1000, // Auto-refetch every 1 second for immediate feedback
+    staleTime: 60000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchInterval: 10000, 
   });
 
   // Fetch numerology readings for upgrade prompt check
   const { data: numerologyReadings = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/numerology-readings"],
     enabled: !!user && user.userType === "client",
+    staleTime: 60000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    gcTime: 1000 * 60 * 60,
   });
   
   // Fetch credit transactions for activity log
   const { data: creditTransactions = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/credit-transactions"],
     enabled: !!user,
+    staleTime: 60000,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
   
   // Get tab from URL query parameter, default to "overview"
