@@ -151,7 +151,6 @@ function AppContent() {
           icon={currentBadge.icon}
           level={currentBadge.level}
           onClose={closeBadge}
-          data-testid="badge-earned"
         />
       )}
       {user && !isPublicRoute && <NotificationPrompt />}

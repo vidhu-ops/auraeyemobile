@@ -37,6 +37,42 @@ const levelColors = {
   },
 };
 
-export function BadgeNotification() {
-  return null;
+export function BadgeNotification({ title, description, icon, level, onClose }: BadgeNotificationProps) {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(false);
+      setTimeout(onClose, 500); // Wait for fade out
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  if (!show) return null;
+
+  return (
+    <div className={`fixed top-4 right-4 z-[100] max-w-sm p-4 rounded-xl border-2 shadow-2xl animate-in slide-in-from-right fade-in duration-500 bg-gradient-to-br ${levelColors[level].bg} ${levelColors[level].border}`}>
+      <div className="flex items-start gap-4">
+        <div className="text-4xl animate-bounce">{icon}</div>
+        <div className="flex-1">
+          <h3 className={`font-bold ${levelColors[level].text}`}>{title}</h3>
+          <p className={`text-sm opacity-90 ${levelColors[level].text}`}>{description}</p>
+          <div className="mt-3 flex items-center gap-2">
+            <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-white/20 ${levelColors[level].text}`}>
+              {level} Badge Earned!
+            </span>
+          </div>
+        </div>
+        <button 
+          onClick={() => {
+            setShow(false);
+            setTimeout(onClose, 500);
+          }}
+          className={`p-1 rounded-full hover:bg-white/20 transition-colors ${levelColors[level].text}`}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
