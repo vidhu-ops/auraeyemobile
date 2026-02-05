@@ -204,10 +204,10 @@ export default function NumerologyPage() {
   const { data: numerologyReadings = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ["/api/numerology-readings"],
     enabled: !!user && user.userType === "client",
-    staleTime: 30000,
+    staleTime: 60000,
     retry: 2,
     refetchOnWindowFocus: false,
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60, // 60 minutes
   });
 
   // Get numerology analysis - use healer data if available
@@ -221,7 +221,7 @@ export default function NumerologyPage() {
     queryFn: () => calculateNumerology(targetName, targetBirthDate),
     enabled: !!(targetBirthDate && targetName),
     staleTime: 60000,
-    retry: 1,
+    retry: 2,
     refetchOnWindowFocus: false,
     gcTime: 1000 * 60 * 60, // 1 hour
   });
