@@ -704,9 +704,18 @@ export class DatabaseStorage implements IStorage {
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
     return await db.transaction(async (tx) => {
       const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
-      if (!user || (user.credits || 0) < amount) return false;
+      if (!user) {
+        console.error(`DeductCredits: User ${userId} not found`);
+        return false;
+      }
+      
+      const currentCredits = Number(user.credits || 0);
+      if (currentCredits < amount) {
+        console.log(`DeductCredits: User ${userId} has insufficient credits (${currentCredits} < ${amount})`);
+        return false;
+      }
 
-      const newCredits = (user.credits || 0) - amount;
+      const newCredits = currentCredits - amount;
       await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
       await tx.insert(creditTransactions).values({
         userId,
@@ -716,6 +725,7 @@ export class DatabaseStorage implements IStorage {
         description,
         balanceAfter: newCredits,
       });
+      console.log(`DeductCredits SUCCESS: User ${userId}, deducted ${amount}, new balance ${newCredits}`);
       return true;
     });
   }

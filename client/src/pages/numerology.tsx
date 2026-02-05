@@ -804,7 +804,8 @@ With awareness and responsibility,
       // Invalidate queries to refresh user's reading history and healer dashboard immediately
       queryClient.invalidateQueries({ queryKey: ['/api/numerology-readings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/healer-numerology-readings'] });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
       queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
       
