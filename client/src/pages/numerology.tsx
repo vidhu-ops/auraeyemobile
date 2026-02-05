@@ -201,9 +201,13 @@ export default function NumerologyPage() {
   }, [targetName, targetBirthDate, form]);
 
   // Check if user has numerology readings
-  const { data: numerologyReadings = [] } = useQuery({
+  const { data: numerologyReadings = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ["/api/numerology-readings"],
     enabled: !!user && user.userType === "client",
+    staleTime: 30000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    gcTime: 1000 * 60 * 30, // 30 minutes
   });
 
   // Get numerology analysis - use healer data if available
@@ -216,6 +220,10 @@ export default function NumerologyPage() {
     queryKey: ["/api/numerology", targetName, targetBirthDate],
     queryFn: () => calculateNumerology(targetName, targetBirthDate),
     enabled: !!(targetBirthDate && targetName),
+    staleTime: 60000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    gcTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Show upgrade prompt if user is a client with no previous readings

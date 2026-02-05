@@ -2306,18 +2306,27 @@ export default function HealerDashboard() {
   const { data: bookings = [], isLoading: isLoadingBookings, refetch } = useQuery<HealerBooking[]>({
     queryKey: ["/api/healer-bookings"],
     refetchInterval: 5000, // Real-time updates every 5 seconds
+    staleTime: 30000,
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch healer analytics
   const { data: analytics } = useQuery<HealerAnalytics>({
     queryKey: ["/api/healer-analytics"],
     refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 60000,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch booking trends
   const { data: trends = [] } = useQuery<BookingTrend[]>({
     queryKey: ["/api/healer-trends"],
     refetchInterval: 60000, // Refresh every minute
+    staleTime: 60000,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   // Login streak data is already fetched via streakData query above
@@ -2326,85 +2335,91 @@ export default function HealerDashboard() {
   const { data: healerAuraReadings = [], isLoading: isLoadingAuraReadings, refetch: refetchAuraReadings } = useQuery<AuraReading[]>({
     queryKey: ["/api/healer-aura-readings"],
     enabled: !!user,
-    staleTime: 0, // Always refetch to get latest data
-    gcTime: 30 * 1000, // Keep in cache for 30 seconds only for immediate updates
-    refetchInterval: 3000, // Refetch every 3 seconds for very fast updates
+    staleTime: 30000,
+    gcTime: 1000 * 60 * 15,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   // Fetch total count of healer's aura readings
   const { data: auraReadingsCountData } = useQuery<{ count: number }>({
     queryKey: ["/api/healer-aura-readings-count"],
     enabled: !!user,
-    staleTime: 30 * 1000,
-    refetchInterval: 30000,
+    staleTime: 60000,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch healer's own numerology readings with real-time updates
   const { data: healerNumerologyReadings = [], isLoading: isLoadingNumerologyReadings, refetch: refetchNumerologyReadings } = useQuery<NumerologyReading[]>({
     queryKey: ["/api/healer-numerology-readings"],
     enabled: !!user,
-    staleTime: 0, // Always refetch to get latest data
-    gcTime: 0, // Don't cache - always fetch fresh data
-    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    refetchOnReconnect: true, // Refetch on reconnection
+    staleTime: 30000,
+    gcTime: 1000 * 60 * 15,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   // Fetch total count of healer's numerology readings
   const { data: numerologyReadingsCountData } = useQuery<{ count: number }>({
     queryKey: ["/api/healer-numerology-readings-count"],
     enabled: !!user,
-    staleTime: 30 * 1000,
-    refetchInterval: 30000,
+    staleTime: 60000,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch healer's own vibe readings with immediate updates
   const { data: healerVibeReadings = [], isLoading: isLoadingVibeReadings, refetch: refetchVibeReadings } = useQuery<VibeReading[]>({
     queryKey: ["/api/healer-vibe-readings"],
     enabled: !!user,
-    staleTime: 0, // Always refetch to get latest data
-    gcTime: 0, // Don't cache - always fetch fresh data
-    refetchInterval: 5000, // Refetch every 5 seconds for faster updates
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    refetchOnReconnect: true, // Refetch on reconnection
+    staleTime: 30000,
+    gcTime: 1000 * 60 * 15,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   // Fetch total count of vibe readings
   const { data: vibeReadingsCountData } = useQuery<{ count: number }>({
     queryKey: ["/api/healer-vibe-readings-count"],
     enabled: !!user,
-    staleTime: 30 * 1000,
-    refetchInterval: 30000,
+    staleTime: 60000,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch healer's own object analyses with immediate updates
   const { data: healerObjectAnalyses = [], isLoading: isLoadingObjectAnalyses, refetch: refetchObjectAnalyses } = useQuery<any[]>({
     queryKey: ["/api/healer-object-analyses"],
     enabled: !!user,
-    staleTime: 0, // Always refetch to get latest data
-    gcTime: 0, // Don't cache - always fetch fresh data
-    refetchInterval: 5000, // Refetch every 5 seconds for faster updates
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    refetchOnReconnect: true, // Refetch on reconnection
+    staleTime: 30000,
+    gcTime: 1000 * 60 * 15,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   // Fetch stored aura PDFs
   const { data: healerPdfs = [], isLoading: isLoadingPdfs, refetch: refetchPdfs } = useQuery<any[]>({
     queryKey: ["/api/healer-pdfs"],
     enabled: !!user,
-    staleTime: 0,
-    gcTime: 30 * 1000,
-    refetchInterval: 10000,
+    staleTime: 60000,
+    gcTime: 1000 * 60 * 30,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch healer's earned badges - authenticated endpoint
   const { data: healerBadgesData } = useQuery<{ badges: HealerBadge[] }>({
     queryKey: ["/api/healer-badges"],
     enabled: !!user?.id,
-    staleTime: 0,
-    refetchInterval: 2000, // Refresh every 2 seconds for real-time badge updates
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    staleTime: 30000,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
   const healerBadges = healerBadgesData?.badges || [];
 
