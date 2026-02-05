@@ -780,6 +780,16 @@ With awareness and responsibility,
       return;
     }
 
+    // New users or users with 0 credits cannot use numerology until they buy credits
+    if (user.credits === 0 || !user.isPremium) {
+      toast({
+        title: "Access Restricted",
+        description: "Please upgrade your account or buy credits to access numerology analysis.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!data.name.trim() || !data.birthDate.trim()) {
       toast({
         title: "Missing Information",
