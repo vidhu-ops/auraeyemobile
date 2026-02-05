@@ -138,10 +138,15 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.45 + seededRandom() * 0.5;
       
       ctx.save();
-      // Creating dense look with blur and shadow for diffusion
+      // Use radial gradient for soft blurred edges
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.8);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`);
+      grad.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${opacity * 0.15})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      
       ctx.shadowBlur = radius * 1.2;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.8, 0, Math.PI * 2);
       ctx.fill();
@@ -163,9 +168,14 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.35 + seededRandom() * 0.45;
       
       ctx.save();
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.7);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.25})`);
+      grad.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
       ctx.shadowBlur = radius * 1.0;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.25})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.7, 0, Math.PI * 2);
       ctx.fill();
@@ -187,9 +197,14 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.3 + seededRandom() * 0.4;
       
       ctx.save();
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.6);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`);
+      grad.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
       ctx.shadowBlur = radius * 0.8;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
       ctx.fill();
@@ -211,9 +226,14 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.25 + seededRandom() * 0.35;
       
       ctx.save();
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.5);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.15})`);
+      grad.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
       ctx.shadowBlur = radius * 0.6;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.15})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.5, 0, Math.PI * 2);
       ctx.fill();
@@ -236,9 +256,14 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.3 + seededRandom() * 0.45;
       
       ctx.save();
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.7);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`);
+      grad.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, ${opacity * 0.05})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
       ctx.shadowBlur = radius * 0.8;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.2})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.7, 0, Math.PI * 2);
       ctx.fill();
@@ -260,9 +285,14 @@ const processImageWithVibeAuraEffect = (
       const opacity = 0.15 + seededRandom() * 0.2;
       
       ctx.save();
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.6);
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`);
+      grad.addColorStop(0.9, `rgba(${r}, ${g}, ${b}, ${opacity * 0.02})`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
       ctx.shadowBlur = radius * 0.5;
       ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.1})`;
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
       ctx.fill();
