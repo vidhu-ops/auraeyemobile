@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import { useBadgeContext } from "@/hooks/use-badge-context";
@@ -169,6 +169,7 @@ const getInitialHealerData = () => {
 
 export default function NumerologyPage() {
   const { user } = useAuth();
+  const [location, navigate] = useLocation();
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
   const { checkBadges, showBadges } = useBadgeContext();
@@ -775,8 +776,8 @@ With awareness and responsibility,
         description: "Please log in to access numerology analysis.",
         variant: "destructive",
       });
-      // Redirect to login page
-      window.location.href = "/auth";
+      // Use navigate for safer redirection
+      navigate("/auth");
       return;
     }
 
