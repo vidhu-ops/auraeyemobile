@@ -44,9 +44,18 @@ import * as badgeDefinitions from "@/lib/badge-definitions";
 export default function ClientDashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const [location] = useLocation();
-  const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
-  const { credits, isLoading: creditsLoading } = useCredits();
-  const { stats, isLoading: statsLoading, hasError: statsError } = useUserStats();
+  const { data: soulEnergy, isLoading: soulEnergyLoading } = useQuery<number>({
+    queryKey: ["/api/soul-energy", user?.id],
+    enabled: !!user,
+  });
+  const { data: credits, isLoading: creditsLoading } = useQuery<number>({
+    queryKey: ["/api/credits", user?.id],
+    enabled: !!user,
+  });
+  const { data: stats, isLoading: statsLoading } = useQuery<any>({
+    queryKey: ["/api/user-stats", user?.id],
+    enabled: !!user,
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
@@ -59,6 +68,9 @@ export default function ClientDashboard() {
     refetchOnWindowFocus: false,
     refetchInterval: 10000, 
   });
+
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
 
   // Fetch numerology readings for upgrade prompt check
   const { data: numerologyReadings = [] as any[] } = useQuery<any[]>({
@@ -101,8 +113,14 @@ export default function ClientDashboard() {
   }, [achievements.length, previousAchievementCount, toast]);
 
   const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Activity", "Settings"];
-  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user?.profilePictureUrl || null);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-500" />
+      </div>
+    );
+  }
   
   // Use new milestone and tree growth system
   const milestone = getSoulEnergyMilestone(soulEnergy);

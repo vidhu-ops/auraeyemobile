@@ -20,6 +20,7 @@ type AuthContextType = {
 type LoginData = Pick<InsertUser, "username" | "password">;
 
 export const AuthContext = createContext<AuthContextType | null>(null);
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     staleTime: 60000,
     retry: 2,
     refetchOnWindowFocus: false,
-    enabled: isMounted, // Only run query after mount
+    enabled: isMounted,
   });
 
   const { data: user, error, isLoading } = authQuery;
@@ -46,9 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
-      // Refetch the user query to ensure component gets updated state
       queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      // Immediately refetch credits and other user data after login (use predicate to match any user-specific key)
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
@@ -75,9 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
-      // Refetch the user query to ensure component gets updated state
       queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      // Immediately refetch credits and other user data after registration (use predicate to match any user-specific key)
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
@@ -103,7 +100,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
-      // Clear all user-specific caches using predicates to match user-scoped keys (e.g., ["/api/credits", userId])
       queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/credits" });
       queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/soul-energy" });
       queryClient.removeQueries({ predicate: (query) => query.queryKey[0] === "/api/user-stats" });
@@ -121,6 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     },
   });
+
+  if (!isMounted) {
+    return <div className="min-h-screen bg-slate-950" />;
+  }
 
   return (
     <AuthContext.Provider
