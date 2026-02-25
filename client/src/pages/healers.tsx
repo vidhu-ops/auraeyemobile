@@ -227,11 +227,14 @@ export default function HealersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {healers.map((healer) => (
               <Card key={healer.id} className="overflow-hidden hover:shadow-lg transition-shadow py-10">
-                <div className="h-25 bg-gradient-to-br from-orange-200 to-pink-200 relative">
+                <div className="h-48 bg-gradient-to-br from-orange-200 to-pink-200 relative">
                   <img 
                     src={healer.imageUrl} 
                     alt={healer.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop';
+                    }}
                   />
                 </div>
                 
