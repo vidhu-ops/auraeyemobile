@@ -66,6 +66,8 @@ export default function HealersPage() {
   // Fetch healers from database
   const { data: healers = [], isLoading, error } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
+    refetchOnMount: true,
+    staleTime: 0
   });
   
   // Booking mutation
