@@ -67,7 +67,9 @@ export default function HealersPage() {
   const { data: healers = [], isLoading, error } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
     refetchOnMount: true,
-    staleTime: 0
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0
   });
   
   // Booking mutation
