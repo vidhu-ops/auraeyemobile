@@ -256,7 +256,7 @@ export default function HealersPage() {
                           <Button variant="ghost" size="sm" className="flex items-center gap-1 h-auto py-1 px-2">
                             <div className="flex items-center">
                               <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                              <span className="ml-2 font-medium text-sm">{allHealerRatings[healer.id]?.length > 0 ? (allHealerRatings[healer.id].reduce((sum: number, r: HealerRating) => sum + r.rating, 0) / allHealerRatings[healer.id].length).toFixed(1) : '5'}</span>
+                              <span className="ml-2 font-medium text-sm text-white">{allHealerRatings[healer.id]?.length > 0 ? (allHealerRatings[healer.id].reduce((sum: number, r: HealerRating) => sum + r.rating, 0) / allHealerRatings[healer.id].length).toFixed(1) : '5'}</span>
                             </div>
                             <ChevronDown className="h-4 w-4" />
                           </Button>
