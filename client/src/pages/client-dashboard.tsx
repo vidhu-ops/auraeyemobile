@@ -112,7 +112,7 @@ export default function ClientDashboard() {
     setPreviousAchievementCount(achievements.length);
   }, [achievements.length, previousAchievementCount, toast]);
 
-  const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Activity", "Settings"];
+  const tabs = ["Overview", "Soul Energy", "Achievements", "Badge Info", "Bookings", "Numerology", "Activity", "Settings"];
   
   if (authLoading || !user) {
     return (
@@ -231,6 +231,77 @@ export default function ClientDashboard() {
         </div>
 
         {/* Tab Content */}
+        {activeTab === "numerology" && user?.birthDate && (
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <Calculator className="h-6 w-6 text-purple-400" />
+                <h3 className="text-xl font-bold text-white">Your Full Numerology Profile</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-4">
+                  <div className="bg-purple-900/30 rounded-xl p-6 border border-purple-400/30">
+                    <div className="text-4xl font-bold text-purple-300 mb-2 text-center">
+                      {userTyped.lifePathNumber || 7}
+                    </div>
+                    <div className="text-sm text-purple-200 text-center font-semibold">Life Path Number</div>
+                    <p className="text-xs text-purple-100/70 mt-4 text-center">Your core purpose and primary life lessons.</p>
+                  </div>
+                  
+                  <div className="bg-indigo-900/30 rounded-xl p-6 border border-indigo-400/30">
+                    <div className="text-4xl font-bold text-indigo-300 mb-2 text-center">
+                      {userTyped.destinyNumber || 3}
+                    </div>
+                    <div className="text-sm text-indigo-200 text-center font-semibold">Destiny Number</div>
+                    <p className="text-xs text-indigo-100/70 mt-4 text-center">Your natural talents and the path you are meant to follow.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-pink-900/30 rounded-xl p-6 border border-pink-400/30">
+                    <div className="text-4xl font-bold text-pink-300 mb-2 text-center">
+                      {userTyped.soulUrgeNumber || 1}
+                    </div>
+                    <div className="text-sm text-pink-200 text-center font-semibold">Soul Urge Number</div>
+                    <p className="text-xs text-pink-100/70 mt-4 text-center">Your inner desires and what truly motivates you.</p>
+                  </div>
+                  
+                  <div className="bg-amber-900/30 rounded-xl p-6 border border-amber-400/30">
+                    <div className="text-4xl font-bold text-amber-300 mb-2 text-center">
+                      {userTyped.personalYearNumber || 9}
+                    </div>
+                    <div className="text-sm text-amber-200 text-center font-semibold">Personal Year Number</div>
+                    <p className="text-xs text-amber-100/70 mt-4 text-center">The current vibrational cycle of your year.</p>
+                  </div>
+                </div>
+              </div>
+
+              {Array.isArray(numerologyReadings) && numerologyReadings.length === 0 ? (
+                <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-xl p-8 text-center">
+                  <Crown className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-bold text-white mb-2">Unlock Detailed Analysis</h4>
+                  <p className="text-yellow-100/80 text-sm mb-6 max-w-md mx-auto">
+                    Get a comprehensive reading covering your personality, relationship compatibility, and future forecasts.
+                  </p>
+                  <Link href="/pricing">
+                    <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8">
+                      Upgrade to Premium
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <Link href="/numerology">
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold h-12">
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Open Deep Analysis Tool
+                  </Button>
+                </Link>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {activeTab === "overview" && (
           <>
             {/* Physical Badges Showcase */}

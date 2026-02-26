@@ -251,7 +251,7 @@ export default function HomePage() {
                   </div>
                 </Link>
                 
-                <Link href={user?.userType === 'healer' || user?.userType === 'semi_healer' ? '/healer-dashboard?tab=tools' : '/numerology'}>
+                <Link href={user?.userType === 'healer' || user?.userType === 'semi_healer' ? '/healer-dashboard?tab=tools' : '/dashboard?tab=numerology'}>
                   <div className="flex items-center gap-4 rounded-2xl bg-amber-500/30 backdrop-blur-md border border-amber-400/40 p-4 hover:bg-amber-500/40 transition-all shadow-lg" data-testid="menu-numerology">
                     <Calculator className="h-8 w-8 text-amber-200" />
                     <span className="text-sm text-amber-100 font-semibold">Numerology</span>
