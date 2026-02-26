@@ -6,18 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star, MessageSquare, Calendar, Loader2, ChevronDown } from "lucide-react";
+import { Star, MessageSquare, Calendar, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface Healer {
   id: number;
@@ -33,52 +28,58 @@ interface Healer {
   location?: string;
 }
 
-interface HealerRating {
-  id: number;
-  healerId: number;
-  raterId: number;
-  raterUsername: string;
-  rating: number;
-  createdAt: string;
-}
-
-interface HealerBadge {
-  id: number;
-  healerId: number;
-  badgeType: string;
-  badgeTitle: string;
-  badgeIcon: string;
-  awardedAt: string;
-  expiresAt: string;
-}
+const STATIC_HEALERS = [
+  {
+    id: 9991,
+    name: "Nishant Sharma",
+    username: "nishant.sharma2",
+    specialty: "Aura Reading",
+    description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer. AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.",
+    email: "nishant@auraeye.com",
+    phone: "+91-XXXXXXXXXX",
+    imageUrl: "/nishant-new.jpg",
+  },
+  {
+    id: 9992,
+    name: "Sunita Mann",
+    username: "sunita_mann",
+    specialty: "Spiritual Teacher & Healer",
+    description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience. Trained in various modalities like Aura reading, Reiki healing, Angel’s therapy etc. With almost 95% success rate in her spiritual evaluation, she can read your energies intuitively and can pinpoint the various issues along with helping you heal the blockages.",
+    email: "sunita@auraeye.com",
+    phone: "+91-XXXXXXXXXX",
+    imageUrl: "/sunita.jpg",
+  },
+  {
+    id: 9993,
+    name: "Mr. Subramayanam",
+    username: "subramayanam",
+    specialty: "Energy Healer & Engineer",
+    description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer who blends analytical precision with intuitive insight. With a strong foundation in engineering and energy diagnostics, he specialises in identifying energetic imbalances at their root cause. Through intuitive energy diagnosis and distance healing practices, he helps individuals understand the underlying patterns affecting their emotional, mental, and physical well-being.",
+    email: "subramayanam@auraeye.com",
+    phone: "+91-XXXXXXXXXX",
+    imageUrl: "/subramanyam.jpg",
+  }
+];
 
 export default function HealersPage() {
-  const [selectedHealer, setSelectedHealer] = useState<Healer | null>(null);
+  const [selectedHealer, setSelectedHealer] = useState<any>(null);
   const [bookingMessage, setBookingMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [ratingHealerId, setRatingHealerId] = useState<number | null>(null);
-  const [ratingValue, setRatingValue] = useState(0);
   
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: healersData = [], isLoading, error } = useQuery<Healer[]>({
+  const { data: dbHealers = [], isLoading } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    staleTime: 0,
   });
 
-  const healers = [...healersData].sort((a, b) => {
-    const order = ["nishant.sharma2", "sunita_mann", "subramayanam"];
-    const indexA = order.indexOf(a.username);
-    const indexB = order.indexOf(b.username);
-    
-    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-    if (indexA !== -1) return -1;
-    if (indexB !== -1) return 1;
-    return a.id - b.id;
+  // Combine static healers with DB healers, avoiding duplicates
+  const healers = [...STATIC_HEALERS];
+  dbHealers.forEach(dbh => {
+    if (!STATIC_HEALERS.find(sh => sh.username === dbh.username)) {
+      healers.push(dbh as any);
+    }
   });
   
   const bookingMutation = useMutation({
@@ -88,12 +89,11 @@ export default function HealersPage() {
     onSuccess: () => {
       toast({
         title: "Booking Request Sent",
-        description: "The healer will review your request and contact you soon. 1 credit has been deducted.",
+        description: "The healer will review your request and contact you soon.",
       });
       setIsDialogOpen(false);
       setBookingMessage("");
       queryClient.invalidateQueries({ queryKey: ["/api/user-bookings"] });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === '/api/credits' });
     },
     onError: (error: any) => {
       toast({
@@ -104,88 +104,12 @@ export default function HealersPage() {
     },
   });
 
-  const ratingMutation = useMutation({
-    mutationFn: async (data: { healerId: number; rating: number; raterUsername: string }) => {
-      const response = await apiRequest("POST", "/api/rate-healer", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Rating Saved ⭐",
-        description: "Thank you for rating this healer!",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-ratings"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/all-healer-badges"] });
-      setRatingHealerId(null);
-      setRatingValue(0);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Rating Failed",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const { data: allHealerRatings = {} } = useQuery({
-    queryKey: ["/api/all-healer-ratings"],
-    queryFn: async () => {
-      const ratingsMap: Record<number, HealerRating[]> = {};
-      for (const healer of healers) {
-        try {
-          const res = await apiRequest("GET", `/api/healer-ratings/${healer.id}`);
-          const data = await res.json();
-          ratingsMap[healer.id] = data.ratings || [];
-        } catch (error) {
-          ratingsMap[healer.id] = [];
-        }
-      }
-      return ratingsMap;
-    },
-    enabled: healers.length > 0,
-    staleTime: 0,
-    refetchInterval: 5000,
-  });
-
-  const { data: allHealersBadges = {} } = useQuery({
-    queryKey: ["/api/all-healer-badges"],
-    queryFn: async () => {
-      const badgesMap: Record<number, HealerBadge[]> = {};
-      for (const healer of healers) {
-        try {
-          const res = await apiRequest("GET", `/api/healer-badges/${healer.id}`);
-          const data = await res.json();
-          badgesMap[healer.id] = data.badges || [];
-        } catch (error) {
-          badgesMap[healer.id] = [];
-        }
-      }
-      return badgesMap;
-    },
-    enabled: healers.length > 0,
-    staleTime: 0,
-    refetchInterval: 5000,
-  });
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col pb-20">
         <Navbar />
         <main className="flex-grow flex items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        </main>
-        {user && <MobileNavigation />}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow flex items-center justify-center">
-          <Button onClick={() => window.location.reload()}>Retry</Button>
         </main>
         {user && <MobileNavigation />}
       </div>
@@ -203,7 +127,7 @@ export default function HealersPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {healers.map((healer) => (
-            <Card key={healer.id} className="bg-slate-900 border-slate-800 overflow-hidden flex flex-col">
+            <Card key={healer.id} className="bg-slate-900 border-slate-800 overflow-hidden flex flex-col border-2 hover:border-purple-500/50 transition-all duration-300">
               <div className="h-64 relative bg-slate-800">
                 <img 
                   src={healer.imageUrl} 
@@ -222,17 +146,12 @@ export default function HealersPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-white font-bold">
-                      {allHealerRatings[healer.id]?.length > 0 
-                        ? (allHealerRatings[healer.id].reduce((sum: number, r: any) => sum + r.rating, 0) / allHealerRatings[healer.id].length).toFixed(1)
-                        : '5.0'}
-                    </span>
-                    <span className="text-slate-500 text-sm">({allHealerRatings[healer.id]?.length || 0} reviews)</span>
+                    <span className="text-white font-bold">5.0</span>
                   </div>
                   <p className="text-slate-300 text-sm line-clamp-4">{healer.description}</p>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col gap-2 p-6 pt-0">
+              <CardFooter className="p-6 pt-0">
                 <div className="flex gap-2 w-full">
                   {user ? (
                     <Dialog open={isDialogOpen && selectedHealer?.id === healer.id} onOpenChange={(open) => {
@@ -269,7 +188,7 @@ export default function HealersPage() {
                       <Button className="w-full bg-purple-600">Login to Book</Button>
                     </Link>
                   )}
-                  <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800" onClick={() => alert(`Contact: ${healer.email}`)}>
+                  <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800" onClick={() => alert("Contact: " + healer.email)}>
                     Contact
                   </Button>
                 </div>
