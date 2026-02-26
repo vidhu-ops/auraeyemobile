@@ -66,14 +66,16 @@ export default function HealersPage() {
   // Fetch healers from database
   const { data: healersData = [], isLoading, error } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
-    refetchOnMount: true,
+    refetchOnMount: "always",
     refetchOnWindowFocus: true,
     staleTime: 0,
-    gcTime: 0
   });
 
-  // Sort healers to ensure specific order: Nishant first, then Sunita, then Subramayanam
-  const healers = [...healersData].sort((a, b) => {
+  // Force strict order and filter to ensure these three are always shown
+  const healers = [
+    ...healersData.filter(h => ["nishant.sharma2", "sunita_mann", "subramayanam"].includes(h.username)),
+    ...healersData.filter(h => !["nishant.sharma2", "sunita_mann", "subramayanam"].includes(h.username))
+  ].sort((a, b) => {
     const order = ["nishant.sharma2", "sunita_mann", "subramayanam"];
     const indexA = order.indexOf(a.username);
     const indexB = order.indexOf(b.username);
