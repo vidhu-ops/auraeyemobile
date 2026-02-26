@@ -64,12 +64,24 @@ export default function HealersPage() {
   const queryClient = useQueryClient();
   
   // Fetch healers from database
-  const { data: healers = [], isLoading, error } = useQuery<Healer[]>({
+  const { data: healersData = [], isLoading, error } = useQuery<Healer[]>({
     queryKey: ["/api/healers"],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     staleTime: 0,
     gcTime: 0
+  });
+
+  // Sort healers to ensure specific order: Nishant first, then Sunita, then Subramayanam
+  const healers = [...healersData].sort((a, b) => {
+    const order = ["nishant.sharma2", "sunita_mann", "subramayanam"];
+    const indexA = order.indexOf(a.username);
+    const indexB = order.indexOf(b.username);
+    
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return a.id - b.id;
   });
   
   // Booking mutation
