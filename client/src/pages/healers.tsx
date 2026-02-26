@@ -71,11 +71,8 @@ export default function HealersPage() {
     staleTime: 0,
   });
 
-  // Force strict order and filter to ensure these three are always shown
-  const healers = [
-    ...healersData.filter(h => ["nishant.sharma2", "sunita_mann", "subramayanam"].includes(h.username)),
-    ...healersData.filter(h => !["nishant.sharma2", "sunita_mann", "subramayanam"].includes(h.username))
-  ].sort((a, b) => {
+  // Force all healers to show, ensuring Nishant, Sunita, and Subramayanam are at the top
+  const healers = [...healersData].sort((a, b) => {
     const order = ["nishant.sharma2", "sunita_mann", "subramayanam"];
     const indexA = order.indexOf(a.username);
     const indexB = order.indexOf(b.username);
