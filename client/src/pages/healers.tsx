@@ -128,7 +128,7 @@ export default function HealersPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {healers.map((healer) => (
             <Card key={healer.id} className="bg-slate-900 border-slate-800 overflow-hidden flex flex-col border-2 hover:border-purple-500/50 transition-all duration-300">
-              <div className="h-64 relative bg-slate-800">
+              <div className="h-84 relative bg-slate-800">
                 <img 
                   src={healer.imageUrl} 
                   alt={healer.name}
