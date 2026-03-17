@@ -251,6 +251,105 @@ function stripDataUrlPrefix(dataUrl: string): string {
   return base64Index > -1 ? dataUrl.substring(base64Index + 1) : dataUrl;
 }
 
+export async function sendWelcomeEmail(
+  email: string,
+  username: string,
+  password: string
+): Promise<boolean> {
+  const subject = "Welcome to AuraEye - Your Account Details";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #9333ea; margin: 0;">AuraEye</h1>
+        <p style="color: #666; margin: 5px 0;">Your Spiritual Wellness Platform</p>
+      </div>
+
+      <h2 style="color: #7c3aed;">Welcome to Your Spiritual Journey! 🌟</h2>
+      
+      <p>Hello <strong>${username}</strong>,</p>
+      
+      <p>Thank you for signing up with AuraEye! We're thrilled to have you join our spiritual wellness community. Your account has been created successfully and you're ready to start exploring your inner light.</p>
+      
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7c3aed;">
+        <h3 style="color: #7c3aed; margin-top: 0;">Your Account Details:</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 10px 0; color: #6b7280; font-weight: bold;">Username:</td>
+            <td style="padding: 10px 0; color: #111827; font-family: monospace; text-align: right;">${username}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; color: #6b7280; font-weight: bold;">Password:</td>
+            <td style="padding: 10px 0; color: #111827; font-family: monospace; text-align: right;">${password}</td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="color: #666; font-size: 13px; background: #fff3cd; padding: 12px; border-radius: 6px; border-left: 4px solid #ffc107;">
+        <strong>⚠️ Important:</strong> Keep your password safe and never share it with anyone. We recommend changing your password after your first login.
+      </p>
+
+      <div style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); color: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <h3 style="margin-top: 0; color: white;">Get Started Today</h3>
+        <p>Start your journey with our spiritual tools:</p>
+        <ul style="text-align: left; display: inline-block;">
+          <li>✨ Aura Scanning for personalized energy insights</li>
+          <li>🔮 Numerology readings to understand your destiny</li>
+          <li>📖 Spiritual journaling for self-reflection</li>
+          <li>🧘 Meditation sessions for inner peace</li>
+          <li>👨‍⚕️ Connect with professional healers</li>
+        </ul>
+      </div>
+
+      <p><strong>You start with 5 welcome credits!</strong> Use them to explore our premium services and discover your spiritual path.</p>
+
+      <div style="text-align: center; margin: 25px 0;">
+        <a href="https://auraeye.com/dashboard" style="background-color: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Go to Dashboard</a>
+      </div>
+
+      <p>If you have any questions or need support, our team is here to help. Contact us through your dashboard or visit our help section.</p>
+
+      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+      
+      <p style="color: #6b7280; font-size: 13px;">Best regards,<br><strong>The AuraEye Team</strong><br>Illuminating Your Spiritual Path ✨</p>
+    </div>
+  `;
+
+  const text = `
+Welcome to AuraEye - Your Account Details
+
+Hello ${username},
+
+Thank you for signing up with AuraEye! We're thrilled to have you join our spiritual wellness community.
+
+Your Account Details:
+- Username: ${username}
+- Password: ${password}
+
+Important: Keep your password safe and never share it. We recommend changing it after your first login.
+
+Get Started Today:
+You start with 5 welcome credits! Use them to explore:
+- Aura Scanning
+- Numerology readings
+- Spiritual journaling
+- Meditation sessions
+- Connect with professional healers
+
+If you have any questions, our team is here to help.
+
+Best regards,
+The AuraEye Team
+Illuminating Your Spiritual Path ✨
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject,
+    html,
+    text
+  });
+}
+
 export async function sendPDFReport(
   userEmail: string, 
   userName: string, 

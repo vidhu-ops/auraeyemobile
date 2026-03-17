@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser, InsertHealer } from "@shared/schema";
 import { validateEmailAddress } from "./email-validator";
+import { sendWelcomeEmail } from "./email-service";
 
 declare global {
   namespace Express {
@@ -243,6 +244,7 @@ export function setupAuth(app: Express) {
         console.log(`Email validation successful for ${req.body.email}: ${emailValidation.message}`);
       }
 
+      const plainPassword = req.body.password;
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
@@ -255,6 +257,17 @@ export function setupAuth(app: Express) {
         biggestBlock: req.body.biggestBlock || null,
         onboardingCompleted: req.body.manifestIntention ? true : false
       });
+
+      // Send welcome email with username and password
+      if (req.body.email) {
+        try {
+          await sendWelcomeEmail(req.body.email, req.body.username, plainPassword);
+          console.log(`Welcome email sent to ${req.body.email}`);
+        } catch (emailError) {
+          console.error(`Failed to send welcome email to ${req.body.email}:`, emailError);
+          // Don't fail the registration if email sending fails
+        }
+      }
 
       // Remove password from response
       const { password, ...userWithoutPassword } = user;
