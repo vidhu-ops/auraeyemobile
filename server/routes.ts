@@ -15,7 +15,7 @@ import { analyzeImageColors } from "./api/image-color-analysis";
 import { getHoroscopeForSign, calculateNumerologyProfile, getPersonalizedHoroscope } from "./api/horoscope";
 import { configureFileUpload } from "./api/upload";
 import { NumerologyResult } from "../client/src/lib/openai";
-import { sendHealerBookingNotification, sendPasswordResetEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
+import { sendHealerBookingNotification, sendPasswordResetEmail, sendPasswordResetConfirmationEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
 import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertHealerBadgeSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users, healerRatings, healerBadges, healerBookings } from "../shared/schema";
@@ -5448,8 +5448,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       await storage.markPasswordResetTokenAsUsed(resetTokenRecord.id);
 
-      console.log(`✅ Password reset successful for ${user.userType} user: ${user.username}`);
-      res.json({ message: "Password reset successfully" });
+      console.log(`✅ Password reset successful for ${user.userType} user: ${user.username} (${user.email})`);
+      
+      // Send password reset confirmation email
+      try {
+        const { sendPasswordResetConfirmationEmail } = await import('./email-service');
+        await sendPasswordResetConfirmationEmail(user.email || normalizedEmail, user.username);
+        console.log(`[DEBUG] Password reset confirmation email sent to ${user.email || normalizedEmail}`);
+      } catch (emailError) {
+        console.error(`[ERROR] Failed to send password reset confirmation email:`, emailError);
+        // Don't fail the request if email sending fails
+      }
+      
+      res.json({ message: "Password reset successfully. A confirmation email has been sent to your account." });
     } catch (error) {
       console.error("Error resetting password:", error);
       res.status(500).json({ message: "Failed to reset password" });

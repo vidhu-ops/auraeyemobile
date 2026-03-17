@@ -134,7 +134,8 @@ export async function sendPasswordResetEmail(
         <h3 style="color: #374151; margin-top: 0;">Your Reset Code:</h3>
         <p style="font-size: 32px; font-weight: bold; color: #6366f1; margin-bottom: 0; letter-spacing: 4px; text-align: center;">${resetToken}</p>
       </div>
-      <p>This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email.</p>
+      <p style="color: #666; font-size: 14px;"><strong>Email Address:</strong> ${email}</p>
+      <p>This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email and your password will remain unchanged.</p>
       <p>Best regards,<br>The AuraEye Team</p>
     </div>
   `;
@@ -147,8 +148,9 @@ Hello,
 You have requested to reset your password for your AuraEye account.
 
 Your Reset Code: ${resetToken}
+Email Address: ${email}
 
-This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email.
+This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email and your password will remain unchanged.
 
 Best regards,
 The AuraEye Team
@@ -159,6 +161,59 @@ The AuraEye Team
     subject,
     text,
     html
+  });
+}
+
+export async function sendPasswordResetConfirmationEmail(
+  email: string,
+  username: string
+): Promise<boolean> {
+  const subject = "Password Reset Successful - AuraEye";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #10b981;">✅ Password Reset Successful</h2>
+      <p>Hello <strong>${username}</strong>,</p>
+      <p>Your password has been successfully reset for your AuraEye account.</p>
+      <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+        <p style="margin: 0; color: #047857;"><strong>Account Details:</strong></p>
+        <p style="margin: 8px 0 0 0; color: #6b7280;">Email: ${email}</p>
+        <p style="margin: 8px 0 0 0; color: #6b7280;">Username: ${username}</p>
+      </div>
+      <p>You can now log in to your account with your new password.</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://auraeye.com/login" style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Go to Login</a>
+      </div>
+      <p style="color: #666; font-size: 13px; background: #fff3cd; padding: 12px; border-radius: 6px;">
+        <strong>Security Tip:</strong> If you didn't request this password reset, your account may have been compromised. Please contact our support team immediately.
+      </p>
+      <p style="color: #6b7280; font-size: 14px;">Best regards,<br>The AuraEye Team</p>
+    </div>
+  `;
+
+  const text = `
+✅ Password Reset Successful - AuraEye
+
+Hello ${username},
+
+Your password has been successfully reset for your AuraEye account.
+
+Account Details:
+- Email: ${email}
+- Username: ${username}
+
+You can now log in to your account with your new password.
+
+Security Tip: If you didn't request this password reset, your account may have been compromised. Please contact our support team immediately.
+
+Best regards,
+The AuraEye Team
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject,
+    html,
+    text
   });
 }
 
