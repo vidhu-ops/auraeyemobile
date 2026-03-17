@@ -122,6 +122,7 @@ Spiritual Wellness Platform
 
 export async function sendPasswordResetEmail(
   email: string,
+  username: string,
   resetToken: string
 ): Promise<boolean> {
   const subject = "Password Reset Request - AuraEye";
@@ -131,10 +132,12 @@ export async function sendPasswordResetEmail(
       <p>Hello,</p>
       <p>You have requested to reset your password for your AuraEye account.</p>
       <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #374151; margin-top: 0;">Your Reset Code:</h3>
+        <h3 style="color: #374151; margin-top: 0;">Account Information:</h3>
+        <p style="margin: 8px 0; color: #6b7280;"><strong>Username:</strong> ${username}</p>
+        <p style="margin: 8px 0; color: #6b7280;"><strong>Email Address:</strong> ${email}</p>
+        <h3 style="color: #374151; margin-top: 15px; margin-bottom: 10px;">Your Reset Code:</h3>
         <p style="font-size: 32px; font-weight: bold; color: #6366f1; margin-bottom: 0; letter-spacing: 4px; text-align: center;">${resetToken}</p>
       </div>
-      <p style="color: #666; font-size: 14px;"><strong>Email Address:</strong> ${email}</p>
       <p>This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email and your password will remain unchanged.</p>
       <p>Best regards,<br>The AuraEye Team</p>
     </div>
@@ -147,8 +150,11 @@ Hello,
 
 You have requested to reset your password for your AuraEye account.
 
-Your Reset Code: ${resetToken}
+Account Information:
+Username: ${username}
 Email Address: ${email}
+
+Your Reset Code: ${resetToken}
 
 This code will expire in 15 minutes. If you didn't request a password reset, please ignore this email and your password will remain unchanged.
 
