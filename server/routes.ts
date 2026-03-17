@@ -5382,8 +5382,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       // Send reset code via email
       const { sendPasswordResetEmail } = await import('./email-service');
-      console.log(`[DEBUG] Attempting to send email to ${normalizedEmail}`);
-      const emailSent = await sendPasswordResetEmail(normalizedEmail, resetToken);
+      console.log(`[DEBUG] Attempting to send email to ${normalizedEmail} for username: ${normalizedUsername}`);
+      const emailSent = await sendPasswordResetEmail(normalizedEmail, normalizedUsername, resetToken);
       console.log(`[DEBUG] Email sent status: ${emailSent}`);
       
       if (emailSent) {
