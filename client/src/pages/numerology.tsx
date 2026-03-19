@@ -925,13 +925,13 @@ With awareness and responsibility,
 
   const getDestinyMeaning = (number: number): string => {
     const meanings: { [key: number]: string } = {
-      1: "Planet:Sun Chakra:Solar Plexus Color:Yellow.You are a Pioneer and innovator Core Lesson:Confidence,Self Worth, Self Esteem, Will Power, Abundance",
+      1: "Planet:Sun Chakra:Solar Plexus Color:Yellow. You are a Pioneer and innovator Core Lesson:Confidence,Self Worth, Self Esteem, Will Power, Abundance",
       2: "Planet:Moon Chakra:Heart Color:Green & Pink. You are a Diplomat and peacemaker Core Lessons:Love Compassion,Forgiveness, Connection, Ability to give and recieve",
-      3: "Planet:Jupiter Chakra:Crown Color:Yellow. You are a Artist and communicator Core lessons:Wisdom, Divine connection, Guidance, Receptivity, Spirtuality, Knowledge",
+      3: "Planet:Jupiter Chakra:Crown Color:violet. You are a Artist and communicator Core lessons:Wisdom, Divine connection, Guidance, Receptivity, Spirtuality, Knowledge",
       4: " Planet:Rahu Chakra:Rarth star Color:Brown. You are a Builder and organizer Core Lessons: Manifestation, Suppourt system from earth, Abundance and growth, Money energy, Ability to make things happen",
       5: "Planet:Mercury Chakra:Throat Color:Blue. You are a Explorer and freedom seeker Core lessons:Self expression, Communication, Speaking the truth, Honesty, Purity of speech",
       6: "Planet:Venus Chakra:Sacral Color:Orange. You are a You are a Healer and caretaker Core lessons: Sexuality, creativity, balance, passion, feel emotion",
-      7: "Planet:Ketu Chakra:Soul star Color:Silver. You are a Seeker of truth and wisdom core lessons:Soul GPS, Clarity and direction, Scynronicity, Life purpose, Karmic alignment, Inner knowing",
+      7: "Planet:Ketu Chakra:Soul star Color:Gold. You are a Seeker of truth and wisdom core lessons:Soul GPS, Clarity and direction, Scynronicity, Life purpose, Karmic alignment, Inner knowing",
       8: "Planet:Saturn Chakra:Third Eye Color:Indigo. You are a Executive and achiever Core lessons: Intution, Trust, Insight, Wisdowm, Seeking truth",
       9: "Planet:Mars Chakra:Root Color:Red. You are a Humanitarian and server Core lessons: Action Stability, security, passion, decisions"
     };
@@ -1127,8 +1127,8 @@ With awareness and responsibility,
 
   const getNumberColorAssociation = (number: number): string => {
     const colorMap: { [key: number]: string } = {
-      1: "Red", 2: "Orange", 3: "Yellow", 4: "Green", 5: "Blue", 
-      6: "Indigo", 7: "Violet", 8: "Pink", 9: "Gold"
+      1: "Yellow", 2: "Green", 3: "Violet", 4: "Brown", 5: "Blue", 
+      6: "Orange", 7: "Gold", 8: "Indigo", 9: "Red"
     };
     return colorMap[number] || "White";
   };
