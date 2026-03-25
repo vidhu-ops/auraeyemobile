@@ -210,12 +210,12 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-4">
-              Begin Your Spiritual Journey
+              Begin Your Wellness Journey
             </h1>
             
             <p className="text-lg text-center text-black-200 mb-12 leading-relaxed">
-              AuraEye™ connects you with powerful spiritual tools to discover your aura, 
-              analyze your energy, and embark on a path of healing and self-discovery.
+              AuraEye™ connects you with powerful tools to discover your aura, 
+              analyze your energy, and embark on a path of wellness and self-discovery.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -233,7 +233,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Star className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-blue-800 mb-3 text-center">Daily Spiritual Guidance</h3>
+                <h3 className="text-xl font-bold text-blue-800 mb-3 text-center">Daily Guidance</h3>
                 <p className="text-blue-600 text-sm text-center leading-relaxed">
                   Get personalized horoscopes, numerology insights, and energy forecasts.
                 </p>
@@ -245,7 +245,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 </div>
                 <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect with Healers</h3>
                 <p className="text-pink-600 text-sm text-center leading-relaxed">
-                  Book sessions with experienced spiritual guides and energy healers.
+                  Book sessions with experienced guides and energy healers.
                 </p>
               </div>
             </div>

@@ -295,7 +295,7 @@ export default function MeditationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
+    <div className="min-h-screen max-w-90vw bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
       <Navbar />
 
       {/* Main content */}
@@ -442,6 +442,7 @@ export default function MeditationsPage() {
           <div>
             {isLoadingFavorites ? (
               <div className="space-y-4">
+                
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="animate-pulse">
                     <div className="bg-white/10 rounded-lg h-24 mb-4"></div>
@@ -461,6 +462,7 @@ export default function MeditationsPage() {
                 {favoriteMeditations.map((favorite) => (
                   <Card 
                     key={favorite.id}
+                    
                     className="bg-gradient-to-r from-pink-500/20 to-red-500/20 border-white/20"
                   >
                     <CardContent className="p-4">
@@ -478,13 +480,27 @@ export default function MeditationsPage() {
                             </Badge>
                           </div>
                         </div>
-                        <button
-                          onClick={() => removeFavoriteMutation.mutate(favorite.meditationId)}
-                          disabled={removeFavoriteMutation.isPending}
-                          className="transition-all hover:scale-110 mt-1"
-                        >
-                          <Heart className="h-5 w-5 fill-red-500 text-red-500" />
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              const meditation = meditations.find(m => m.id === favorite.meditationId);
+                              if (meditation) {
+                                handlePlayMeditation(meditation);
+                              }
+                            }}
+                            className="transition-all hover:scale-110 bg-gradient-to-r from-cyan-500 to-teal-500 text-white p-2 rounded-full hover:shadow-lg"
+                            data-testid={`play-favorite-${favorite.meditationId}`}
+                          >
+                            <Play className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => removeFavoriteMutation.mutate(favorite.meditationId)}
+                            disabled={removeFavoriteMutation.isPending}
+                            className="transition-all hover:scale-110 mt-1"
+                          >
+                            <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                          </button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

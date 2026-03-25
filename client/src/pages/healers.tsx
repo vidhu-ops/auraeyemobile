@@ -35,7 +35,7 @@ const STATIC_HEALERS = [
     username: "nishant.sharma2",
     specialty: "Aura Reading",
     description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer. AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.",
-    email: "nishant@auraeye.com",
+    email: "contact@auraeye.in",
     phone: "+91-XXXXXXXXXX",
     imageUrl: "/nishant-new.jpg",
   },
@@ -45,7 +45,7 @@ const STATIC_HEALERS = [
     username: "sunita_mann",
     specialty: "Spiritual Teacher & Healer",
     description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience. Trained in various modalities like Aura reading, Reiki healing, Angel’s therapy etc. With almost 95% success rate in her spiritual evaluation, she can read your energies intuitively and can pinpoint the various issues along with helping you heal the blockages.",
-    email: "sunita@auraeye.com",
+    email: "mannsunita0609@gmail.com",
     phone: "+91-XXXXXXXXXX",
     imageUrl: "/sunita.jpg",
   },
@@ -55,7 +55,7 @@ const STATIC_HEALERS = [
     username: "subramayanam",
     specialty: "Energy Healer & Engineer",
     description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer who blends analytical precision with intuitive insight. With a strong foundation in engineering and energy diagnostics, he specialises in identifying energetic imbalances at their root cause. Through intuitive energy diagnosis and distance healing practices, he helps individuals understand the underlying patterns affecting their emotional, mental, and physical well-being.",
-    email: "subramayanam@auraeye.com",
+    email: "subramayanam.aurahealer@gmail.com",
     phone: "+91-XXXXXXXXXX",
     imageUrl: "/subramanyam.jpg",
   }
@@ -127,7 +127,7 @@ export default function HealersPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {healers.map((healer) => (
-            <Card key={healer.id} className="bg-slate-900 border-slate-800 overflow-hidden flex flex-col border-2 hover:border-purple-500/50 transition-all duration-300">
+            <Card key={healer.id} className="bg-slate-900 border-slate-800 flex flex-col border-2 hover:border-purple-500/50 transition-all duration-300">
               <div className="h-84 relative bg-slate-800">
                 <img 
                   src={healer.imageUrl} 
@@ -148,7 +148,7 @@ export default function HealersPage() {
                     <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                     <span className="text-white font-bold">5.0</span>
                   </div>
-                  <p className="text-slate-300 text-sm line-clamp-4">{healer.description}</p>
+                  <p className="text-slate-300 text-sm line-clamp-9">{healer.description}</p>
                 </div>
               </CardContent>
               <CardFooter className="p-6 pt-0">
@@ -188,7 +188,7 @@ export default function HealersPage() {
                       <Button className="w-full bg-purple-600">Login to Book</Button>
                     </Link>
                   )}
-                  <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800" onClick={() => alert("Contact: " + healer.email)}>
+                  <Button variant="outline" className="border-slate-700 text-black hover:bg-slate-800" onClick={() => alert("Contact: " + healer.email)}>
                     Contact
                   </Button>
                 </div>
