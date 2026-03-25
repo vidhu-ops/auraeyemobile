@@ -2825,51 +2825,13 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Healer booking API endpoint with email notification - 3 credits to client, 1 to healer
-  // Static healers data matching the frontend
-  const STATIC_HEALERS_DATA: Record<number, { id: number; name: string; username: string; specialty: string; description: string; email: string; phone: string; imageUrl?: string }> = {
-    9991: {
-      id: 9991,
-      name: "Nishant Sharma",
-      username: "nishant.sharma2",
-      specialty: "Aura Reading",
-      description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer.",
-      email: "contact@auraeye.in",
-      phone: "+91-XXXXXXXXXX",
-      imageUrl: "/nishant-new.jpg",
-    },
-    9992: {
-      id: 9992,
-      name: "Sunita Mann",
-      username: "sunita_mann",
-      specialty: "Spiritual Teacher & Healer",
-      description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience.",
-      email: "mannsunita0609@gmail.com",
-      phone: "+91-XXXXXXXXXX",
-      imageUrl: "/sunita.jpg",
-    },
-    9993: {
-      id: 9993,
-      name: "Mr. Subramayanam",
-      username: "subramayanam",
-      specialty: "Energy Healer & Engineer",
-      description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer.",
-      email: "subramayanam.aurahealer@gmail.com",
-      phone: "+91-XXXXXXXXXX",
-      imageUrl: "/subramanyam.jpg",
-    }
-  };
-
   app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
       const user = req.user as any;
       const { healerId, message } = req.body;
 
-      // Get healer details from DB first, then check static healers
-      let healer = await storage.getHealer(healerId);
-      if (!healer && STATIC_HEALERS_DATA[healerId]) {
-        healer = STATIC_HEALERS_DATA[healerId] as any;
-      }
+      // Get healer details
+      const healer = await storage.getHealer(healerId);
       if (!healer) {
         return res.status(404).json({ message: "Healer not found" });
       }
