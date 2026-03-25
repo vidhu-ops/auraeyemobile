@@ -2865,14 +2865,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const user = req.user as any;
       const { healerId, message } = req.body;
 
-      // Try to get healer from database first
+      // Get healer details from DB first, then check static healers
       let healer = await storage.getHealer(healerId);
-      
-      // If not found in DB, check static healers
       if (!healer && STATIC_HEALERS_DATA[healerId]) {
         healer = STATIC_HEALERS_DATA[healerId] as any;
       }
-      
       if (!healer) {
         return res.status(404).json({ message: "Healer not found" });
       }
