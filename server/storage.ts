@@ -527,11 +527,85 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getHealer(id: number): Promise<Healer | undefined> {
+    const STATIC_HEALERS_MAP: Record<number, Healer> = {
+      9991: {
+        id: 9991,
+        name: "Nishant Sharma",
+        username: "nishant.sharma2",
+        specialty: "Aura Reading",
+        description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer.",
+        email: "nishant@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/nishant-new.jpg",
+      },
+      9992: {
+        id: 9992,
+        name: "Sunita Mann",
+        username: "sunita_mann",
+        specialty: "Spiritual Teacher & Healer",
+        description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience. Trained in various modalities like Aura reading, Reiki healing, Angel's therapy etc.",
+        email: "sunita@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/sunita.jpg",
+      },
+      9993: {
+        id: 9993,
+        name: "Mr. Subramayanam",
+        username: "subramayanam",
+        specialty: "Energy Healer & Engineer",
+        description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer who blends analytical precision with intuitive insight.",
+        email: "subramayanam@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/subramanyam.jpg",
+      }
+    };
+
+    if (STATIC_HEALERS_MAP[id]) {
+      return STATIC_HEALERS_MAP[id];
+    }
+
     const [healer] = await db.select().from(healers).where(eq(healers.id, id));
     return healer || undefined;
   }
 
   async getHealerByUsername(username: string): Promise<Healer | undefined> {
+    const STATIC_HEALERS_MAP: Record<string, Healer> = {
+      "nishant.sharma2": {
+        id: 9991,
+        name: "Nishant Sharma",
+        username: "nishant.sharma2",
+        specialty: "Aura Reading",
+        email: "nishant@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/nishant-new.jpg",
+        description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer.",
+      },
+      "sunita_mann": {
+        id: 9992,
+        name: "Sunita Mann",
+        username: "sunita_mann",
+        specialty: "Spiritual Teacher & Healer",
+        email: "sunita@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/sunita.jpg",
+        description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience. Trained in various modalities like Aura reading, Reiki healing, Angel's therapy etc.",
+      },
+      "subramayanam": {
+        id: 9993,
+        name: "Mr. Subramayanam",
+        username: "subramayanam",
+        specialty: "Energy Healer & Engineer",
+        email: "subramayanam@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/subramanyam.jpg",
+        description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer who blends analytical precision with intuitive insight.",
+      }
+    };
+
+    if (STATIC_HEALERS_MAP[username]) {
+      return STATIC_HEALERS_MAP[username];
+    }
+
     const [healer] = await db.select().from(healers).where(eq(healers.username, username));
     return healer || undefined;
   }
