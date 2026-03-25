@@ -23,6 +23,17 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
   const [energyLevel, setEnergyLevel] = useState<EnergyLevel | null>(null);
   const [biggestBlock, setBiggestBlock] = useState<Block | null>(null);
 
+  const handleComplete = () => {
+    // Only set hasSeenOnboarding after post-registration questionnaire
+    if (skipWelcome) {
+      localStorage.setItem("hasSeenOnboarding", "true");
+      setLocation("/");
+    } else {
+      // In initial welcome flow, just redirect to login
+      setLocation("/login");
+    }
+  };
+
   const saveOnboardingMutation = useMutation({
     mutationFn: async (data: { manifestIntention: ManifestIntention; energyLevel: EnergyLevel; biggestBlock: Block }) => {
       const response = await apiRequest("PATCH", "/api/users/me/onboarding", data);
@@ -37,6 +48,9 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
         title: "Welcome Bonus! 🎉",
         description: `You've received ${data.creditsAwarded || 5} free credits for completing onboarding!`,
       });
+      
+      // Now redirect to home after saving
+      handleComplete();
     },
     onError: () => {
       toast({
@@ -56,22 +70,13 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
     }
   }, [step]);
 
-  const handleComplete = () => {
-    // Only set hasSeenOnboarding after post-registration questionnaire
-    if (skipWelcome) {
-      localStorage.setItem("hasSeenOnboarding", "true");
-      setLocation("/");
-    } else {
-      // In initial welcome flow, just redirect to login
-      setLocation("/login");
-    }
-  };
-
   const handleGuidanceContinue = () => {
     if (manifestIntention && energyLevel && biggestBlock) {
       saveOnboardingMutation.mutate({ manifestIntention, energyLevel, biggestBlock });
+      // Don't call handleComplete here - it's called in onSuccess callback
+    } else {
+      handleComplete();
     }
-    handleComplete();
   };
 
   const getIconForIntention = (intention: string) => {
