@@ -130,7 +130,7 @@ export async function sendPasswordResetEmail(
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #6366f1;">Password Reset Request</h2>
       <p>Hello,</p>
-      <p>You have requested to reset your password for your AuraEye™ account.</p>
+      <p>You have requested to reset your password for your AuraEye account.</p>
       <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #374151; margin-top: 0;">Account Information:</h3>
         <p style="margin: 8px 0; color: #6b7280;"><strong>Username:</strong> ${username}</p>
@@ -148,7 +148,7 @@ Password Reset Request - AuraEye
 
 Hello,
 
-You have requested to reset your password for your AuraEye™ account.
+You have requested to reset your password for your AuraEye account.
 
 Account Information:
 Username: ${username}
@@ -230,7 +230,7 @@ export async function sendPaymentConfirmationEmail(
   credits: number,
   price: number
 ): Promise<boolean> {
-  const subject = "Payment Confirmation - AuraEye™ Credits";
+  const subject = "Payment Confirmation - AuraEye Credits";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #10b981;">Payment Confirmed ✨</h2>
@@ -259,7 +259,7 @@ export async function sendPaymentConfirmationEmail(
         </table>
       </div>
 
-      <p>Your new credits are immediately available in your account. You can use them to access all premium services.</p>
+      <p>Your new credits are immediately available in your account. You can use them to access all premium spiritual services.</p>
       
       <div style="text-align: center; margin: 30px 0;">
         <a href="https://auraeye.com/dashboard" style="background-color: #6366f1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
@@ -281,7 +281,7 @@ export async function sendEmailConfirmationEmail(
   email: string,
   username: string
 ): Promise<boolean> {
-  const subject = "Email Address Updated - AuraEye™";
+  const subject = "Email Address Updated - AuraEye";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #7c3aed;">Email Address Updated ✨</h2>
@@ -317,19 +317,19 @@ export async function sendWelcomeEmail(
   username: string,
   password: string
 ): Promise<boolean> {
-  const subject = "Welcome to AuraEye™ - Your Account Details";
+  const subject = "Welcome to AuraEye - Your Account Details";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="color: #9333ea; margin: 0;">AuraEye</h1>
-        <p style="color: #666; margin: 5px 0;">Your Wellness Platform</p>
+        <p style="color: #666; margin: 5px 0;">Your Spiritual Wellness Platform</p>
       </div>
 
-      <h2 style="color: #7c3aed;">Welcome to Your Journey! 🌟</h2>
+      <h2 style="color: #7c3aed;">Welcome to Your Spiritual Journey! 🌟</h2>
       
       <p>Hello <strong>${username}</strong>,</p>
       
-      <p>Thank you for signing up with AuraEye! We're thrilled to have you join our wellness community. Your account has been created successfully and you're ready to start exploring your inner light.</p>
+      <p>Thank you for signing up with AuraEye! We're thrilled to have you join our spiritual wellness community. Your account has been created successfully and you're ready to start exploring your inner light.</p>
       
       <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7c3aed;">
         <h3 style="color: #7c3aed; margin-top: 0;">Your Account Details:</h3>
@@ -376,11 +376,11 @@ export async function sendWelcomeEmail(
   `;
 
   const text = `
-Welcome to AuraEye™ - Your Account Details
+Welcome to AuraEye - Your Account Details
 
 Hello ${username},
 
-Thank you for signing up with AuraEye! We're thrilled to have you join our wellness community.
+Thank you for signing up with AuraEye! We're thrilled to have you join our spiritual wellness community.
 
 Your Account Details:
 - Username: ${username}
@@ -422,8 +422,8 @@ export async function sendPDFReport(
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #9333ea; margin: 0;">AuraEye™</h1>
-        <p style="color: #666; margin: 5px 0;">Your Wellness Platform</p>
+        <h1 style="color: #9333ea; margin: 0;">AuraEye</h1>
+        <p style="color: #666; margin: 5px 0;">Your Spiritual Wellness Platform</p>
       </div>
       
       <h2 style="color: #333;">Your Aura Analysis Report</h2>
@@ -443,12 +443,12 @@ export async function sendPDFReport(
         </ul>
       </div>
       
-      <p>This comprehensive report provides insights into your energy and can help guide your wellness journey.</p>
+      <p>This comprehensive report provides insights into your spiritual energy and can help guide your wellness journey.</p>
       
       <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
       
       <p style="color: #666; font-size: 12px;">
-        This email was sent because you downloaded a report from your AuraEye™ account.<br>
+        This email was sent because you downloaded a report from your AuraEye account.<br>
         For support, please contact us through your dashboard.
       </p>
       
@@ -472,9 +472,9 @@ export async function sendPDFReport(
     - Energy level evaluation
     - Personalized recommendations
     
-    This comprehensive report provides insights into your energy and can help guide your wellness journey.
+    This comprehensive report provides insights into your spiritual energy and can help guide your wellness journey.
     
-    Thank you for using AuraEye - Your Wellness Platform.
+    Thank you for using AuraEye - Your Spiritual Wellness Platform.
   `;
 
   const attachments: Array<{ content: string; filename: string; type?: string; disposition?: string }> = [

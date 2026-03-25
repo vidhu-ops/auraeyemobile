@@ -2825,6 +2825,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Healer booking API endpoint with email notification - 3 credits to client, 1 to healer
   app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
       const user = req.user as any;
@@ -2865,7 +2866,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Add soul energy (credits * 100) for healer connection
         try {
           const healerSoulEnergyAmount = 1 * 100; // 1 credit = 100 soul energy
-          await storage.addSoulEnergy(healerUser.id, healerSoulEnergyAmount, 'healer_booking');
+          await storage.addSoulEnergy(healerUser.id, healerSoulEnergyAmount, 'healer_booking', 'Healer booking connection');
           console.log(`⚡ Added +${healerSoulEnergyAmount} soul energy to healer ${healerUser.id} for booking connection`);
         } catch (soulEnergyError) {
           console.error("Error adding soul energy to healer:", soulEnergyError);
@@ -2875,7 +2876,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Add soul energy (credits * 100) to client for booking a healer
       try {
         const clientSoulEnergyAmount = 3 * 100; // 3 credits = 300 soul energy
-        await storage.addSoulEnergy(user.id, clientSoulEnergyAmount, 'healer_booking');
+        await storage.addSoulEnergy(user.id, clientSoulEnergyAmount, 'healer_booking', 'Booked healer session');
         console.log(`⚡ Added +${clientSoulEnergyAmount} soul energy to user ${user.id} for healer booking`);
       } catch (soulEnergyError) {
         console.error("Error adding soul energy:", soulEnergyError);

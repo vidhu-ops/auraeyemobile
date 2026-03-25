@@ -1,5 +1,4 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import {
   useQuery,
   useMutation,
@@ -23,7 +22,6 @@ type LoginData = Pick<InsertUser, "username" | "password">;
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -110,8 +108,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Logged out successfully",
       });
-      // Redirect to home page
-      setLocation("/");
     },
     onError: (error: Error) => {
       toast({

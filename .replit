@@ -44,7 +44,6 @@ integrations = ["javascript_sendgrid:1.0.0", "javascript_sendgrid:1.0.0", "javas
 [userenv.shared]
 SENDGRID_FROM_EMAIL = "vidhugupta1996@gmail.com"
 RESEND_FROM_EMAIL = "contact@auraeye.in"
-DATABASE_URL = "postgresql://neondb_owner:npg_D7tYu9qkKZrz@ep-sparkling-cell-a5ytwax2.us-east-2.aws.neon.tech/neondb?sslmode=require"
 
 [userenv.development]
 
