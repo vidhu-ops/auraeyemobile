@@ -134,7 +134,7 @@ const processImageWithVibeAuraEffect = (
       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       if (distanceFromCenter < personRadius * 1.5) continue;
       
-      const radius = 30 + seededRandom() * 150;
+      const radius = 40 + seededRandom() * 170;
       const opacity = 0.45 + seededRandom() * 0.5;
       
       ctx.save();
@@ -193,7 +193,7 @@ const processImageWithVibeAuraEffect = (
       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       if (distanceFromCenter < personRadius * 1.3) continue;
       
-      const radius = 8 + seededRandom() * 40;
+      const radius = 9 + seededRandom() * 40;
       const opacity = 0.3 + seededRandom() * 0.4;
       
       ctx.save();
@@ -222,7 +222,7 @@ const processImageWithVibeAuraEffect = (
       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
       if (distanceFromCenter < personRadius * 1.3) continue;
       
-      const radius = 4 + seededRandom() * 20;
+      const radius = 7 + seededRandom() * 20;
       const opacity = 0.25 + seededRandom() * 0.35;
       
       ctx.save();
