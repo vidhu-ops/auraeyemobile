@@ -2835,11 +2835,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const user = req.user as any;
       const { healerId, message } = req.body;
 
+      console.log(`📝 Booking request - User: ${user.id}, Healer: ${healerId}, Message: ${message}`);
+
       // Get healer details
       const healer = await storage.getHealer(healerId);
       if (!healer) {
+        console.error(`Healer ${healerId} not found`);
         return res.status(404).json({ message: "Healer not found" });
       }
+
+      console.log(`✅ Healer found: ${healer.name}`);
 
       // Deduct 3 credits from client
       const creditDeducted = await storage.deductCredits(
@@ -2850,12 +2855,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
       );
 
       if (!creditDeducted) {
+        console.error(`Failed to deduct credits from user ${user.id}`);
         return res.status(400).json({ 
           message: "Failed to deduct credits. Please try again.",
           requiredCredits: 3,
           currentCredits: await storage.getUserCredits(user.id)
         });
       }
+
+      console.log(`💳 Credits deducted from user ${user.id}`);
 
       // Get healer user to add 1 credit and soul energy
       const healerUser = await storage.getUserByUsername(healer.username);
@@ -2887,13 +2895,19 @@ function calculateDominantSoulChakra(birthDate: string): number {
       }
 
       // Create booking record
+      console.log(`📋 Creating booking record with data:`, { userId: user.id, healerId, message });
+      
       const bookingData = insertHealerBookingSchema.parse({
         userId: user.id,
         healerId: healerId,
         message: message || null
       });
+
+      console.log(`✅ Booking data validated:`, bookingData);
       
       const booking = await storage.createHealerBooking(bookingData);
+
+      console.log(`✅ Booking created: ${booking.id}`);
 
       // Send email notification to healer
       const emailSent = await sendHealerBookingNotification(
@@ -2916,7 +2930,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       });
     } catch (error) {
       console.error("Error processing booking:", error);
-      res.status(500).json({ message: "Failed to process booking" });
+      res.status(500).json({ 
+        message: "Failed to process booking",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
