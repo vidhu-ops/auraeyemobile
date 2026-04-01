@@ -11,19 +11,47 @@ export async function seedHealers() {
     }
 
     const healersData = [
+      // Static healers - must be created for booking functionality
       {
         name: "Nishant Sharma",
         username: "nishant.sharma2",
         password: await hashPassword("healer123"),
-        specialty: "Energy Healing & Chakra Balancing",
-        description: "With over 15 years of experience in energy healing, Nishant specializes in chakra alignment and spiritual wellness. He combines traditional Eastern practices with modern healing techniques.",
-        email: "nishant.sharma@spiritualwellness.com",
-        phone: "+1-555-0123",
-        imageUrl: "/attached_assets/WhatsApp%20Image%202025-08-11%20at%203.52.01%20AM_1755705996010.jpeg",
+        specialty: "Aura Reading",
+        description: "Founded by Nishant Sharma, an IT Engineer with a Master's in Applied Positive Psychology & Coaching Psychology (UEL, London) and over 20 years as a certified Energy healer. AuraEye™ blends cutting-edge technology with authentic energy healing to bring spiritual wellness into the digital age.",
+        email: "nishant@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/nishant-new.jpg",
+        rating: 5,
+        experience: "20+ years",
+        location: "India"
+      },
+      {
+        name: "Sunita Mann",
+        username: "sunita_mann",
+        password: await hashPassword("healer123"),
+        specialty: "Spiritual Teacher & Healer",
+        description: "Sunita Mann is a spiritual teacher & healer with over 20 years of experience. Trained in various modalities like Aura reading, Reiki healing, Angel's therapy etc. With almost 95% success rate in her spiritual evaluation, she can read your energies intuitively and can pinpoint the various issues along with helping you heal the blockages.",
+        email: "sunita@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/sunita.jpg",
+        rating: 5,
+        experience: "20+ years",
+        location: "India"
+      },
+      {
+        name: "Mr. Subramayanam",
+        username: "subramayanam",
+        password: await hashPassword("healer123"),
+        specialty: "Energy Healer & Engineer",
+        description: "Subramayanam is a Mechanical Engineer, Aura Reader, and Energy Healer who blends analytical precision with intuitive insight. With a strong foundation in engineering and energy diagnostics, he specialises in identifying energetic imbalances at their root cause. Through intuitive energy diagnosis and distance healing practices, he helps individuals understand the underlying patterns affecting their emotional, mental, and physical well-being.",
+        email: "subramayanam@auraeye.com",
+        phone: "+91-XXXXXXXXXX",
+        imageUrl: "/subramanyam.jpg",
         rating: 5,
         experience: "15+ years",
-        location: "San Francisco, CA"
+        location: "India"
       },
+      // Additional healers
       {
         name: "Master Liu Wei",
         username: "liu.wei",
