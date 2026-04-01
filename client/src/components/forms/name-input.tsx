@@ -42,7 +42,7 @@ export default function NameInput({
     <Card className="max-w-md mx-auto">
       <CardHeader className="text-center">
         <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-          <User className="w-8 h-8 text-primary" />
+          <User className="w-8 h-8 text-medium" />
         </div>
         <CardTitle className="text-xl text-black bg-white">{title}</CardTitle>
         <p className="text-sm text-black">{description}</p>
@@ -55,7 +55,7 @@ export default function NameInput({
               id="name"
               type="text"
               value={name}
-              onChange={(e) => {
+             onChange={(e) => {
                 setName(e.target.value);
                 if (error) setError("");
               }}
