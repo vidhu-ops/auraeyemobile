@@ -2633,7 +2633,14 @@ export default function HealerDashboard() {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="soul-energy">Soul Energy</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
+          <TabsTrigger value="bookings" className="relative">
+            Bookings
+            {pendingBookings.length > 0 && (
+              <Badge className="ml-2 bg-red-500 text-white animate-pulse">
+                {pendingBookings.length}
+              </Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="readings">My Readings</TabsTrigger>
           <TabsTrigger value="tools">Spiritual Tools</TabsTrigger>
