@@ -509,6 +509,10 @@ export default function Mascot() {
   const handleClose = () => {
     setIsAnimatingOut(true);
     setHasBeenClosedOnThisPage(true);
+
+    // Also mark as permanently clicked so it doesn't reappear unless summoned
+    localStorage.setItem("mascotClicked", "true");
+    setHasBeenClickedPermanently(true);
     setTimeout(() => {
       setIsVisible(false);
       setIsAnimatingOut(false);

@@ -18,7 +18,7 @@ import { NumerologyResult } from "../client/src/lib/openai";
 import { sendHealerBookingNotification, sendPasswordResetEmail, sendPasswordResetConfirmationEmail, sendPaymentConfirmationEmail, sendEmailConfirmationEmail } from "./email-service";
 import { generateAndSendOTP, verifyOTP, isMobileVerified } from "./otp-service";
 import { hashPassword, comparePasswords } from "./auth";
-import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertHealerBadgeSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users, healerRatings, healerBadges, healerBookings } from "../shared/schema";
+import { insertHealerSchema, insertHealerBookingSchema, insertHealerRatingSchema, insertHealerBadgeSchema, insertJournalSchema, otpVerifications, insertPushSubscriptionSchema, pdfStorage, achievements, colorCollectors, chakraUnlocks, paymentPlans, paymentTransactions, userSubscriptions, users, healerRatings, healerBadges, healerBookings, User } from "../shared/schema";
 import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt, gte, lt, sql } from "drizzle-orm";
@@ -1062,7 +1062,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const userId = req.user.id;
+      const userId = newFunction().id;
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -1103,6 +1103,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: "Failed to change password" 
       });
     }
+
+      function newFunction() {
+          return req.user;
+      }
   });
 
   app.patch("/api/users/me/onboarding", isAuthenticated, async (req, res) => {
