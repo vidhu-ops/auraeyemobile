@@ -3362,7 +3362,27 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.json([]);
       }
 
-      const bookings = await storage.getHealerBookingsByHealer(healerData.id);
+      console.log(`📖 Fetching bookings for healer: ${healerData.username} (ID: ${healerData.id})`);
+
+      // Get bookings by healer ID from database
+      let bookings = await storage.getHealerBookingsByHealer(healerData.id);
+      
+      // Also check for bookings under permanent contact IDs
+      // Map healer username to permanent contact ID
+      const permanentContactMap: Record<string, number> = {
+        "nishant.sharma2": 9991,
+        "sunita_mann": 9992,
+        "subramayanam": 9993
+      };
+      
+      const permanentContactId = permanentContactMap[healerData.username];
+      if (permanentContactId) {
+        console.log(`✅ Found permanent contact mapping: ${healerData.username} -> ID ${permanentContactId}`);
+        const permanentBookings = await storage.getHealerBookingsByHealer(permanentContactId);
+        bookings = [...bookings, ...permanentBookings];
+        console.log(`📋 Total bookings for healer: ${bookings.length} (${bookings.length - permanentBookings.length} from healer table, ${permanentBookings.length} from permanent contact)`);
+      }
+
       res.json(bookings);
     } catch (error) {
       console.error("Error retrieving healer bookings:", error);
@@ -3393,7 +3413,20 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Get healer record to verify permissions
       const healerData = req.user.healerData;
       
-      if (!healerData || healerData.id !== booking.healerId) {
+      // Map healer username to permanent contact ID
+      const permanentContactMap: Record<string, number> = {
+        "nishant.sharma2": 9991,
+        "sunita_mann": 9992,
+        "subramayanam": 9993
+      };
+      
+      const healerPermanentId = permanentContactMap[healerData?.username || ''];
+      const isAuthorized = healerData && (
+        healerData.id === booking.healerId || 
+        (healerPermanentId && healerPermanentId === booking.healerId)
+      );
+      
+      if (!isAuthorized) {
         console.log(`Healer auth failed: user=${req.user.username}, healer=${healerData?.name}, booking healerId=${booking.healerId}`);
         return res.status(403).json({ message: "Access denied - not authorized for this booking" });
       }
