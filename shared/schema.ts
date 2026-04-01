@@ -180,7 +180,7 @@ export const healers = pgTable("healers", {
 export const healerBookings = pgTable("healer_bookings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  healerId: integer("healer_id").notNull().references(() => healers.id),
+  healerId: integer("healer_id").notNull(), // Store healer ID without constraint for static and DB healers
   message: text("message"),
   status: text("status").default("pending"), // "pending", "accepted", "rejected", "cancelled"
   healerResponse: text("healer_response"), // Healer's response message
@@ -190,7 +190,7 @@ export const healerBookings = pgTable("healer_bookings", {
 
 export const healerRatings = pgTable("healer_ratings", {
   id: serial("id").primaryKey(),
-  healerId: integer("healer_id").notNull().references(() => healers.id),
+  healerId: integer("healer_id").notNull(), // Store healer ID without constraint for static and DB healers
   raterId: integer("rater_id").notNull().references(() => users.id),
   raterUsername: text("rater_username").notNull(),
   rating: integer("rating").notNull(), // 1-5 stars
@@ -217,7 +217,7 @@ export const insertHealerRatingSchema = createInsertSchema(healerRatings).omit({
 
 export const healerBadges = pgTable("healer_badges", {
   id: serial("id").primaryKey(),
-  healerId: integer("healer_id").notNull().references(() => healers.id),
+  healerId: integer("healer_id").notNull(), // Store healer ID without constraint for static and DB healers
   badgeType: text("badge_type").notNull(), // "most_rated", "most_5_star", "best_healer"
   badgeTitle: text("badge_title").notNull(),
   badgeIcon: text("badge_icon").notNull(), // emoji or icon code
