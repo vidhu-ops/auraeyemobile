@@ -7381,7 +7381,7 @@ Team AuraEye™
               <div className="space-y-10">
                 {/* Name input or Upload section */}
                 {!nameEntered && !result ? (
-                  <div className="flex justify-center font-primary">
+                  <div className="flex justify-center font-medium">
                     <NameInput
                       onNameSubmit={(name) => {
                         setAnalysisName(name);

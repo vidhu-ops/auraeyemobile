@@ -322,7 +322,7 @@ function HealerNumerologyInput({ onSuccess }: { onSuccess: () => void }) {
             Person's Name
           </label>
           <Input
-            type="text"
+            type="text font-medium"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter full name"
