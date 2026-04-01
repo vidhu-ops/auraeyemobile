@@ -2829,6 +2829,32 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Permanent contacts mapping - static healers with user IDs
+  // These are loaded dynamically on startup
+  let PERMANENT_CONTACTS: Record<number, any> = {};
+  
+  // Initialize permanent contacts by finding user accounts
+  (async () => {
+    try {
+      const contacts = [
+        { id: 9991, username: "nishant.sharma2", name: "Nishant Sharma", email: "nishant@auraeye.com" },
+        { id: 9992, username: "sunita_mann", name: "Sunita Mann", email: "sunita@auraeye.com" },
+        { id: 9993, username: "subramayanam", name: "Mr. Subramayanam", email: "subramayanam@auraeye.com" }
+      ];
+      
+      for (const contact of contacts) {
+        const user = await storage.getUserByUsername(contact.username);
+        PERMANENT_CONTACTS[contact.id] = {
+          ...contact,
+          userId: user?.id || null
+        };
+        console.log(`✅ Permanent contact loaded: ${contact.name} (ID: ${contact.id}, User ID: ${user?.id || 'N/A'})`);
+      }
+    } catch (error) {
+      console.error("Error initializing permanent contacts:", error);
+    }
+  })();
+
   // Healer booking API endpoint with email notification - 3 credits to client, 1 to healer
   app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
@@ -2837,8 +2863,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       console.log(`📝 Booking request - User: ${user.id}, Healer: ${healerId}, Message: ${message}`);
 
-      // Get healer details
-      const healer = await storage.getHealer(healerId);
+      // Get healer details from permanent contacts or database
+      let healer = PERMANENT_CONTACTS[healerId as keyof typeof PERMANENT_CONTACTS];
+      if (!healer) {
+        healer = await storage.getHealer(healerId);
+      }
+      
       if (!healer) {
         console.error(`Healer ${healerId} not found`);
         return res.status(404).json({ message: "Healer not found" });
@@ -2865,8 +2895,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       console.log(`💳 Credits deducted from user ${user.id}`);
 
-      // Get healer user to add 1 credit and soul energy
-      const healerUser = await storage.getUserByUsername(healer.username);
+      // For permanent contacts, use their mapped userId; otherwise get healer user
+      let healerUser;
+      if (PERMANENT_CONTACTS[healerId as keyof typeof PERMANENT_CONTACTS]) {
+        const contact = PERMANENT_CONTACTS[healerId as keyof typeof PERMANENT_CONTACTS];
+        healerUser = await storage.getUser(contact.userId);
+      } else {
+        healerUser = await storage.getUserByUsername(healer.username);
+      }
+
       if (healerUser) {
         await storage.addCredits(
           healerUser.id,
@@ -2894,7 +2931,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         console.error("Error adding soul energy:", soulEnergyError);
       }
 
-      // Create booking record
+      // Create booking record - use healer ID directly (no FK constraint now)
       console.log(`📋 Creating booking record with data:`, { userId: user.id, healerId, message });
       
       const bookingData = insertHealerBookingSchema.parse({
@@ -2909,7 +2946,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       console.log(`✅ Booking created: ${booking.id}`);
 
-      // Send email notification to healer
+      // Send email notification to healer with booking info
       const emailSent = await sendHealerBookingNotification(
         healer.email,
         healer.name,
@@ -2919,6 +2956,27 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       if (!emailSent) {
         console.log("Email notification failed, but booking was saved");
+      }
+
+      // Send push notification to healer's user account if available
+      if (healerUser) {
+        try {
+          await sendPushNotification(healerUser.id, {
+            title: "New Booking Request",
+            body: `${user.username} has booked a session${message ? ": " + message.substring(0, 50) : ""}`,
+            tag: "booking_request",
+            data: {
+              type: "booking",
+              bookingId: booking.id,
+              clientId: user.id,
+              clientUsername: user.username,
+              message: message || ""
+            }
+          });
+          console.log(`📲 Push notification sent to healer user ${healerUser.id}`);
+        } catch (pushError) {
+          console.error("Error sending push notification:", pushError);
+        }
       }
 
       res.status(201).json({ 
