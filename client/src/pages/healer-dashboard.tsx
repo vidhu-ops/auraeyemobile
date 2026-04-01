@@ -2311,6 +2311,11 @@ export default function HealerDashboard() {
     refetchOnWindowFocus: false,
   });
 
+  // Filter bookings by status (compute early for use in tabs)
+  const pendingBookings = bookings.filter(b => b.status === 'pending');
+  const acceptedBookings = bookings.filter(b => b.status === 'accepted');
+  const rejectedBookings = bookings.filter(b => b.status === 'rejected');
+
   // Fetch healer analytics
   const { data: analytics } = useQuery<HealerAnalytics>({
     queryKey: ["/api/healer-analytics"],
@@ -2522,10 +2527,6 @@ export default function HealerDashboard() {
     });
   };
 
-  // Filter bookings by status
-  const pendingBookings = bookings.filter(b => b.status === 'pending');
-  const acceptedBookings = bookings.filter(b => b.status === 'accepted');
-  const rejectedBookings = bookings.filter(b => b.status === 'rejected');
 
   const renderBookingCard = (booking: HealerBooking) => (
     <Card key={booking.id} className="border-l-4 border-l-primary">
