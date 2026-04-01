@@ -982,7 +982,7 @@ export default function ObjectAnalysis() {
                         to discover its aura color, energy qualities, and spiritual significance.
                       </p>
                       
-                      <div className="flex flex-col items-center justify-center text-black">
+                      <div className="flex flex-col items-center justify-center text-black font-medium">
                         {showNameInput ? (
                           <NameInput
                             onNameSubmit={handleNameSubmit}
