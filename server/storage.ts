@@ -35,6 +35,7 @@ export interface IStorage {
   updateProfilePicture(userId: number, pictureUrl: string): Promise<User | undefined>;
   updateUserCredits(userId: number, newCredits: number): Promise<User | undefined>;
   updateUserEmail(userId: number, newEmail: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   
   // Push notification subscriptions
   savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
@@ -128,6 +129,7 @@ export interface IStorage {
   addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean>;
   getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]>;
   createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction>;
+  createNotification(notification: { userId: number; title: string; message: string; type?: string }): Promise<any>;
   
   // Soul energy management
   getUserSoulEnergy(userId: number): Promise<number>;
