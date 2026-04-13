@@ -43,6 +43,8 @@ import NotificationPrompt from "@/components/notification-prompt";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
 import { CookieConsent } from "@/components/legal/cookie-consent";
 import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { X } from "lucide-react";
 
 function Router() {
   return (
@@ -87,6 +89,7 @@ function AppContent() {
   const [location, setLocation] = useLocation();
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const { currentBadge, closeBadge } = useBadgeContext();
+  const [appNotification, setAppNotification] = useState<{ title: string; message: string } | null>(null);
 
   // Force reset zoom on every route change
   useEffect(() => {
@@ -121,6 +124,16 @@ function AppContent() {
     setOnboardingChecked(true);
   }, []); // Only run once on mount
 
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const customEvent = event as CustomEvent<{ title: string; message: string }>;
+      setAppNotification(customEvent.detail);
+      setTimeout(() => setAppNotification(null), 5000);
+    };
+    window.addEventListener("app-notification", handler);
+    return () => window.removeEventListener("app-notification", handler);
+  }, []);
+
   // Don't render anything until we've checked onboarding status
   if (!onboardingChecked) {
     return null;
@@ -152,6 +165,25 @@ function AppContent() {
           level={currentBadge.level}
           onClose={closeBadge}
         />
+      )}
+      {appNotification && (
+        <div className="fixed top-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
+          <Card className="border-emerald-500/30 bg-emerald-500 text-white shadow-2xl">
+            <CardContent className="p-4 flex items-start gap-3 relative">
+              <div className="flex-1">
+                <div className="font-semibold text-base">{appNotification.title}</div>
+                <div className="text-sm text-white/90">{appNotification.message}</div>
+              </div>
+              <button
+                onClick={() => setAppNotification(null)}
+                className="rounded-full p-1 hover:bg-white/10"
+                aria-label="Close notification"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </CardContent>
+          </Card>
+        </div>
       )}
       {user && !isPublicRoute && <NotificationPrompt />}
     </>

@@ -8,6 +8,7 @@ interface NotificationContextType {
   permission: NotificationPermission;
   requestPermission: () => Promise<boolean>;
   sendNotification: (title: string, options?: NotificationOptions) => void;
+  showInAppNotification: (title: string, message: string) => void;
   isEnabled: boolean;
   subscribeToPush: () => Promise<boolean>;
   unsubscribeFromPush: () => Promise<boolean>;
@@ -232,6 +233,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const showInAppNotification = (title: string, message: string) => {
+    window.dispatchEvent(new CustomEvent("app-notification", { detail: { title, message } }));
+  };
+
   return (
     <NotificationContext.Provider 
       value={{ 
@@ -239,6 +244,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         permission, 
         requestPermission, 
         sendNotification,
+        showInAppNotification,
         isEnabled: preferences?.browserEnabled || false,
         subscribeToPush,
         unsubscribeFromPush
