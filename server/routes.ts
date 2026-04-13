@@ -3343,6 +3343,52 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  app.post("/api/admin/grant-credits-to-all", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || req.user.userType !== "healer") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      let updated = 0;
+
+      for (const user of allUsers) {
+        const currentCredits = await storage.getUserCredits(user.id);
+        await storage.updateUserCredits(user.id, currentCredits + 5);
+        await storage.createCreditTransaction({
+          userId: user.id,
+          username: user.username,
+          amount: 5,
+          transactionType: "bonus",
+          description: "5 bonus credits added to your account",
+          balanceAfter: currentCredits + 5,
+        });
+        await storage.createNotification({
+          userId: user.id,
+          title: "Credits Added",
+          message: "5 credits have been added to your account.",
+          type: "credit_bonus",
+        });
+        updated += 1;
+      }
+
+      res.json({ message: "Credits added to all users", updated });
+    } catch (error) {
+      console.error("Error granting credits to all users:", error);
+      res.status(500).json({ message: "Failed to grant credits" });
+    }
+  });
+
+  app.get("/api/notifications", isAuthenticated, async (req, res) => {
+    try {
+      const notifications = await storage.getNotificationsByUser(req.user.id);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
   // Get healer's booking requests (for healer dashboard)
   app.get("/api/healer-bookings", async (req, res) => {
     if (!req.isAuthenticated()) {
