@@ -1050,7 +1050,32 @@ export default function ClientDashboard() {
 
         {/* Settings Tab */}
         {activeTab === "settings" && (
-          <NotificationSettings />
+          <>
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
+              <CardContent className="p-6 space-y-3">
+                <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
+                <p className="text-cyan-100 text-sm">Open the privacy policy or delete your account from here.</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link href="/privacy-policy">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">Open Privacy Policy</Button>
+                  </Link>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      if (confirm("Delete your account permanently? This cannot be undone.")) {
+                        fetch("/api/user", { method: "DELETE", credentials: "include" }).then(() => {
+                          window.location.href = "/";
+                        });
+                      }
+                    }}
+                  >
+                    Delete Account
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <NotificationSettings />
+          </>
         )}
       </div>
 
