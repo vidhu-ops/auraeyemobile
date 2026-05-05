@@ -26,6 +26,7 @@ import HelpPage from "@/pages/help";
 import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
 import SettingsPage from "@/pages/settings";
+import PrivacyPolicyPage from "@/pages/privacy-policy";
 import PaymentPage from "@/pages/payment";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
 import OnboardingPage from "@/pages/onboarding-page";
@@ -71,6 +72,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/pricing" component={PricingPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
       <Route path="/healers" component={HealersPage} />
       <Route path="/healer-crm" component={HealerCRM} />
       <ProtectedRoute path="/meditations" component={MeditationsPage} />
