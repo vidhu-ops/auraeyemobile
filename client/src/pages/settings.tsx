@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Link } from "wouter";
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -432,6 +433,18 @@ export default function SettingsPage() {
                   </form>
                 </Form>
               )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-purple-200/50 shadow-lg">
+            <CardHeader>
+              <CardTitle>Legal</CardTitle>
+              <CardDescription>Review our policy information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Link href="/privacy-policy">Open Privacy Policy</Link>
+              </Button>
             </CardContent>
           </Card>
 
