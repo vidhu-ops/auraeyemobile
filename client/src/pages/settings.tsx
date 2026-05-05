@@ -278,6 +278,31 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-6">
+          <Card className="border-purple-200/50 shadow-lg bg-gradient-to-r from-white to-purple-50">
+            <CardHeader>
+              <CardTitle>Account & Privacy</CardTitle>
+              <CardDescription>Quick access to your policy and account controls</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                <Link href="/privacy-policy">Open Privacy Policy</Link>
+              </Button>
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() => {
+                  if (confirm("Delete your account permanently? This cannot be undone.")) {
+                    deleteAccountMutation.mutate();
+                  }
+                }}
+                disabled={deleteAccountMutation.isPending}
+              >
+                {deleteAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                Delete Account
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Password Settings Card */}
           <Card className="border-purple-200/50 shadow-lg">
             <CardHeader>
@@ -454,33 +479,6 @@ export default function SettingsPage() {
                   </form>
                 </Form>
               )}
-            </CardContent>
-          </Card>
-
-          <Card className="border-purple-200/50 shadow-lg">
-            <CardHeader>
-              <CardTitle>Legal</CardTitle>
-              <CardDescription>Review our policy information</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Button asChild className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white">
-                  <Link href="/privacy-policy">Open Privacy Policy</Link>
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="w-full sm:w-auto"
-                  onClick={() => {
-                    if (confirm("Delete your account permanently? This cannot be undone.")) {
-                      deleteAccountMutation.mutate();
-                    }
-                  }}
-                  disabled={deleteAccountMutation.isPending}
-                >
-                  {deleteAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                  Delete Account
-                </Button>
-              </div>
             </CardContent>
           </Card>
 
