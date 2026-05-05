@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Bell, Smartphone, Mail, Send } from "lucide-react";
+import { Bell, Smartphone, Mail, Send, Trash2 } from "lucide-react";
+import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -204,10 +205,56 @@ export default function NotificationSettings() {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("DELETE", "/api/user");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been deleted successfully.",
+      });
+      window.location.href = "/";
+    },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Unable to delete your account right now.",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (!user) return null;
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Account & Privacy</CardTitle>
+          <CardDescription>Open the privacy policy or delete your account.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+            <Link href="/privacy-policy">Open Privacy Policy</Link>
+          </Button>
+          <Button
+            variant="destructive"
+            className="w-full"
+            disabled={deleteAccountMutation.isPending}
+            onClick={() => {
+              if (confirm("Delete your account permanently? This cannot be undone.")) {
+                deleteAccountMutation.mutate();
+              }
+            }}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Account
+          </Button>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
