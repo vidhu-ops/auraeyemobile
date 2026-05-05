@@ -3389,6 +3389,18 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  app.delete("/api/user", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteUser(req.user.id);
+      req.session.destroy(() => {});
+      res.clearCookie("connect.sid");
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   // Get healer's booking requests (for healer dashboard)
   app.get("/api/healer-bookings", async (req, res) => {
     if (!req.isAuthenticated()) {

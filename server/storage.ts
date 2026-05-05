@@ -38,6 +38,7 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   getNotificationsByUser(userId: number): Promise<Notification[]>;
+  deleteUser(userId: number): Promise<boolean>;
   
   // Push notification subscriptions
   savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
@@ -331,6 +332,11 @@ export class DatabaseStorage implements IStorage {
 
   async getNotificationsByUser(userId: number): Promise<Notification[]> {
     return await db.select().from(notifications).where(eq(notifications.userId, userId));
+  }
+
+  async deleteUser(userId: number): Promise<boolean> {
+    await db.delete(users).where(eq(users.id, userId));
+    return true;
   }
 
   async getAllPushSubscriptions(): Promise<PushSubscription[]> {
