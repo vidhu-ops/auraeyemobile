@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, BellOff, Settings as SettingsIcon, Check, Lock, Loader2 } from "lucide-react";
+import { Bell, BellOff, Settings as SettingsIcon, Check, Lock, Loader2, Trash2, ShieldAlert } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -69,6 +69,27 @@ export default function SettingsPage() {
     onError: (error: Error) => {
       toast({
         title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("DELETE", "/api/user");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been deleted successfully.",
+      });
+      window.location.href = "/";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -442,9 +463,24 @@ export default function SettingsPage() {
               <CardDescription>Review our policy information</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
-                <Link href="/privacy-policy">Open Privacy Policy</Link>
-              </Button>
+              <div className="space-y-3">
+                <Button asChild className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white">
+                  <Link href="/privacy-policy">Open Privacy Policy</Link>
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full sm:w-auto"
+                  onClick={() => {
+                    if (confirm("Delete your account permanently? This cannot be undone.")) {
+                      deleteAccountMutation.mutate();
+                    }
+                  }}
+                  disabled={deleteAccountMutation.isPending}
+                >
+                  {deleteAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                  Delete Account
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
