@@ -33,7 +33,7 @@ export function isHealerType(userType: string | undefined): boolean {
  * Get the appropriate dashboard route for user type
  */
 export function getDashboardRoute(userType: string | undefined): string {
-  return isHealerType(userType) ? "/healer-dashboard" : "/client-dashboard";
+  return isHealerType(userType) ? "/healer-dashboard" : "/dashboard";
 }
 
 /**
