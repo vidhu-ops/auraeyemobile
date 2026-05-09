@@ -128,7 +128,19 @@ export default function ClientDashboard() {
   const treeGrowth = calculateTreeGrowth(safeSoulEnergy);
   const milestoneProgress = getProgressToNextMilestone(safeSoulEnergy);
 
-  const statsTyped = stats as any;
+  const statsTyped = {
+    meditationHours: 0,
+    healersConsulted: 0,
+    auraScans: 0,
+    totalSessions: 0,
+    auraReadings: 0,
+    numerologyReadings: 0,
+    vibeReadings: 0,
+    journals: 0,
+    objectAnalyses: 0,
+    meditationSessions: 0,
+    ...stats,
+  } as any;
   const userTyped = user as any;
 
   return (
@@ -376,14 +388,14 @@ export default function ClientDashboard() {
                       <div className="text-2xl font-bold text-purple-400 mb-1">
                         {statsLoading ? '...' : `${statsTyped.meditationHours || 0}h`}
                       </div>
-                      <Progress value={statsTyped.meditationHours > 0 ? Math.min((statsTyped.meditationHours / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={(statsTyped.meditationHours || 0) > 0 ? Math.min(((statsTyped.meditationHours || 0) / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
                       <div className="text-2xl font-bold text-cyan-400 mb-1">
                         {statsLoading ? '...' : (statsTyped.healersConsulted || 0)}
                       </div>
-                      <Progress value={statsTyped.healersConsulted > 0 ? Math.min((statsTyped.healersConsulted / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={(statsTyped.healersConsulted || 0) > 0 ? Math.min(((statsTyped.healersConsulted || 0) / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                   </div>
 
