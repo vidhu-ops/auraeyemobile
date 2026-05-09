@@ -123,9 +123,10 @@ export default function ClientDashboard() {
   }
   
   // Use new milestone and tree growth system
-  const milestone = getSoulEnergyMilestone(soulEnergy || 0);
-  const treeGrowth = calculateTreeGrowth(soulEnergy || 0);
-  const milestoneProgress = getProgressToNextMilestone(soulEnergy || 0);
+  const safeSoulEnergy = soulEnergy || 0;
+  const milestone = getSoulEnergyMilestone(safeSoulEnergy);
+  const treeGrowth = calculateTreeGrowth(safeSoulEnergy);
+  const milestoneProgress = getProgressToNextMilestone(safeSoulEnergy);
 
   const statsTyped = stats as any;
   const userTyped = user as any;
@@ -186,7 +187,7 @@ export default function ClientDashboard() {
                 <div className="text-xs text-purple-100">Credits</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{soulEnergyLoading ? '...' : soulEnergy}</div>
+                <div className="text-2xl font-bold text-white">{soulEnergyLoading ? '...' : safeSoulEnergy}</div>
                 <div className="text-xs text-purple-100">Soul Energy</div>
               </div>
               <div className="text-center">
