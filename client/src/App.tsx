@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -61,8 +61,14 @@ function Router() {
       <Route path="/services" component={Services} />
       <ProtectedRoute path="/vibe" component={VibePage} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
-      <ProtectedRoute path="/dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
+      <ProtectedRoute path="/dashboard">
+        {(props) => {
+          const { user } = useAuth();
+          const isHealer = user?.userType === "healer" || user?.userType === "semi_healer";
+          return <Redirect to={isHealer ? "/healer-dashboard" : "/client-dashboard"} />;
+        }}
+      </ProtectedRoute>
       <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
       <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
       <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
