@@ -15,7 +15,7 @@ import { useBadgeContext } from "@/hooks/use-badge-context";
 import { useCredits } from "@/hooks/use-credits";
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const { checkBadges } = useBadgeContext();
   const { credits } = useCredits();
 
-  const { data: stats } = useQuery({
+  const { data: stats = { auraReadings: 0, numerologyReadings: 0, vibeReadings: 0, journals: 0, objectAnalyses: 0, meditationSessions: 0, auraScans: 0, totalSessions: 0 } } = useQuery({
     queryKey: ["/api/user-stats"],
   });
 
@@ -31,7 +31,7 @@ export default function ProfilePage() {
     queryKey: ["/api/user-subscription"],
   });
 
-  const { data: streaks } = useQuery({
+  const { data: streaks = { currentStreak: 0, longestStreak: 0 } } = useQuery({
     queryKey: ["/api/streaks"],
   });
 
@@ -70,7 +70,7 @@ export default function ProfilePage() {
   });
 
   const handleLogout = async () => {
-    await logout();
+    await logoutMutation.mutateAsync();
     setLocation("/login");
   };
 
