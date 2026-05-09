@@ -44,13 +44,15 @@ import * as badgeDefinitions from "@/lib/badge-definitions";
 export default function ClientDashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const [location] = useLocation();
-  const { data: soulEnergy = 0, isLoading: soulEnergyLoading } = useQuery<number>({
+  const { data: soulEnergy = 0, isLoading: soulEnergyLoading } = useQuery<any, Error, number>({
     queryKey: ["/api/soul-energy", user?.id],
     enabled: !!user,
+    select: (data: any) => typeof data === 'number' ? data : (data?.soulEnergy ?? 0),
   });
-  const { data: credits, isLoading: creditsLoading } = useQuery<number>({
+  const { data: credits = 0, isLoading: creditsLoading } = useQuery<any, Error, number>({
     queryKey: ["/api/credits", user?.id],
     enabled: !!user,
+    select: (data: any) => typeof data === 'number' ? data : (data?.credits ?? 0),
   });
   const { data: stats, isLoading: statsLoading } = useQuery<any>({
     queryKey: ["/api/user-stats", user?.id],
