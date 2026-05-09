@@ -27,15 +27,15 @@ export default function ProfilePage() {
     queryKey: ["/api/user-stats"],
   });
 
-  const { data: subscription } = useQuery({
+  const { data: subscription = { planName: "Free", status: "active" } } = useQuery({
     queryKey: ["/api/user-subscription"],
   });
 
-  const { data: streaks = { currentStreak: 0, longestStreak: 0 } } = useQuery({
+  const { data: streaks = { currentStreak: 0, longestStreak: 0, daysOutOf7: 0 } } = useQuery({
     queryKey: ["/api/streaks"],
   });
 
-  const { data: achievements = [], refetch: refetchAchievements } = useQuery({
+  const { data: achievements = [], refetch: refetchAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
   });
 
