@@ -43,9 +43,34 @@ import Mascot from "@/components/mascot/mascot";
 import NotificationPrompt from "@/components/notification-prompt";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
 import { CookieConsent } from "@/components/legal/cookie-consent";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Component, ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+          <div className="bg-red-900/40 border border-red-500 rounded-xl p-6 max-w-lg w-full text-white">
+            <h2 className="text-lg font-bold text-red-300 mb-2">Dashboard Error</h2>
+            <p className="text-sm text-red-200 font-mono break-all">{this.state.error.message}</p>
+            <p className="text-xs text-red-300 mt-2 font-mono break-all">{this.state.error.stack?.split('\n').slice(0,3).join('\n')}</p>
+            <button onClick={() => { this.setState({ error: null }); window.location.href = '/'; }} className="mt-4 px-4 py-2 bg-red-600 rounded text-sm">Go Home</button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function DashboardRedirect() {
   const { user, isLoading } = useAuth();
@@ -164,14 +189,18 @@ function AppContent() {
   const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
-  // Show lights activation only if user is logged in, not on a public route, and lights are off
-  if (user && !isPublicRoute && !lightsOn && !isLoading) {
+  // Show lights activation only on the home page for first-time session feel
+  // Skip it on all dashboard/feature routes so they always load directly
+  const isDashboardRoute = location.startsWith('/dashboard') || location.startsWith('/client-dashboard') || location.startsWith('/healer-dashboard');
+  if (user && !isPublicRoute && !isDashboardRoute && !lightsOn && !isLoading && location === '/') {
     return <LightsActivation />;
   }
 
   return (
     <>
-      <Router />
+      <ErrorBoundary>
+        <Router />
+      </ErrorBoundary>
       {user && !isPublicRoute && <Mascot />}
       {currentBadge && (
         <BadgeNotification

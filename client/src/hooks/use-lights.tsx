@@ -8,9 +8,18 @@ interface LightsContextType {
 const LightsContext = createContext<LightsContextType | undefined>(undefined);
 
 export function LightsProvider({ children }: { children: React.ReactNode }) {
-  const [lightsOn, setLightsOn] = useState<boolean>(false);
+  const [lightsOn, setLightsOn] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("lightsOn") === "true";
+    } catch {
+      return false;
+    }
+  });
 
   const turnOnLights = () => {
+    try {
+      localStorage.setItem("lightsOn", "true");
+    } catch {}
     setLightsOn(true);
   };
 
