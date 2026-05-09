@@ -62,13 +62,20 @@ function Router() {
       <ProtectedRoute path="/vibe" component={VibePage} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
-      <ProtectedRoute path="/dashboard">
+      <Route path="/dashboard">
         {() => {
-          const { user } = useAuth();
+          const { user, isLoading } = useAuth();
+          if (isLoading) {
+            return (
+              <div className="min-h-screen flex items-center justify-center bg-slate-950">
+                <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-500" />
+              </div>
+            );
+          }
           const isHealer = user?.userType === "healer" || user?.userType === "semi_healer";
           return <Redirect to={isHealer ? "/healer-dashboard" : "/client-dashboard"} />;
         }}
-      </ProtectedRoute>
+      </Route>
       <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
       <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
       <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
