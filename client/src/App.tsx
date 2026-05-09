@@ -47,6 +47,20 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
 
+function DashboardRedirect() {
+  const { user, isLoading } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-500" />
+      </div>
+    );
+  }
+  if (!user) return <Redirect to="/auth" />;
+  const isHealer = user.userType === "healer" || user.userType === "semi-healer" || user.userType === "semi_healer";
+  return <Redirect to={isHealer ? "/healer-dashboard" : "/client-dashboard"} />;
+}
+
 function Router() {
   return (
     <Switch>
@@ -62,20 +76,7 @@ function Router() {
       <ProtectedRoute path="/vibe" component={VibePage} />
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
-      <Route path="/dashboard">
-        {() => {
-          const { user, isLoading } = useAuth();
-          if (isLoading) {
-            return (
-              <div className="min-h-screen flex items-center justify-center bg-slate-950">
-                <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-500" />
-              </div>
-            );
-          }
-          const isHealer = user?.userType === "healer" || user?.userType === "semi_healer";
-          return <Redirect to={isHealer ? "/healer-dashboard" : "/client-dashboard"} />;
-        }}
-      </Route>
+      <Route path="/dashboard" component={DashboardRedirect} />
       <ProtectedRoute path="/aura-analysis" component={AuraAnalysis} />
       <ProtectedRoute path="/object-analysis" component={ObjectAnalysis} />
       <ProtectedRoute path="/daily-horoscope" component={DailyHoroscope} />
