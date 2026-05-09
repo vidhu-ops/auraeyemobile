@@ -44,7 +44,7 @@ import * as badgeDefinitions from "@/lib/badge-definitions";
 export default function ClientDashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const [location] = useLocation();
-  const { data: soulEnergy, isLoading: soulEnergyLoading } = useQuery<number>({
+  const { data: soulEnergy = 0, isLoading: soulEnergyLoading } = useQuery<number>({
     queryKey: ["/api/soul-energy", user?.id],
     enabled: !!user,
   });
@@ -123,7 +123,7 @@ export default function ClientDashboard() {
   }
   
   // Use new milestone and tree growth system
-  const safeSoulEnergy = soulEnergy || 0;
+  const safeSoulEnergy = soulEnergy;
   const milestone = getSoulEnergyMilestone(safeSoulEnergy);
   const treeGrowth = calculateTreeGrowth(safeSoulEnergy);
   const milestoneProgress = getProgressToNextMilestone(safeSoulEnergy);
@@ -183,7 +183,7 @@ export default function ClientDashboard() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{creditsLoading ? '...' : credits}</div>
+                <div className="text-2xl font-bold text-white">{creditsLoading ? '...' : (credits || 0)}</div>
                 <div className="text-xs text-purple-100">Credits</div>
               </div>
               <div className="text-center">
@@ -374,14 +374,14 @@ export default function ClientDashboard() {
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
                       <div className="text-2xl font-bold text-purple-400 mb-1">
-                        {statsLoading ? '...' : `${statsTyped.meditationHours}h`}
+                        {statsLoading ? '...' : `${statsTyped.meditationHours || 0}h`}
                       </div>
                       <Progress value={statsTyped.meditationHours > 0 ? Math.min((statsTyped.meditationHours / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
                       <div className="text-2xl font-bold text-cyan-400 mb-1">
-                        {statsLoading ? '...' : statsTyped.healersConsulted}
+                        {statsLoading ? '...' : (statsTyped.healersConsulted || 0)}
                       </div>
                       <Progress value={statsTyped.healersConsulted > 0 ? Math.min((statsTyped.healersConsulted / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
@@ -391,13 +391,13 @@ export default function ClientDashboard() {
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Aura Scans</div>
                       <div className="text-2xl font-bold text-indigo-400">
-                        {statsLoading ? '...' : statsTyped.auraScans}
+                        {statsLoading ? '...' : (statsTyped.auraScans || 0)}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Total Sessions</div>
                       <div className="text-2xl font-bold text-pink-400">
-                        {statsLoading ? '...' : statsTyped.totalSessions}
+                        {statsLoading ? '...' : (statsTyped.totalSessions || 0)}
                       </div>
                     </div>
                   </div>
