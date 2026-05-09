@@ -3,13 +3,6 @@ import { hashPassword } from "./auth";
 
 export async function seedHealers() {
   try {
-    // Check if healers already exist
-    const existingHealers = await storage.getAllHealers();
-    if (existingHealers.length > 0) {
-      console.log("Healers already seeded");
-      return;
-    }
-
     const healersData = [
       // Static healers - must be created for booking functionality
       {
@@ -120,6 +113,10 @@ export async function seedHealers() {
     ];
 
     for (const healerData of healersData) {
+      const existing = await storage.getHealerByUsername(healerData.username);
+      if (existing) {
+        continue;
+      }
       await storage.createHealer(healerData);
     }
 
