@@ -63,7 +63,7 @@ function Router() {
       <ProtectedRoute path="/client-dashboard" component={ClientDashboard} />
       <ProtectedRoute path="/healer-dashboard" component={HealerDashboard} />
       <ProtectedRoute path="/dashboard">
-        {(props) => {
+        {() => {
           const { user } = useAuth();
           const isHealer = user?.userType === "healer" || user?.userType === "semi_healer";
           return <Redirect to={isHealer ? "/healer-dashboard" : "/client-dashboard"} />;
