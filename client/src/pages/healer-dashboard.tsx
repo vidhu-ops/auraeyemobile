@@ -2086,7 +2086,7 @@ export default function HealerDashboard() {
   const { soulEnergy, isLoading: soulEnergyLoading } = useSoulEnergy();
   const { checkBadges } = useBadgeContext();
 
-  const { data: streakData } = useQuery<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }>({
+  const { data: streakData = { currentStreak: 0, longestStreak: 0, weeklyActiveDates: [] } } = useQuery<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }>({
     queryKey: ["/api/streaks"],
   });
 

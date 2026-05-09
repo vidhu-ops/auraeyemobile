@@ -59,7 +59,7 @@ export default function ClientDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
-  const { data: streakData } = useQuery<any>({ queryKey: ["/api/streaks"] });
+  const { data: streakData = { currentStreak: 0, longestStreak: 0, weeklyActiveDates: [] } } = useQuery<any>({ queryKey: ["/api/streaks"] });
   const { data: achievements = [] as any[], refetch: refetchAchievements } = useQuery<any[]>({
     queryKey: ["/api/achievements"],
     enabled: !!user,
@@ -123,9 +123,9 @@ export default function ClientDashboard() {
   }
   
   // Use new milestone and tree growth system
-  const milestone = getSoulEnergyMilestone(soulEnergy);
-  const treeGrowth = calculateTreeGrowth(soulEnergy);
-  const milestoneProgress = getProgressToNextMilestone(soulEnergy);
+  const milestone = getSoulEnergyMilestone(soulEnergy || 0);
+  const treeGrowth = calculateTreeGrowth(soulEnergy || 0);
+  const milestoneProgress = getProgressToNextMilestone(soulEnergy || 0);
 
   const statsTyped = stats as any;
   const userTyped = user as any;

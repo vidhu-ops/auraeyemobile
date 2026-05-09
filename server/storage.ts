@@ -847,7 +847,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]> {
-    return await db.select().from(creditTransactions).where(eq(creditTransactions.userId, userId)).orderBy(desc(creditTransactions.createdAt));
+    try {
+      return await db.select().from(creditTransactions).where(eq(creditTransactions.userId, userId)).orderBy(desc(creditTransactions.createdAt));
+    } catch (error) {
+      console.error("Error fetching credit transactions:", error);
+      return [];
+    }
   }
 
   async createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction> {
@@ -945,7 +950,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getMoodSnapshotsByUser(userId: number): Promise<MoodSnapshot[]> {
-    return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.timestamp));
+    try {
+      return await db.select().from(moodSnapshots).where(eq(moodSnapshots.userId, userId)).orderBy(desc(moodSnapshots.timestamp));
+    } catch (error) {
+      console.error("Error fetching mood snapshots:", error);
+      return [];
+    }
   }
 
   async getRecentMoodSnapshots(userId: number, limit: number): Promise<MoodSnapshot[]> {
@@ -959,7 +969,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserMeditationSessions(userId: number): Promise<MeditationSession[]> {
-    return await db.select().from(meditationSessions).where(eq(meditationSessions.userId, userId)).orderBy(desc(meditationSessions.createdAt));
+    try {
+      return await db.select().from(meditationSessions).where(eq(meditationSessions.userId, userId)).orderBy(desc(meditationSessions.createdAt));
+    } catch (error) {
+      console.error("Error fetching meditation sessions:", error);
+      return [];
+    }
   }
 
   async getMeditationStats(userId: number): Promise<{ sessionsCount: number; totalMinutes: number; totalEnergy: number }> {
@@ -1003,27 +1018,40 @@ export class DatabaseStorage implements IStorage {
 
   // User stats
   async getUserStats(userId: number): Promise<any> {
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    const [auraReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(auraReadings).where(eq(auraReadings.userId, userId));
-    const [numerologyReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
-    const [vibeReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(vibeReadings).where(eq(vibeReadings.userId, userId));
-    const [journalsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(journals).where(eq(journals.userId, userId));
-    const [objectAnalysesCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(objectAnalyses).where(eq(objectAnalyses.userId, userId));
-    const [meditationSessionsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(meditationSessions).where(eq(meditationSessions.userId, userId));
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      const [auraReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(auraReadings).where(eq(auraReadings.userId, userId));
+      const [numerologyReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(numerologyReadings).where(eq(numerologyReadings.userId, userId));
+      const [vibeReadingsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(vibeReadings).where(eq(vibeReadings.userId, userId));
+      const [journalsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(journals).where(eq(journals.userId, userId));
+      const [objectAnalysesCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(objectAnalyses).where(eq(objectAnalyses.userId, userId));
+      const [meditationSessionsCount] = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(meditationSessions).where(eq(meditationSessions.userId, userId));
 
-    return {
-      name: user?.name,
-      email: user?.email,
-      auraReadings: auraReadingsCount?.count || 0,
-      numerologyReadings: numerologyReadingsCount?.count || 0,
-      vibeReadings: vibeReadingsCount?.count || 0,
-      journals: journalsCount?.count || 0,
-      objectAnalyses: objectAnalysesCount?.count || 0,
-      meditationSessions: meditationSessionsCount?.count || 0,
-      // Compatibility fields for some dashboard views
-      auraScans: auraReadingsCount?.count || 0,
-      totalSessions: (auraReadingsCount?.count || 0) + (meditationSessionsCount?.count || 0)
-    };
+      return {
+        name: user?.name,
+        email: user?.email,
+        auraReadings: auraReadingsCount?.count || 0,
+        numerologyReadings: numerologyReadingsCount?.count || 0,
+        vibeReadings: vibeReadingsCount?.count || 0,
+        journals: journalsCount?.count || 0,
+        objectAnalyses: objectAnalysesCount?.count || 0,
+        meditationSessions: meditationSessionsCount?.count || 0,
+        auraScans: auraReadingsCount?.count || 0,
+        totalSessions: (auraReadingsCount?.count || 0) + (meditationSessionsCount?.count || 0)
+      };
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      return {
+        auraReadings: 0,
+        numerologyReadings: 0,
+        vibeReadings: 0,
+        journals: 0,
+        objectAnalyses: 0,
+        meditationSessions: 0,
+        auraScans: 0,
+        totalSessions: 0
+      };
+    }
   }
 
   // Login streak tracking
@@ -1032,7 +1060,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLoginStreak(userId: number): Promise<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }> {
-    return { currentStreak: 1, longestStreak: 1, weeklyActiveDates: [] };
+    try {
+      return { currentStreak: 1, longestStreak: 1, weeklyActiveDates: [] };
+    } catch (error) {
+      console.error("Error fetching login streak:", error);
+      return { currentStreak: 0, longestStreak: 0, weeklyActiveDates: [] };
+    }
   }
 }
 
