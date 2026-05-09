@@ -11,5 +11,8 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Strip surrounding quotes if the URL was pasted with them
+const cleanDatabaseUrl = process.env.DATABASE_URL.replace(/^['"]|['"]$/g, '');
+
+export const pool = new Pool({ connectionString: cleanDatabaseUrl });
 export const db = drizzle({ client: pool, schema });
