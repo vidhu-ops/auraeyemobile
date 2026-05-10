@@ -22,7 +22,12 @@ function getConnectionString(): string {
   return url.replace(/^['"]|['"]$/g, '');
 }
 
-const connectionString = getConnectionString();
+function getPoolConfig() {
+  const connectionString = getConnectionString();
+  return {
+    connectionString,
+  };
+}
 
-export const pool = new Pool({ connectionString });
+export const pool = new Pool(getPoolConfig());
 export const db = drizzle({ client: pool, schema });
