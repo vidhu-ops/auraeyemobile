@@ -26,16 +26,7 @@ export async function seedDefaultUsers() {
       const existing = await storage.getUserByUsername(userData.username);
       if (existing) {
         await storage.updateUserPassword(existing.id, userData.password);
-        if (existing.userType !== userData.userType) {
-          await storage.createUser({
-            username: userData.username,
-            password: userData.password,
-            userType: userData.userType,
-            birthDate: "1990-01-01",
-            email: userData.email,
-            credits: userData.credits,
-          });
-        }
+        await storage.updateUserEmail(existing.id, userData.email);
         continue;
       }
 
