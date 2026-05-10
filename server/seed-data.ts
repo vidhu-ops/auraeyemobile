@@ -1,6 +1,60 @@
 import { storage } from "./storage";
 import { hashPassword } from "./auth";
 
+export async function seedDefaultUsers() {
+  try {
+    const defaultUsers = [
+      {
+        name: "Test Client",
+        username: "test.client",
+        password: await hashPassword("client123"),
+        userType: "client" as const,
+        email: "test.client@spiritualwellness.com",
+        credits: 5,
+      },
+      {
+        name: "Test Healer",
+        username: "test healer",
+        password: await hashPassword("healer123"),
+        userType: "healer" as const,
+        email: "test.healer@spiritualwellness.com",
+        credits: 100,
+      }
+    ];
+
+    for (const userData of defaultUsers) {
+      const existing = await storage.getUserByUsername(userData.username);
+      if (existing) {
+        await storage.updateUserPassword(existing.id, userData.password);
+        if (existing.userType !== userData.userType) {
+          await storage.createUser({
+            username: userData.username,
+            password: userData.password,
+            userType: userData.userType,
+            birthDate: "1990-01-01",
+            email: userData.email,
+            credits: userData.credits,
+          });
+        }
+        continue;
+      }
+
+      await storage.createUser({
+        username: userData.username,
+        password: userData.password,
+        userType: userData.userType,
+        birthDate: "1990-01-01",
+        email: userData.email,
+        credits: userData.credits,
+      });
+    }
+
+    console.log("Successfully seeded default users data");
+  } catch (error) {
+    console.error("Error seeding default users:", error);
+  }
+}
+
 export async function seedHealers() {
   try {
     const healersData = [
