@@ -1039,7 +1039,7 @@ function calculateSoulChakra(birthDate: string): number {
   return calculateLifePath(birthDate);
 }
 
-import { seedHealers } from "./seed-data";
+import { seedDefaultUsers, seedHealers } from "./seed-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
@@ -1185,6 +1185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Seed initial healer data asynchronously (don't block server startup)
   setImmediate(async () => {
     try {
+      await seedDefaultUsers();
       await seedHealers();
       console.log("Healer data seeded successfully");
     } catch (error) {
