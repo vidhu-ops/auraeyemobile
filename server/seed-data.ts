@@ -1,5 +1,8 @@
 import { storage } from "./storage";
 import { hashPassword } from "./auth";
+import { db } from "./db";
+import { users, healers } from "../shared/schema";
+import { sql } from "drizzle-orm";
 
 export async function seedDefaultUsers() {
   try {
@@ -170,4 +173,14 @@ export async function seedHealers() {
   } catch (error) {
     console.error("Error seeding healers:", error);
   }
+}
+
+export async function ensureProductionSeed() {
+  await seedDefaultUsers();
+  await seedHealers();
+
+  const userCount = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(users);
+  const healerCount = await db.select({ count: sql<number>`cast(count(*) as integer)` }).from(healers);
+
+  console.log(`Production seed ready: ${userCount[0]?.count || 0} users, ${healerCount[0]?.count || 0} healers`);
 }

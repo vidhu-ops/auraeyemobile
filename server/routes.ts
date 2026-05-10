@@ -1200,6 +1200,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to load seeded accounts" });
     }
   });
+
+  app.get("/api/debug/db-status", async (_req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const healers = await storage.getAllHealers();
+      res.json({
+        connected: true,
+        users: users.length,
+        healers: healers.length,
+      });
+    } catch (error) {
+      res.status(500).json({
+        connected: false,
+        error: error instanceof Error ? error.message : "Database read failed",
+      });
+    }
+  });
   
   // Configure file upload first (lightweight operation)
   const upload = configureFileUpload();
