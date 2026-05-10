@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { runStartupSeed } from "./seed-data";
 import { setupVite, serveStatic, log } from "./vite";
 import { serveProductionStatic } from "./production-static";
 import { initializeWhatsApp } from "./whatsapp-service";
@@ -187,6 +188,9 @@ app.use((req, res, next) => {
   // Initialize WhatsApp service
   console.log('Initializing WhatsApp service...');
   initializeWhatsApp();
+
+  // Seed all users and healers from production data
+  await runStartupSeed();
   
   const server = await registerRoutes(app);
 
