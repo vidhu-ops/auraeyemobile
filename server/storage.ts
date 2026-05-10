@@ -248,7 +248,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
 
     // If user is a healer, sync password to healers table
-    if (user && (user.userType === 'healer' || user.userType === 'semi_healer')) {
+    if (user && (user.userType === 'healer' || user.userType === 'semi-healer')) {
       await db
         .update(healers)
         .set({ password: hashedPassword })
