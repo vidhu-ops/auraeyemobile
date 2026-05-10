@@ -115,6 +115,7 @@ export async function seedHealers() {
     for (const healerData of healersData) {
       const existing = await storage.getHealerByUsername(healerData.username);
       if (existing) {
+        await storage.updateHealerPassword(healerData.username, healerData.password);
         continue;
       }
       await storage.createHealer(healerData);
