@@ -4,8 +4,16 @@ import * as schema from "../shared/schema";
 
 const { Pool } = pg;
 
-// Prefer Replit's managed database (PGHOST) over any external DATABASE_URL
+function cleanUrl(url: string) {
+  return url.replace(/^['"]|['"]$/g, '');
+}
+
 function getConnectionString(): string {
+  const directUrl = process.env.DATABASE_URL;
+  if (directUrl) {
+    return cleanUrl(directUrl);
+  }
+
   if (process.env.PGHOST && process.env.PGHOST !== '') {
     const user = process.env.PGUSER || 'postgres';
     const password = process.env.PGPASSWORD || '';
@@ -15,17 +23,15 @@ function getConnectionString(): string {
     return `postgresql://${user}:${password}@${host}:${port}/${database}`;
   }
 
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
-  }
-  return url.replace(/^['"]|['"]$/g, '');
+  throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
 }
 
 function getPoolConfig() {
   const connectionString = getConnectionString();
+  const needsSsl = connectionString.includes("sslmode=require") || !!process.env.REPLIT_DEPLOYMENT || process.env.NODE_ENV === "production";
   return {
     connectionString,
+    ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
   };
 }
 
