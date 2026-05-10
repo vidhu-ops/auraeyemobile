@@ -1039,7 +1039,6 @@ function calculateSoulChakra(birthDate: string): number {
   return calculateLifePath(birthDate);
 }
 
-import { seedDefaultUsers, seedHealers } from "./seed-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
@@ -1178,21 +1177,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(404).json({ error: 'Asset not found' });
     }
   });
+
+  app.get("/api/debug/seeded-accounts", async (_req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const healers = await storage.getAllHealers();
+      res.json({
+        users: users.map((user) => ({
+          id: user.id,
+          username: user.username,
+          userType: user.userType,
+          email: user.email,
+        })),
+        healers: healers.map((healer) => ({
+          id: healer.id,
+          username: healer.username,
+          email: healer.email,
+          specialty: healer.specialty,
+        })),
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to load seeded accounts" });
+    }
+  });
   
   // Configure file upload first (lightweight operation)
   const upload = configureFileUpload();
   
-  // Seed initial healer data asynchronously (don't block server startup)
-  setImmediate(async () => {
-    try {
-      await seedDefaultUsers();
-      await seedHealers();
-      console.log("Healer data seeded successfully");
-    } catch (error) {
-      console.error("Failed to seed healers, continuing without seeding:", error);
-    }
-  });
-
   // Helper function to resize images to exactly 700x500 pixels and compress to 20KB maximum for mobile aura processing
   const resizeImageToStandard = async (inputBuffer: Buffer): Promise<Buffer> => {
     try {

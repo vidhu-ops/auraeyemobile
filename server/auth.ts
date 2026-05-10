@@ -107,6 +107,8 @@ export function setupAuth(app: Express) {
                 credits: 100,
                 soulEnergy: 0
               });
+          } else if (userRecord.password !== healer.password) {
+            await storage.updateUserPassword(userRecord.id, healer.password);
             }
             
             // Check if user account is active
@@ -148,6 +150,10 @@ export function setupAuth(app: Express) {
           console.log(`[AUTH] User password match: ${passwordMatch}`);
           
           if (passwordMatch) {
+          const healerRecord = await storage.getHealerByUsername(username);
+          if (healerRecord && healerRecord.password !== user.password) {
+            await storage.updateHealerPassword(username, user.password);
+          }
             return done(null, user);
           }
         }
