@@ -3423,10 +3423,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       await storage.deleteUser(req.user.id);
       req.session.destroy(() => {});
       res.clearCookie("connect.sid");
-      res.json({ message: "Account deleted successfully" });
+      res.json({ message: "Account deactivated successfully" });
     } catch (error) {
-      console.error("Error deleting user account:", error);
-      res.status(500).json({ message: "Failed to delete account" });
+      console.error("Error deactivating user account:", error);
+      res.status(500).json({ message: "Failed to deactivate account" });
     }
   });
 

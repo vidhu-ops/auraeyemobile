@@ -75,27 +75,6 @@ export default function SettingsPage() {
     },
   });
 
-  const deleteAccountMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("DELETE", "/api/user");
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Account Deleted",
-        description: "Your account has been deleted successfully.",
-      });
-      window.location.href = "/";
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Delete Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
   const { data: preferences, isLoading } = useQuery<NotificationPreferences>({
     queryKey: ["/api/notification-preferences"],
   });
@@ -287,19 +266,12 @@ export default function SettingsPage() {
               <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                 <Link href="/privacy-policy">Open Privacy Policy</Link>
               </Button>
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={() => {
-                  if (confirm("Delete your account permanently? This cannot be undone.")) {
-                    deleteAccountMutation.mutate();
-                  }
-                }}
-                disabled={deleteAccountMutation.isPending}
-              >
-                {deleteAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                Delete Account
-              </Button>
+              <Link href="/delete-account">
+                <Button variant="destructive" className="w-full">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Account
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 

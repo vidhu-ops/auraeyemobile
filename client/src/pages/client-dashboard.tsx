@@ -1074,18 +1074,11 @@ export default function ClientDashboard() {
                   <Link href="/privacy-policy">
                     <Button className="bg-purple-600 hover:bg-purple-700 text-white">Open Privacy Policy</Button>
                   </Link>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      if (confirm("Delete your account permanently? This cannot be undone.")) {
-                        fetch("/api/user", { method: "DELETE", credentials: "include" }).then(() => {
-                          window.location.href = "/";
-                        });
-                      }
-                    }}
-                  >
-                    Delete Account
-                  </Button>
+                  <Link href="/delete-account">
+                    <Button variant="destructive">
+                      Delete Account
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
