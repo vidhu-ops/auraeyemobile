@@ -28,6 +28,7 @@ import VibePage from "@/pages/vibe";
 import SettingsPage from "@/pages/settings";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
 import PaymentPage from "@/pages/payment";
+import DeleteAccountPage from "@/pages/delete-account";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
 import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -119,6 +120,7 @@ function Router() {
       <ProtectedRoute path="/color-meanings" component={ColorMeaningsPage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/payment" component={PaymentPage} />
+      <ProtectedRoute path="/delete-account" component={DeleteAccountPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );

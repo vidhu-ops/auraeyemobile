@@ -4214,18 +4214,11 @@ export default function HealerDashboard() {
                 <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
                   <Link href="/privacy-policy">Open Privacy Policy</Link>
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    if (confirm("Delete your account permanently? This cannot be undone.")) {
-                      fetch("/api/user", { method: "DELETE", credentials: "include" }).then(() => {
-                        window.location.href = "/";
-                      });
-                    }
-                  }}
-                >
-                  Delete Account
-                </Button>
+                <Link href="/delete-account">
+                  <Button variant="destructive">
+                    Delete Account
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

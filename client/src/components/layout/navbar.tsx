@@ -42,7 +42,8 @@ import {
   LayoutDashboard,
   X,
   Settings,
-  Trophy
+  Trophy,
+  Trash2
 } from "lucide-react";
 import logoPath from "@assets/new-logo.jpeg";
 
@@ -210,6 +211,16 @@ export default function Navbar() {
                           >
                             <Settings className="mr-2 h-4 w-4" />
                             Settings
+                          </Button>
+                        </Link>
+                        <Link href="/delete-account" onClick={closeSheet}>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-center text-red-500 hover:text-red-700 hover:bg-red-50"
+                            data-testid="button-delete-account"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Account
                           </Button>
                         </Link>
                         <Button 
