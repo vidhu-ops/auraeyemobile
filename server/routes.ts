@@ -3430,6 +3430,18 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  app.post("/api/user/deactivate", isAuthenticated, async (req, res) => {
+    try {
+      await storage.deactivateUser(req.user.id);
+      req.session.destroy(() => {});
+      res.clearCookie("connect.sid");
+      res.json({ message: "Account deactivated successfully" });
+    } catch (error) {
+      console.error("Error deactivating user account:", error);
+      res.status(500).json({ message: "Failed to deactivate account" });
+    }
+  });
+
   // Get healer's booking requests (for healer dashboard)
   app.get("/api/healer-bookings", async (req, res) => {
     if (!req.isAuthenticated()) {

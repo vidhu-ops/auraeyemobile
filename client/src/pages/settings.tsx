@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, BellOff, Settings as SettingsIcon, Check, Lock, Loader2, Trash2, ShieldAlert } from "lucide-react";
+import { Bell, BellOff, Settings as SettingsIcon, Check, Lock, Loader2, Trash2, ShieldAlert, UserX } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -90,6 +90,27 @@ export default function SettingsPage() {
     onError: (error: Error) => {
       toast({
         title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deactivateAccountMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/user/deactivate");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deactivated",
+        description: "Your account has been deactivated. You can no longer log in.",
+      });
+      window.location.href = "/";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Deactivation Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -299,6 +320,19 @@ export default function SettingsPage() {
               >
                 {deleteAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                 Delete Account
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={() => {
+                  if (confirm("Deactivate your account? Your username and password will be disabled. You can no longer log in.")) {
+                    deactivateAccountMutation.mutate();
+                  }
+                }}
+                disabled={deactivateAccountMutation.isPending}
+              >
+                {deactivateAccountMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserX className="mr-2 h-4 w-4" />}
+                Deactivate Account
               </Button>
             </CardContent>
           </Card>

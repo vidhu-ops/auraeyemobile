@@ -1,0 +1,245 @@
+# Privacy Policy for AuraEye™
+
+Effective Date: June 2026
+
+Website: https://auraeye.in
+
+Contact Email: [admin@auraeyesolutions.com](mailto:admin@auraeyesolutions.com)
+
+## 1. Introduction
+
+AuraEye™ ("AuraEye", "we", "our", or "us") values your privacy and is committed to protecting your personal information.
+
+This Privacy Policy explains how we collect, use, process, store, share, and protect information when you use the AuraEye mobile application, website, and related services.
+
+By accessing or using AuraEye, you agree to the collection and use of information in accordance with this Privacy Policy.
+
+---
+
+## 2. Information We Collect
+
+### Account Information
+
+When you create an account, we may collect:
+
+* Username
+* Email address
+* Password (stored securely using industry-standard encryption or hashing methods)
+* Profile information voluntarily provided by the user
+
+### Images and Uploaded Content
+
+AuraEye allows users to upload images and photos for analysis.
+
+Images uploaded by users are stored within the user's account and profile to provide ongoing access to generated reports and application features.
+
+### Generated Reports
+
+AuraEye generates reports and analysis results based on user-submitted content.
+
+Generated reports are stored within the user's account so they can access previous analyses and purchased services.
+
+### Device Information
+
+We may collect:
+
+* Device type
+* Operating system version
+* Device identifiers
+* IP address
+* Browser information
+* Diagnostic information
+* Error and crash information
+
+### Transaction Information
+
+When users purchase credits, reports, subscriptions, or other services, we may collect:
+
+* Transaction identifiers
+* Purchase history
+* Credit balances
+* Payment confirmation records
+* Subscription status
+
+AuraEye does not store complete payment card information.
+
+Payments are processed through authorized third-party payment providers.
+
+---
+
+## 3. Permissions We Request
+
+### Camera Permission
+
+AuraEye may request camera access to allow users to capture photos directly within the application.
+
+Camera access is used only after user permission is granted.
+
+### Storage and Media Access
+
+AuraEye may request permission to access photos and media files so users can upload images for analysis.
+
+---
+
+## 4. How We Use Information
+
+We use collected information to:
+
+* Create and manage user accounts
+* Authenticate users
+* Provide AuraEye analysis services
+* Process uploaded images
+* Generate reports and insights
+* Store user reports and analysis history
+* Process purchases and credit transactions
+* Provide customer support
+* Improve platform functionality
+* Detect fraud, abuse, and unauthorized activity
+* Comply with legal obligations
+* Communicate important service updates
+
+---
+
+## 5. AI Processing and Analysis
+
+AuraEye uses artificial intelligence technologies, including services provided by OpenAI and Google Gemini, to analyze user-submitted content and generate reports.
+
+Uploaded images and related information may be transmitted securely to these service providers solely for the purpose of providing requested analysis services.
+
+Users acknowledge that AI-generated reports are automated outputs and should not be considered medical, legal, financial, psychological, or professional advice.
+
+---
+
+## 6. Payments, Credits, and Purchases
+
+AuraEye offers paid features, credits, subscriptions, and other digital services.
+
+Payments are processed through Razorpay and other authorized payment providers where applicable.
+
+AuraEye stores transaction records, purchase history, and credit balances necessary to provide purchased services and maintain financial records.
+
+AuraEye does not store complete credit card or payment card information.
+
+---
+
+## 7. Third-Party Services
+
+AuraEye may use third-party service providers including:
+
+* OpenAI
+* Google Gemini
+* Razorpay
+* Cloud hosting providers
+* Authentication providers
+* Customer support providers
+
+These providers may process information solely for purposes necessary to provide AuraEye services.
+
+---
+
+## 8. Data Sharing and Disclosure
+
+AuraEye does not sell personal information.
+
+We may disclose information:
+
+* To service providers operating on our behalf
+* To comply with legal obligations
+* To enforce our agreements
+* To protect user safety and platform security
+* During mergers, acquisitions, or business transfers
+
+---
+
+## 9. Data Security
+
+We implement commercially reasonable administrative, technical, and organizational safeguards to protect personal information.
+
+While we strive to protect user information, no method of electronic transmission or storage can be guaranteed to be completely secure.
+
+---
+
+## 10. Data Retention
+
+AuraEye retains account information while the account remains active.
+
+Uploaded images and generated reports remain stored within the user's account until deleted by the user or until the account is deleted.
+
+Transaction records, purchase records, and payment-related information may be retained for up to seven (7) years to comply with accounting, taxation, legal, fraud-prevention, and regulatory requirements.
+
+Diagnostic and security logs may be retained for up to twelve (12) months.
+
+---
+
+## 11. Account Deletion and Data Deletion
+
+Users may request deletion of their account and personal information by contacting:
+
+[admin@auraeyesolutions.com](mailto:admin@auraeyesolutions.com)
+
+Deletion requests should include the user's registered email address.
+
+Verified deletion requests will be processed within thirty (30) days.
+
+Upon account deletion:
+
+* User profile information will be removed or anonymized.
+* Uploaded images will be deleted.
+* Stored reports will be deleted.
+* Future access to the account will be disabled.
+
+Certain records may be retained where required by law, fraud prevention, dispute resolution, taxation requirements, or regulatory obligations.
+
+---
+
+## 12. User Rights
+
+Users may have the right to:
+
+* Access personal information
+* Correct inaccurate information
+* Request deletion of information
+* Withdraw consent where applicable
+* Request information regarding processing activities
+
+Requests may be submitted to:
+
+[admin@auraeyesolutions.com](mailto:admin@auraeyesolutions.com)
+
+---
+
+## 13. Children's Privacy
+
+AuraEye is not intended for children under 13 years of age.
+
+We do not knowingly collect personal information from children under 13.
+
+If we become aware that such information has been collected, we will take reasonable steps to delete it.
+
+---
+
+## 14. International Data Transfers
+
+User information may be processed and stored in countries other than the user's country of residence.
+
+By using AuraEye, users consent to such transfers where necessary for service delivery.
+
+---
+
+## 15. Changes to This Privacy Policy
+
+AuraEye may update this Privacy Policy periodically.
+
+Updated versions will be posted on this page with a revised effective date.
+
+Continued use of AuraEye after updates become effective constitutes acceptance of the revised Privacy Policy.
+
+---
+
+## 16. Contact Us
+
+AuraEye™
+
+Website: https://auraeye.in
+
+Email: [admin@auraeyesolutions.com](mailto:admin@auraeyesolutions.com)
