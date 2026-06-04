@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 
 // Create appropriate session store based on environment
-export const createSessionStore = () => {
+const createSessionStore = () => {
   if (process.env.DATABASE_URL && (process.env.NODE_ENV === "production" || process.env.REPLIT_ENVIRONMENT === "production")) {
     const PostgreSQLStore = connectPg(session);
     return new PostgreSQLStore({
@@ -39,8 +39,7 @@ export interface IStorage {
   createNotification(notification: InsertNotification): Promise<Notification>;
   getNotificationsByUser(userId: number): Promise<Notification[]>;
   deleteUser(userId: number): Promise<boolean>;
-  deactivateUser(userId: number): Promise<User | undefined>;
-
+  
   // Push notification subscriptions
   savePushSubscription(subscription: InsertPushSubscription): Promise<PushSubscription>;
   getPushSubscriptionsByUser(userId: number): Promise<PushSubscription[]>;
@@ -338,15 +337,6 @@ export class DatabaseStorage implements IStorage {
   async deleteUser(userId: number): Promise<boolean> {
     await db.delete(users).where(eq(users.id, userId));
     return true;
-  }
-
-  async deactivateUser(userId: number): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set({ isActive: false, password: "" })
-      .where(eq(users.id, userId))
-      .returning();
-    return user || undefined;
   }
 
   async getAllPushSubscriptions(): Promise<PushSubscription[]> {
