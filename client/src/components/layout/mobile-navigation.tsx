@@ -1,4 +1,4 @@
-import { Home, Heart, Circle, BookOpen, LayoutDashboard } from "lucide-react";
+import { Home, Heart, Circle, BookOpen, LayoutDashboard, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -45,6 +45,12 @@ export default function MobileNavigation() {
       icon: LayoutDashboard,
       href: dashboardRoute,
       dataTestId: "nav-dashboard"
+    },
+    {
+      name: "Settings",
+      icon: Settings,
+      href: "/settings",
+      dataTestId: "nav-settings"
     },
     {
       name: "AURI",
