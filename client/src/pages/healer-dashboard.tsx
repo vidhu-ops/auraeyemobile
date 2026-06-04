@@ -4210,7 +4210,7 @@ export default function HealerDashboard() {
             <CardContent className="p-6 space-y-3">
               <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
               <p className="text-cyan-100 text-sm">Open the privacy policy or delete your account from here.</p>
-              <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
                   <Link href="/privacy-policy">Open Privacy Policy</Link>
                 </Button>
@@ -4225,19 +4225,6 @@ export default function HealerDashboard() {
                   }}
                 >
                   Delete Account
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
-                  onClick={() => {
-                    if (confirm("Deactivate your account? Your username and password will be disabled. You can no longer log in.")) {
-                      fetch("/api/user/deactivate", { method: "POST", credentials: "include" }).then(() => {
-                        window.location.href = "/";
-                      });
-                    }
-                  }}
-                >
-                  Deactivate Account
                 </Button>
               </div>
             </CardContent>
