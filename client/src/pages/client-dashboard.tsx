@@ -54,7 +54,10 @@ export default function ClientDashboard() {
     enabled: !!user,
     select: (data: any) => typeof data === 'number' ? data : (data?.credits ?? 0),
   });
-  const { stats, isLoading: statsLoading } = useUserStats();
+  const { data: stats, isLoading: statsLoading } = useQuery<any>({
+    queryKey: ["/api/user-stats", user?.id],
+    enabled: !!user,
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [previousAchievementCount, setPreviousAchievementCount] = useState<number | null>(null);
