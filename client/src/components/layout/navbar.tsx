@@ -126,8 +126,15 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Menu button - visible on all screen sizes */}
-          <div>
+          {/* Right side: Settings icon + Menu button */}
+          <div className="flex items-center gap-2">
+            {user && (
+              <Link href={settingsHref}>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" data-testid="button-settings-nav">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">

@@ -1070,7 +1070,7 @@ export default function ClientDashboard() {
               <CardContent className="p-6 space-y-3">
                 <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
                 <p className="text-cyan-100 text-sm">Open the privacy policy or delete your account from here.</p>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                   <Link href="/privacy-policy">
                     <Button className="bg-purple-600 hover:bg-purple-700 text-white">Open Privacy Policy</Button>
                   </Link>
@@ -1085,6 +1085,19 @@ export default function ClientDashboard() {
                     }}
                   >
                     Delete Account
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    onClick={() => {
+                      if (confirm("Deactivate your account? Your username and password will be disabled. You can no longer log in.")) {
+                        fetch("/api/user/deactivate", { method: "POST", credentials: "include" }).then(() => {
+                          window.location.href = "/";
+                        });
+                      }
+                    }}
+                  >
+                    Deactivate Account
                   </Button>
                 </div>
               </CardContent>

@@ -231,15 +231,13 @@ export default function PrivacyPolicyPage() {
 
               ---
 
-              ## 13. Children's Privacy
+                13. Children's Privacy
 
-              AuraEye is not intended for children under 13 years of age.
+                AuraEye is intended only for individuals who are at least 16 years of age.
 
-              We do not knowingly collect personal information from children under 13.
+                We do not knowingly collect personal information from individuals under the age of 16.
 
-              If we become aware that such information has been collected, we will take reasonable steps to delete it.
-
-              ---
+                If we become aware that information from a person under 16 has been collected, we will take reasonable steps to delete such information.
 
               ## 14. International Data Transfers
 
