@@ -141,7 +141,7 @@ export default function ClientDashboard() {
     journals: 0,
     objectAnalyses: 0,
     meditationSessions: 0,
-    ...stats,
+    ...(stats || {}),
   } as any;
   const userTyped = user as any;
 
