@@ -388,9 +388,9 @@ export default function ClientDashboard() {
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
                       <div className="text-2xl font-bold text-purple-400 mb-1">
-                        {statsLoading ? '...' : `${statsTyped.meditationHours || 0}h`}
+                        {statsLoading ? '...' : `${(statsTyped?.meditationHours ?? 0)}h`}
                       </div>
-                      <Progress value={(statsTyped.meditationHours || 0) > 0 ? Math.min(((statsTyped.meditationHours || 0) / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={((statsTyped?.meditationHours ?? 0) > 0) ? Math.min(((statsTyped?.meditationHours ?? 0) / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
                       <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>

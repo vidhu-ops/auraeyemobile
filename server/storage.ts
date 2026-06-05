@@ -1040,7 +1040,9 @@ export class DatabaseStorage implements IStorage {
         objectAnalyses: objectAnalysesCount?.count || 0,
         meditationSessions: meditationSessionsCount?.count || 0,
         auraScans: auraReadingsCount?.count || 0,
-        totalSessions: (auraReadingsCount?.count || 0) + (meditationSessionsCount?.count || 0)
+        totalSessions: (auraReadingsCount?.count || 0) + (meditationSessionsCount?.count || 0),
+        meditationHours: 0,
+        healersConsulted: 0,
       };
     } catch (error) {
       console.error("Error fetching user stats:", error);
