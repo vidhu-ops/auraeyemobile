@@ -190,7 +190,8 @@ app.use((req, res, next) => {
   initializeWhatsApp();
 
   // Seed all users and healers from production data
-  await runStartupSeed();
+  // Don't block server startup - seed in background
+  setTimeout(() => runStartupSeed().catch(e => console.error("Seed failed:", e)), 100);
   
   const server = await registerRoutes(app);
 

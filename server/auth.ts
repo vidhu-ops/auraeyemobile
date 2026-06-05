@@ -61,7 +61,6 @@ export async function comparePasswords(supplied: string, stored: string, usernam
 export function setupAuth(app: Express) {
   // Detect if we're running on HTTPS (Replit preview or production)
   const isHttps = process.env.NODE_ENV === "production" || 
-                  process.env.REPL_SLUG !== undefined || 
                   process.env.REPLIT_DEPLOYMENT === "1";
   
   const sessionSettings: session.SessionOptions = {
