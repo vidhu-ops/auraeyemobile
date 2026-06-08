@@ -34,7 +34,8 @@ import {
   Eye,
   Settings,
   Calculator,
-  Crown
+  Crown,
+  Trash2
 } from "lucide-react";
 import AvatarSoulTree from "@/components/avatar-soul-tree";
 import NotificationSettings from "@/components/notification-settings";
@@ -386,18 +387,18 @@ export default function ClientDashboard() {
                 <CardContent className="p-4">
                   <div className="grid grid-cols-2 gap-6 mb-4">
                     <div>
-                      <div className="text-sm text-cyan-200 mb-2">Meditation Hours</div>
+                      <div className="text-sm text-cyan-200 mb-2">Meditation Sessions</div>
                       <div className="text-2xl font-bold text-purple-400 mb-1">
-                        {statsLoading ? '...' : `${(statsTyped?.meditationHours ?? 0)}h`}
+                        {statsLoading ? '...' : (statsTyped.meditationSessions || 0)}
                       </div>
-                      <Progress value={((statsTyped?.meditationHours ?? 0) > 0) ? Math.min(((statsTyped?.meditationHours ?? 0) / 200) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={(statsTyped.meditationSessions || 0) > 0 ? Math.min(((statsTyped.meditationSessions || 0) / 50) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                     <div>
-                      <div className="text-sm text-cyan-200 mb-2">Healers Consulted</div>
+                      <div className="text-sm text-cyan-200 mb-2">Journal Entries</div>
                       <div className="text-2xl font-bold text-cyan-400 mb-1">
-                        {statsLoading ? '...' : (statsTyped.healersConsulted || 0)}
+                        {statsLoading ? '...' : (statsTyped.journals || 0)}
                       </div>
-                      <Progress value={(statsTyped.healersConsulted || 0) > 0 ? Math.min(((statsTyped.healersConsulted || 0) / 10) * 100, 100) : 0} className="h-2 bg-slate-700" />
+                      <Progress value={(statsTyped.journals || 0) > 0 ? Math.min(((statsTyped.journals || 0) / 30) * 100, 100) : 0} className="h-2 bg-slate-700" />
                     </div>
                   </div>
 
@@ -1067,16 +1068,21 @@ export default function ClientDashboard() {
         {activeTab === "settings" && (
           <>
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
-              <CardContent className="p-6 space-y-3">
+              <CardContent className="p-6 space-y-4">
                 <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
-                <p className="text-cyan-100 text-sm">Open the privacy policy or delete your account from here.</p>
+                <p className="text-cyan-100 text-sm">Manage your account settings and privacy options.</p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link href="/privacy-policy">
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">Open Privacy Policy</Button>
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">Open Privacy Policy</Button>
                   </Link>
+                </div>
+                <div className="border-t border-white/20 pt-4">
+                  <h4 className="text-red-300 font-semibold mb-1">Danger Zone</h4>
+                  <p className="text-cyan-200 text-sm mb-3">Once you delete your account, this action cannot be undone.</p>
                   <Link href="/delete-account">
-                    <Button variant="destructive">
-                      Delete Account
+                    <Button variant="destructive" className="w-full sm:w-auto flex items-center gap-2">
+                      <Trash2 className="h-4 w-4" />
+                      Delete My Account
                     </Button>
                   </Link>
                 </div>
