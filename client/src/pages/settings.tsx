@@ -264,7 +264,7 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                <Link href="/privacy-policy">Open Privacy Policy</Link>
+                <Link href="/privacy">Open Privacy Policy</Link>
               </Button>
               <Link href="/delete-account">
                 <Button variant="destructive" className="w-full">

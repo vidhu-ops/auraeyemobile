@@ -1072,7 +1072,7 @@ export default function ClientDashboard() {
                 <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
                 <p className="text-cyan-100 text-sm">Manage your account settings and privacy options.</p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href="/privacy-policy">
+                  <Link href="/privacy">
                     <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">Open Privacy Policy</Button>
                   </Link>
                 </div>

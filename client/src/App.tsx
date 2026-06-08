@@ -113,6 +113,7 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/pricing" component={PricingPage} />
       <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/privacy" component={PrivacyPolicyPage} />
       <Route path="/healers" component={HealersPage} />
       <Route path="/healer-crm" component={HealerCRM} />
       <ProtectedRoute path="/meditations" component={MeditationsPage} />

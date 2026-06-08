@@ -4213,7 +4213,7 @@ export default function HealerDashboard() {
               <p className="text-cyan-100 text-sm">Manage your account settings and privacy options.</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
-                  <Link href="/privacy-policy">Open Privacy Policy</Link>
+                  <Link href="/privacy">Open Privacy Policy</Link>
                 </Button>
               </div>
               <div className="border-t border-white/20 pt-4">
