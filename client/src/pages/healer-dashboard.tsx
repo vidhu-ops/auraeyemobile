@@ -47,7 +47,8 @@ import {
   Circle,
   Trophy,
   Target,
-  Award
+  Award,
+  Trash2
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -4207,16 +4208,21 @@ export default function HealerDashboard() {
         {/* Settings Tab */}
         <TabsContent value="settings">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-lg mb-4">
-            <CardContent className="p-6 space-y-3">
+            <CardContent className="p-6 space-y-4">
               <h3 className="text-white font-bold text-lg">Account & Privacy</h3>
-              <p className="text-cyan-100 text-sm">Open the privacy policy or delete your account from here.</p>
+              <p className="text-cyan-100 text-sm">Manage your account settings and privacy options.</p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
                   <Link href="/privacy-policy">Open Privacy Policy</Link>
                 </Button>
+              </div>
+              <div className="border-t border-white/20 pt-4">
+                <h4 className="text-red-300 font-semibold mb-1">Danger Zone</h4>
+                <p className="text-cyan-200 text-sm mb-3">Once you delete your account, this action cannot be undone.</p>
                 <Link href="/delete-account">
-                  <Button variant="destructive">
-                    Delete Account
+                  <Button variant="destructive" className="w-full sm:w-auto flex items-center gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    Delete My Account
                   </Button>
                 </Link>
               </div>
