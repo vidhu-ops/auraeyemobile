@@ -1054,7 +1054,9 @@ export class DatabaseStorage implements IStorage {
         objectAnalyses: 0,
         meditationSessions: 0,
         auraScans: 0,
-        totalSessions: 0
+        totalSessions: 0,
+        healersConsulted: 0,
+        meditationHours: 0,
       };
     }
   }

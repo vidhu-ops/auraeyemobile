@@ -132,17 +132,17 @@ export default function ClientDashboard() {
   const milestoneProgress = getProgressToNextMilestone(safeSoulEnergy);
 
   const statsTyped = {
-    meditationHours: 0,
-    healersConsulted: 0,
     auraScans: 0,
-    totalSessions: 0,
     auraReadings: 0,
     numerologyReadings: 0,
     vibeReadings: 0,
     journals: 0,
     objectAnalyses: 0,
     meditationSessions: 0,
-    ...(stats || {}),
+    totalSessions: 0,
+    healersConsulted: 0,
+    meditationHours: 0,
+    ...(stats && typeof stats === 'object' ? stats : {}),
   } as any;
   const userTyped = user as any;
 
