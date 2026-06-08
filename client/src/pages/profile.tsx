@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const { checkBadges } = useBadgeContext();
   const { credits } = useCredits();
 
-  const { data: stats = { auraReadings: 0, numerologyReadings: 0, vibeReadings: 0, journals: 0, objectAnalyses: 0, meditationSessions: 0, auraScans: 0, totalSessions: 0 } } = useQuery({
+  const { data: stats = { auraReadings: 0, numerologyReadings: 0, vibeReadings: 0, journals: 0, objectAnalyses: 0, meditationSessions: 0, auraScans: 0, totalSessions: 0, healersConsulted: 0, meditationHours: 0 } } = useQuery({
     queryKey: ["/api/user-stats"],
   });
 
@@ -283,8 +283,8 @@ export default function ProfilePage() {
                       <p className="text-xs text-purple-300">Healers</p>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-white/5">
-                      <p className="text-2xl font-bold text-cyan-300">{Math.floor(stats.meditationHours)}</p>
-                      <p className="text-xs text-purple-300">Med. Hours</p>
+                      <p className="text-2xl font-bold text-cyan-300">{(stats as any).meditationSessions ?? 0}</p>
+                      <p className="text-xs text-purple-300">Med. Sessions</p>
                     </div>
                   </div>
                 </CardContent>

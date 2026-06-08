@@ -523,14 +523,16 @@ export type InsertFavoriteMeditation = z.infer<typeof insertFavoriteMeditationSc
 
 // User Statistics Schema
 export const userStatsSchema = z.object({
-  meditationHours: z.number().default(0),
-  healersConsulted: z.number().default(0),
+  auraReadings: z.number().default(0),
   auraScans: z.number().default(0),
-  vibeScans: z.number().default(0),
   numerologyReadings: z.number().default(0),
-  objectScans: z.number().default(0),
+  vibeReadings: z.number().default(0),
+  journals: z.number().default(0),
+  objectAnalyses: z.number().default(0),
+  meditationSessions: z.number().default(0),
   totalSessions: z.number().default(0),
-  journalEntries: z.number().default(0),
+  healersConsulted: z.number().default(0),
+  meditationHours: z.number().default(0),
   // Healer-specific stats
   clientsServed: z.number().optional(),
   sessionsPerformed: z.number().optional(),
