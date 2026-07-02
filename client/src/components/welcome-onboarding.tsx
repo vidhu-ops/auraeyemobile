@@ -245,7 +245,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 </div>
                 <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect</h3>
                 <p className="text-pink-600 text-sm text-center leading-relaxed">
-                  Book sessions with experienced guides and energy healers.
+                  Follow the plan
                 </p>
               </div>
             </div>
