@@ -243,7 +243,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect with Healers</h3>
+                <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect</h3>
                 <p className="text-pink-600 text-sm text-center leading-relaxed">
                   Book sessions with experienced guides and energy healers.
                 </p>
