@@ -3408,6 +3408,41 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
+  // Grant credits to active healers only (admin use)
+  app.post("/api/admin/grant-credits-to-healers", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || req.user.username !== 'admin') {
+        return res.status(403).json({ message: "Access denied: Admin only" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      const activeHealers = allUsers.filter(
+        (u: any) => (u.userType === "healer" || u.userType === "semi-healer") && u.isActive !== false
+      );
+
+      let updated = 0;
+      for (const user of activeHealers) {
+        const currentCredits = await storage.getUserCredits(user.id);
+        const newCredits = currentCredits + 5;
+        await storage.updateUserCredits(user.id, newCredits);
+        await storage.createCreditTransaction({
+          userId: user.id,
+          username: user.username,
+          amount: 5,
+          transactionType: "admin_bonus",
+          description: "Admin: 5 bonus credits added to healer account",
+          balanceAfter: newCredits,
+        });
+        updated += 1;
+      }
+
+      res.json({ message: "Credits added to active healers", updated });
+    } catch (error) {
+      console.error("Error granting credits to healers:", error);
+      res.status(500).json({ message: "Failed to grant credits to healers" });
+    }
+  });
+
   app.get("/api/notifications", isAuthenticated, async (req, res) => {
     try {
       const notifications = await storage.getNotificationsByUser(req.user.id);

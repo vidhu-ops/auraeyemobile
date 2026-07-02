@@ -27,6 +27,7 @@ import ColorMeaningsPage from "@/pages/color-meanings";
 import VibePage from "@/pages/vibe";
 import SettingsPage from "@/pages/settings";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
+import AdminPage from "@/pages/admin";
 import PaymentPage from "@/pages/payment";
 import DeleteAccountPage from "@/pages/delete-account";
 import WelcomeOnboarding from "@/components/welcome-onboarding";
@@ -122,6 +123,7 @@ function Router() {
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/payment" component={PaymentPage} />
       <ProtectedRoute path="/delete-account" component={DeleteAccountPage} />
+      <ProtectedRoute path="/admin" component={AdminPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
