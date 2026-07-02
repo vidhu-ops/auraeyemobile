@@ -3408,20 +3408,88 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   });
 
-  // Grant credits to active healers only (admin use)
-  app.post("/api/admin/grant-credits-to-healers", isAuthenticated, async (req, res) => {
+  // Admin: get all healers with their stats
+  app.get("/api/admin/healers", isAuthenticated, async (req, res) => {
     try {
       if (!req.user || req.user.username !== 'admin') {
         return res.status(403).json({ message: "Access denied: Admin only" });
       }
 
       const allUsers = await storage.getAllUsers();
-      const activeHealers = allUsers.filter(
-        (u: any) => (u.userType === "healer" || u.userType === "semi-healer") && u.isActive !== false
+      const healers = allUsers
+        .filter((u: any) => u.userType === "healer" || u.userType === "semi-healer")
+        .map((u: any) => ({
+          id: u.id,
+          username: u.username,
+          name: u.name,
+          userType: u.userType,
+          credits: u.credits,
+          isActive: u.isActive,
+          email: u.email,
+        }));
+
+      res.json(healers);
+    } catch (error) {
+      console.error("Error fetching healers:", error);
+      res.status(500).json({ message: "Failed to fetch healers" });
+    }
+  });
+
+  // Admin: deactivate healers not in the keep list
+  app.post("/api/admin/deactivate-others", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || req.user.username !== 'admin') {
+        return res.status(403).json({ message: "Access denied: Admin only" });
+      }
+
+      const { keepUsernames } = req.body;
+      if (!Array.isArray(keepUsernames) || keepUsernames.length === 0) {
+        return res.status(400).json({ message: "keepUsernames array is required" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      const healersToDeactivate = allUsers.filter(
+        (u: any) =>
+          (u.userType === "healer" || u.userType === "semi-healer") &&
+          !keepUsernames.includes(u.username) &&
+          u.isActive !== false
+      );
+
+      let deactivated = 0;
+      for (const user of healersToDeactivate) {
+        await storage.deleteUser(user.id); // soft delete (sets is_active = false)
+        deactivated += 1;
+      }
+
+      res.json({ message: "Healers deactivated", deactivated });
+    } catch (error) {
+      console.error("Error deactivating healers:", error);
+      res.status(500).json({ message: "Failed to deactivate healers" });
+    }
+  });
+
+  // Admin: grant credits to selected healers
+  app.post("/api/admin/grant-credits-to-selected", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || req.user.username !== 'admin') {
+        return res.status(403).json({ message: "Access denied: Admin only" });
+      }
+
+      const { usernames } = req.body;
+      if (!Array.isArray(usernames) || usernames.length === 0) {
+        return res.status(400).json({ message: "usernames array is required" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      const selectedHealers = allUsers.filter(
+        (u: any) =>
+          usernames.includes(u.username) &&
+          (u.userType === "healer" || u.userType === "semi-healer") &&
+          u.isActive !== false
       );
 
       let updated = 0;
-      for (const user of activeHealers) {
+      for (const user of selectedHealers) {
         const currentCredits = await storage.getUserCredits(user.id);
         const newCredits = currentCredits + 5;
         await storage.updateUserCredits(user.id, newCredits);
@@ -3430,16 +3498,16 @@ function calculateDominantSoulChakra(birthDate: string): number {
           username: user.username,
           amount: 5,
           transactionType: "admin_bonus",
-          description: "Admin: 5 bonus credits added to healer account",
+          description: "Admin: 5 bonus credits added",
           balanceAfter: newCredits,
         });
         updated += 1;
       }
 
-      res.json({ message: "Credits added to active healers", updated });
+      res.json({ message: "Credits granted to selected healers", updated });
     } catch (error) {
-      console.error("Error granting credits to healers:", error);
-      res.status(500).json({ message: "Failed to grant credits to healers" });
+      console.error("Error granting credits:", error);
+      res.status(500).json({ message: "Failed to grant credits" });
     }
   });
 
