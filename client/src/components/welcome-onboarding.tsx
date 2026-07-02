@@ -215,7 +215,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
             
             <p className="text-lg text-center text-black-200 mb-12 leading-relaxed">
               AuraEye™ connects you with powerful tools to discover yourself, 
-              analyze you and embark on a path of wellness and self-discovery.
+            
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -223,7 +223,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Eye className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-purple-800 mb-3 text-center">Analysis</h3>
+                <h3 className="text-xl font-bold text-purple-800 mb-3 text-center">1.</h3>
                 <p className="text-purple-600 text-sm text-center leading-relaxed">
                   Take the evaluation
                 </p>
@@ -233,7 +233,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Star className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-blue-800 mb-3 text-center">Guidance</h3>
+                <h3 className="text-xl font-bold text-blue-800 mb-3 text-center">2.</h3>
                 <p className="text-blue-600 text-sm text-center leading-relaxed">
                   Get Results
                 </p>
@@ -243,7 +243,7 @@ export default function WelcomeOnboarding({ skipWelcome = false }: WelcomeOnboar
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">Connect</h3>
+                <h3 className="text-xl font-bold text-pink-800 mb-3 text-center">3.</h3>
                 <p className="text-pink-600 text-sm text-center leading-relaxed">
                   Follow the plan
                 </p>
