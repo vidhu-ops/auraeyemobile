@@ -96,6 +96,7 @@ const CSV_USERS: Array<{
   { username: "Dr.AnjanaBarot", userType: "healer", email: "aurareaderanjana@gmail.com", credits: 150 },
   { username: "Kalpana.Muralidhar", userType: "healer", email: "kalpanaa.murli@gmail.com", credits: 138 },
   { username: "Ananya.Reddy11", userType: "healer", email: "ananya.reddy11@aurfy.com", credits: 20 },
+  { username: "Manolinie.Parbat", userType: "healer", email: "manolinie.parbat@aurfy.com", credits: 75 },
   // test account
   { username: "test.client", userType: "client", email: "test.client@spiritualwellness.com", credits: 5 },
 ];
