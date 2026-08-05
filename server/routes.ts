@@ -5680,8 +5680,8 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       // Store reset token with 15-minute expiry
       await storage.createPasswordResetToken({
-        username: normalizedUsername,
-        email: normalizedEmail,
+        username: user.username,
+        email: user.email.toLowerCase(),
         mobileNumber: user.mobileNumber || null,
         token: resetToken,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
@@ -5692,7 +5692,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       // Send reset code via email
       const { sendPasswordResetEmail } = await import('./email-service');
       console.log(`[DEBUG] Attempting to send email to ${normalizedEmail} for username: ${normalizedUsername}`);
-      const emailSent = await sendPasswordResetEmail(normalizedEmail, normalizedUsername, resetToken);
+      const emailSent = await sendPasswordResetEmail(user.email, user.username, resetToken);
       console.log(`[DEBUG] Email sent status: ${emailSent}`);
       
       if (emailSent) {

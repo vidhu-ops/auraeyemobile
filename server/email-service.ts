@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 
 interface EmailParams {
   to: string;
@@ -14,67 +15,128 @@ interface EmailParams {
   }>;
 }
 
-async function getResendCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
+function getDefaultFromEmail(): string {
+  return (
+    process.env.SENDGRID_FROM_EMAIL ||
+    process.env.RESEND_FROM_EMAIL ||
+    'contact@auraeye.in'
+  );
+}
+
+async function sendViaResend(params: EmailParams): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-  
   if (!apiKey) {
-    throw new Error('RESEND_API_KEY environment variable not set');
+    return false;
   }
-  
-  console.log("Using Resend with API key from environment");
-  return { apiKey, fromEmail };
+
+  const fromEmail = params.from || process.env.RESEND_FROM_EMAIL || getDefaultFromEmail();
+  const resend = new Resend(apiKey);
+
+  console.log("\n=== SENDING EMAIL VIA RESEND ===");
+  console.log("To:", params.to);
+  console.log("From:", fromEmail);
+  console.log("Subject:", params.subject);
+
+  const emailData: {
+    from: string;
+    to: string;
+    subject: string;
+    html?: string;
+    text?: string;
+    attachments?: Array<{ filename: string; content: Buffer }>;
+  } = {
+    from: fromEmail,
+    to: params.to,
+    subject: params.subject,
+  };
+
+  if (params.html) emailData.html = params.html;
+  if (params.text) emailData.text = params.text;
+
+  if (params.attachments && params.attachments.length > 0) {
+    emailData.attachments = params.attachments.map((att) => ({
+      filename: att.filename,
+      content: Buffer.from(att.content, 'base64'),
+    }));
+  }
+
+  const result = await resend.emails.send(emailData as Parameters<typeof resend.emails.send>[0]);
+  console.log("[DEBUG] Resend response:", JSON.stringify(result));
+
+  if (result.error) {
+    console.error("Resend error:", result.error);
+    return false;
+  }
+
+  console.log("Email sent successfully via Resend! ID:", result.data?.id);
+  return true;
+}
+
+async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
+  const apiKey = process.env.SENDGRID_API_KEY;
+  if (!apiKey) {
+    return false;
+  }
+
+  const fromEmail = params.from || getDefaultFromEmail();
+  sgMail.setApiKey(apiKey);
+
+  console.log("\n=== SENDING EMAIL VIA SENDGRID ===");
+  console.log("To:", params.to);
+  console.log("From:", fromEmail);
+  console.log("Subject:", params.subject);
+
+  const message = {
+    to: params.to,
+    from: fromEmail,
+    subject: params.subject,
+    html: params.html || params.text || '<p></p>',
+    ...(params.text ? { text: params.text } : {}),
+  } as sgMail.MailDataRequired;
+
+  if (params.attachments && params.attachments.length > 0) {
+    message.attachments = params.attachments.map((att) => ({
+      content: att.content,
+      filename: att.filename,
+      type: att.type || 'application/octet-stream',
+      disposition: att.disposition || 'attachment',
+    }));
+  }
+
+  await sgMail.send(message);
+  console.log("Email sent successfully via SendGrid");
+  return true;
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
-  try {
-    const { apiKey, fromEmail } = await getResendCredentials();
-    const resend = new Resend(apiKey);
-    
-    console.log("\n=== SENDING EMAIL VIA RESEND ===");
-    console.log("To:", params.to);
-    console.log("From:", params.from || fromEmail);
-    console.log("Subject:", params.subject);
-    console.log("Time:", new Date().toLocaleString());
-    
-    const emailData: any = {
-      from: params.from || fromEmail,
-      to: params.to,
-      subject: params.subject,
-    };
-    
-    if (params.html) {
-      emailData.html = params.html;
-    }
-    if (params.text) {
-      emailData.text = params.text;
-    }
-    
-    if (params.attachments && params.attachments.length > 0) {
-      emailData.attachments = params.attachments.map(att => ({
-        filename: att.filename,
-        content: Buffer.from(att.content, 'base64')
-      }));
-    }
-    
-    const result = await resend.emails.send(emailData);
-    
-    console.log("[DEBUG] Resend response:", JSON.stringify(result));
-    
-    if (result.error) {
-      console.error("Resend error:", result.error);
-      return false;
-    }
-    
-    console.log("Email sent successfully! ID:", result.data?.id);
-    console.log("================================\n");
-    return true;
-  } catch (error) {
-    console.error('\n=== EMAIL ERROR ===');
-    console.error('Resend email error:', error);
-    console.error('===================\n');
+  const providers: Array<{ name: string; send: (params: EmailParams) => Promise<boolean> }> = [];
+
+  if (process.env.RESEND_API_KEY) {
+    providers.push({ name: 'Resend', send: sendViaResend });
+  }
+  if (process.env.SENDGRID_API_KEY) {
+    providers.push({ name: 'SendGrid', send: sendViaSendGrid });
+  }
+
+  if (providers.length === 0) {
+    console.error('No email provider configured. Set RESEND_API_KEY or SENDGRID_API_KEY.');
     return false;
   }
+
+  for (const provider of providers) {
+    try {
+      const sent = await provider.send(params);
+      if (sent) {
+        return true;
+      }
+      console.warn(`${provider.name} failed, trying next provider if available...`);
+    } catch (error) {
+      console.error(`${provider.name} email error:`, error);
+    }
+  }
+
+  console.error('All configured email providers failed.');
+  return false;
 }
 
 export async function sendHealerBookingNotification(

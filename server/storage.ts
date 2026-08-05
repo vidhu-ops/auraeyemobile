@@ -890,8 +890,8 @@ export class DatabaseStorage implements IStorage {
   async validatePasswordResetToken(username: string, email: string, token: string): Promise<PasswordResetToken | undefined> {
     const [record] = await db.select().from(passwordResetTokens).where(
       and(
-        eq(passwordResetTokens.username, username),
-        eq(passwordResetTokens.email, email),
+        sql`LOWER(${passwordResetTokens.username}) = LOWER(${username})`,
+        sql`LOWER(${passwordResetTokens.email}) = LOWER(${email})`,
         eq(passwordResetTokens.token, token),
         gt(passwordResetTokens.expiresAt, new Date()),
         eq(passwordResetTokens.used, false)
