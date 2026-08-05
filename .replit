@@ -48,3 +48,5 @@ RESEND_FROM_EMAIL = "contact@auraeye.in"
 [userenv.development]
 
 [userenv.production]
+RESEND_FROM_EMAIL = "contact@auraeye.in"
+RESEND_FROM_NAME = "AuraEye"

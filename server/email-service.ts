@@ -15,21 +15,56 @@ interface EmailParams {
   }>;
 }
 
-function getDefaultFromEmail(): string {
-  return (
-    process.env.SENDGRID_FROM_EMAIL ||
-    process.env.RESEND_FROM_EMAIL ||
-    'contact@auraeye.in'
-  );
+function getResendApiKey(): string | undefined {
+  return process.env.RESEND_API_KEY?.trim() || undefined;
+}
+
+function getResendFromAddress(): string {
+  const email = (process.env.RESEND_FROM_EMAIL || 'contact@auraeye.in').trim();
+  const name = (process.env.RESEND_FROM_NAME || 'AuraEye').trim();
+  if (email.includes('<') && email.includes('>')) {
+    return email;
+  }
+  return `${name} <${email}>`;
+}
+
+export function getEmailProviderStatus(): {
+  resend: boolean;
+  sendgrid: boolean;
+  resendFrom: string;
+} {
+  return {
+    resend: !!getResendApiKey(),
+    sendgrid: !!process.env.SENDGRID_API_KEY,
+    resendFrom: getResendFromAddress(),
+  };
+}
+
+export function logEmailProviderStatus(): void {
+  const status = getEmailProviderStatus();
+  console.log('📧 Email providers:', {
+    resend: status.resend ? 'configured' : 'missing RESEND_API_KEY',
+    sendgrid: status.sendgrid ? 'configured' : 'not set',
+    resendFrom: status.resendFrom,
+  });
+
+  if (!status.resend && !status.sendgrid) {
+    console.warn(
+      '⚠️  No email provider configured. Add RESEND_API_KEY to Replit Deployment Secrets and republish.'
+    );
+  } else if (!status.resend && status.sendgrid) {
+    console.warn('⚠️  RESEND_API_KEY missing — using SendGrid fallback only.');
+  }
 }
 
 async function sendViaResend(params: EmailParams): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
   if (!apiKey) {
+    console.error('Resend skipped: RESEND_API_KEY is not set');
     return false;
   }
 
-  const fromEmail = params.from || process.env.RESEND_FROM_EMAIL || getDefaultFromEmail();
+  const fromEmail = params.from || getResendFromAddress();
   const resend = new Resend(apiKey);
 
   console.log("\n=== SENDING EMAIL VIA RESEND ===");
@@ -39,15 +74,17 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
 
   const emailData: {
     from: string;
-    to: string;
+    to: string[];
     subject: string;
     html?: string;
     text?: string;
+    reply_to?: string;
     attachments?: Array<{ filename: string; content: Buffer }>;
   } = {
     from: fromEmail,
-    to: params.to,
+    to: [params.to],
     subject: params.subject,
+    reply_to: process.env.RESEND_REPLY_TO || 'contact@auraeye.in',
   };
 
   if (params.html) emailData.html = params.html;
@@ -64,11 +101,16 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
   console.log("[DEBUG] Resend response:", JSON.stringify(result));
 
   if (result.error) {
-    console.error("Resend error:", result.error);
+    console.error("Resend error:", JSON.stringify(result.error, null, 2));
     return false;
   }
 
-  console.log("Email sent successfully via Resend! ID:", result.data?.id);
+  if (!result.data?.id) {
+    console.error("Resend returned no message id:", JSON.stringify(result));
+    return false;
+  }
+
+  console.log("Email sent successfully via Resend! ID:", result.data.id);
   return true;
 }
 
@@ -78,7 +120,7 @@ async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
     return false;
   }
 
-  const fromEmail = params.from || getDefaultFromEmail();
+  const fromEmail = params.from || process.env.SENDGRID_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'contact@auraeye.in';
   sgMail.setApiKey(apiKey);
 
   console.log("\n=== SENDING EMAIL VIA SENDGRID ===");
@@ -111,7 +153,7 @@ async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   const providers: Array<{ name: string; send: (params: EmailParams) => Promise<boolean> }> = [];
 
-  if (process.env.RESEND_API_KEY) {
+  if (getResendApiKey()) {
     providers.push({ name: 'Resend', send: sendViaResend });
   }
   if (process.env.SENDGRID_API_KEY) {

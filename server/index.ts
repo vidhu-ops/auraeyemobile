@@ -4,6 +4,7 @@ import { runStartupSeed } from "./seed-data";
 import { setupVite, serveStatic, log } from "./vite";
 import { serveProductionStatic } from "./production-static";
 import { initializeWhatsApp } from "./whatsapp-service";
+import { logEmailProviderStatus } from "./email-service";
 import Stripe from "stripe";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
@@ -252,6 +253,7 @@ app.use((req, res, next) => {
     reusePort: true,
   }, async () => {
     log(`serving on host ${host} port ${port}`);
+    logEmailProviderStatus();
     
     // Start daily horoscope cron job after server starts
     try {
