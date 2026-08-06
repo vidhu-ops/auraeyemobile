@@ -42,8 +42,9 @@ integrations = ["javascript_sendgrid:1.0.0", "javascript_sendgrid:1.0.0", "javas
 [userenv]
 
 [userenv.shared]
-SENDGRID_FROM_EMAIL = "vidhugupta1996@gmail.com"
+SENDGRID_FROM_EMAIL = "teamauraeye@gmail.com"
 RESEND_FROM_EMAIL = "teamauraeye@gmail.com"
+GMAIL_USER = "teamauraeye@gmail.com"
 
 [userenv.development]
 
