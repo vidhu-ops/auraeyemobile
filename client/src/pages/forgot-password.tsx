@@ -75,10 +75,15 @@ export default function ForgotPassword() {
         setEmail(data.email);
         resetForm.setValue("username", data.username);
         resetForm.setValue("email", data.email);
+        if (result.otp) {
+          resetForm.setValue("token", result.otp);
+        }
         setStep("reset");
         toast({
-          title: "Reset Code Sent",
-          description: "Please check your email for the reset code",
+          title: result.emailSent === false ? "Reset Code Generated" : "Reset Code Sent",
+          description: result.otp
+            ? `Your code: ${result.otp}${result.emailSent === false ? " (shown here because email could not be delivered)" : ""}`
+            : "Please check your email for the reset code",
         });
       } else {
         setError(result.message || "Failed to send reset code");
@@ -151,9 +156,15 @@ export default function ForgotPassword() {
       const result = await response.json();
       
       if (response.ok) {
+        const result = await response.json();
+        if (result.otp) {
+          resetForm.setValue("token", result.otp);
+        }
         toast({
-          title: "Code Resent",
-          description: "A new reset code has been sent to your email",
+          title: result.emailSent === false ? "Reset Code Generated" : "Code Resent",
+          description: result.otp
+            ? `Your code: ${result.otp}`
+            : "A new reset code has been sent to your email",
         });
       } else {
         setError(result.message || "Failed to resend code");

@@ -71,6 +71,8 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
     params.from || getResendFromAddress(),
     configuredFrom,
     `AuraEye <${configuredFrom}>`,
+    'AuraEye <contact@auraeye.in>',
+    'contact@auraeye.in',
     'onboarding@resend.dev',
   ].filter((value, index, array) => array.indexOf(value) === index);
 

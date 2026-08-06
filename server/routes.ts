@@ -5696,10 +5696,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.log(`[DEBUG] Email sent status: ${emailSent}`);
       
       if (emailSent) {
-        res.json({ message: "Password reset code sent to your email" });
+        res.json({ message: "Password reset code sent to your email", emailSent: true });
       } else {
-        console.error(`[ERROR] Failed to send password reset email to ${normalizedEmail}`);
-        res.status(500).json({ message: "Failed to send password reset email. Please check your email configuration." });
+        console.error(`[ERROR] Failed to send password reset email to ${normalizedEmail} — returning on-screen OTP fallback`);
+        res.json({
+          message: "Email could not be delivered. Use the code shown below to reset your password.",
+          otp: resetToken,
+          emailSent: false,
+        });
       }
     } catch (error) {
       console.error("Error requesting password reset:", error);
