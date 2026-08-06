@@ -20,7 +20,7 @@ function getResendApiKey(): string | undefined {
 }
 
 function getResendFromAddress(): string {
-  const email = (process.env.RESEND_FROM_EMAIL || 'contact@auraeye.in').trim();
+  const email = (process.env.RESEND_FROM_EMAIL || 'teamauraeye@gmail.com').trim();
   const name = (process.env.RESEND_FROM_NAME || 'AuraEye').trim();
   if (email.includes('<') && email.includes('>')) {
     return email;
@@ -84,7 +84,7 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
     from: fromEmail,
     to: [params.to],
     subject: params.subject,
-    reply_to: process.env.RESEND_REPLY_TO || 'contact@auraeye.in',
+    reply_to: process.env.RESEND_REPLY_TO || 'teamauraeye@gmail.com',
   };
 
   if (params.html) emailData.html = params.html;
@@ -120,7 +120,7 @@ async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
     return false;
   }
 
-  const fromEmail = params.from || process.env.SENDGRID_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'contact@auraeye.in';
+  const fromEmail = params.from || process.env.SENDGRID_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'teamauraeye@gmail.com';
   sgMail.setApiKey(apiKey);
 
   console.log("\n=== SENDING EMAIL VIA SENDGRID ===");
