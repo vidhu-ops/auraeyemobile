@@ -31,11 +31,13 @@ function getResendFromAddress(): string {
 export function getEmailProviderStatus(): {
   resend: boolean;
   sendgrid: boolean;
+  gmail: boolean;
   resendFrom: string;
 } {
   return {
     resend: !!getResendApiKey(),
     sendgrid: !!process.env.SENDGRID_API_KEY,
+    gmail: !!process.env.GMAIL_APP_PASSWORD,
     resendFrom: getResendFromAddress(),
   };
 }
@@ -43,17 +45,16 @@ export function getEmailProviderStatus(): {
 export function logEmailProviderStatus(): void {
   const status = getEmailProviderStatus();
   console.log('📧 Email providers:', {
-    resend: status.resend ? 'configured' : 'missing RESEND_API_KEY',
+    gmail: status.gmail ? 'configured' : 'not set (add GMAIL_APP_PASSWORD for reliable delivery)',
     sendgrid: status.sendgrid ? 'configured' : 'not set',
+    resend: status.resend ? 'configured' : 'missing RESEND_API_KEY',
     resendFrom: status.resendFrom,
   });
 
-  if (!status.resend && !status.sendgrid) {
+  if (!status.resend && !status.sendgrid && !status.gmail) {
     console.warn(
-      '⚠️  No email provider configured. Add RESEND_API_KEY to Replit Deployment Secrets and republish.'
+      '⚠️  No email provider configured. Add GMAIL_APP_PASSWORD, RESEND_API_KEY, or SENDGRID_API_KEY to Replit Deployment Secrets.'
     );
-  } else if (!status.resend && status.sendgrid) {
-    console.warn('⚠️  RESEND_API_KEY missing — using SendGrid fallback only.');
   }
 }
 
@@ -64,54 +65,99 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
     return false;
   }
 
-  const fromEmail = params.from || getResendFromAddress();
   const resend = new Resend(apiKey);
+  const configuredFrom = (process.env.RESEND_FROM_EMAIL || 'teamauraeye@gmail.com').trim();
+  const fromCandidates = [
+    params.from || getResendFromAddress(),
+    configuredFrom,
+    `AuraEye <${configuredFrom}>`,
+    'onboarding@resend.dev',
+  ].filter((value, index, array) => array.indexOf(value) === index);
 
-  console.log("\n=== SENDING EMAIL VIA RESEND ===");
+  for (const fromEmail of fromCandidates) {
+    console.log("\n=== SENDING EMAIL VIA RESEND ===");
+    console.log("To:", params.to);
+    console.log("From:", fromEmail);
+    console.log("Subject:", params.subject);
+
+    const emailData: {
+      from: string;
+      to: string[];
+      subject: string;
+      html?: string;
+      text?: string;
+      reply_to?: string;
+      attachments?: Array<{ filename: string; content: Buffer }>;
+    } = {
+      from: fromEmail,
+      to: [params.to],
+      subject: params.subject,
+      reply_to: process.env.RESEND_REPLY_TO || configuredFrom,
+    };
+
+    if (params.html) emailData.html = params.html;
+    if (params.text) emailData.text = params.text;
+
+    if (params.attachments && params.attachments.length > 0) {
+      emailData.attachments = params.attachments.map((att) => ({
+        filename: att.filename,
+        content: Buffer.from(att.content, 'base64'),
+      }));
+    }
+
+    const result = await resend.emails.send(emailData as Parameters<typeof resend.emails.send>[0]);
+    console.log("[DEBUG] Resend response:", JSON.stringify(result));
+
+    if (result.error) {
+      console.error(`Resend error (from ${fromEmail}):`, JSON.stringify(result.error, null, 2));
+      continue;
+    }
+
+    if (!result.data?.id) {
+      console.error("Resend returned no message id:", JSON.stringify(result));
+      continue;
+    }
+
+    console.log("Email sent successfully via Resend! ID:", result.data.id);
+    return true;
+  }
+
+  return false;
+}
+
+async function sendViaGmail(params: EmailParams): Promise<boolean> {
+  const user = (process.env.GMAIL_USER || process.env.RESEND_FROM_EMAIL || 'teamauraeye@gmail.com').trim();
+  const pass = process.env.GMAIL_APP_PASSWORD?.trim();
+  if (!pass) {
+    return false;
+  }
+
+  const nodemailer = await import('nodemailer');
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user, pass },
+  });
+
+  console.log("\n=== SENDING EMAIL VIA GMAIL SMTP ===");
   console.log("To:", params.to);
-  console.log("From:", fromEmail);
+  console.log("From:", user);
   console.log("Subject:", params.subject);
 
-  const emailData: {
-    from: string;
-    to: string[];
-    subject: string;
-    html?: string;
-    text?: string;
-    reply_to?: string;
-    attachments?: Array<{ filename: string; content: Buffer }>;
-  } = {
-    from: fromEmail,
-    to: [params.to],
-    subject: params.subject,
-    reply_to: process.env.RESEND_REPLY_TO || 'teamauraeye@gmail.com',
-  };
+  try {
+    await transporter.sendMail({
+      from: `AuraEye <${user}>`,
+      to: params.to,
+      subject: params.subject,
+      html: params.html,
+      text: params.text,
+    });
 
-  if (params.html) emailData.html = params.html;
-  if (params.text) emailData.text = params.text;
-
-  if (params.attachments && params.attachments.length > 0) {
-    emailData.attachments = params.attachments.map((att) => ({
-      filename: att.filename,
-      content: Buffer.from(att.content, 'base64'),
-    }));
-  }
-
-  const result = await resend.emails.send(emailData as Parameters<typeof resend.emails.send>[0]);
-  console.log("[DEBUG] Resend response:", JSON.stringify(result));
-
-  if (result.error) {
-    console.error("Resend error:", JSON.stringify(result.error, null, 2));
+    console.log("Email sent successfully via Gmail SMTP");
+    return true;
+  } catch (error: any) {
+    console.error("Gmail SMTP error:", error?.message || error);
     return false;
   }
-
-  if (!result.data?.id) {
-    console.error("Resend returned no message id:", JSON.stringify(result));
-    return false;
-  }
-
-  console.log("Email sent successfully via Resend! ID:", result.data.id);
-  return true;
 }
 
 async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
@@ -145,23 +191,32 @@ async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
     }));
   }
 
-  await sgMail.send(message);
-  console.log("Email sent successfully via SendGrid");
-  return true;
+  try {
+    await sgMail.send(message);
+    console.log("Email sent successfully via SendGrid");
+    return true;
+  } catch (error: any) {
+    console.error("SendGrid error:", error?.response?.body || error?.message || error);
+    return false;
+  }
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   const providers: Array<{ name: string; send: (params: EmailParams) => Promise<boolean> }> = [];
 
-  if (getResendApiKey()) {
-    providers.push({ name: 'Resend', send: sendViaResend });
+  // Gmail SMTP is most reliable for teamauraeye@gmail.com when app password is set
+  if (process.env.GMAIL_APP_PASSWORD) {
+    providers.push({ name: 'Gmail', send: sendViaGmail });
   }
   if (process.env.SENDGRID_API_KEY) {
     providers.push({ name: 'SendGrid', send: sendViaSendGrid });
   }
+  if (getResendApiKey()) {
+    providers.push({ name: 'Resend', send: sendViaResend });
+  }
 
   if (providers.length === 0) {
-    console.error('No email provider configured. Set RESEND_API_KEY or SENDGRID_API_KEY.');
+    console.error('No email provider configured. Set GMAIL_APP_PASSWORD, RESEND_API_KEY, or SENDGRID_API_KEY.');
     return false;
   }
 
