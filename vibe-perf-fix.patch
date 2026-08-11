@@ -1,0 +1,295 @@
+# Apply against mobileauraeyefinal (or Replit) from repo root:
+#   patch -p0 < vibe-perf-fix.patch
+# Or replace client/src/pages/vibe.tsx with the version in this PR.
+--- client/src/pages/vibe.tsx	2026-08-11 20:44:27.838013751 +0000
++++ client/src/pages/vibe.tsx	2026-08-11 20:44:27.838013751 +0000
+@@ -1,4 +1,4 @@
+-import { useState, useRef } from "react";
++import { useState, useRef, useEffect } from "react";
+ import { Link, useLocation } from "wouter";
+ import { useAuth } from "@/hooks/use-auth";
+ import { useToast } from "@/hooks/use-toast";
+@@ -12,8 +12,19 @@
+ import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
+ import { useBadgeContext } from "@/hooks/use-badge-context";
+ import logoImage from "@assets/new-logo.jpeg";
+-import meditationVideo from "@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4";
+-import demoPdfReport from "@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29.pdf_(8)_1768045427610.pdf";
++
++// Large media is lazy-loaded when the matching modal opens (keeps /vibe initial load light)
++const loadMeditationVideo = () =>
++  import("@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4").then(
++    (mod) => mod.default as string
++  );
++const loadDemoPdfReport = () =>
++  import("@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29.pdf_(8)_1768045427610.pdf").then(
++    (mod) => mod.default as string
++  );
++
++/** Max canvas edge length before aura particles run — same effect, far less main-thread work */
++const VIBE_AURA_MAX_DIMENSION = 900;
+ 
+ interface VibeResult {
+   dominantColor: string;
+@@ -70,28 +81,35 @@
+ };
+ 
+ // Add watermark to image
+-const addWatermark = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
++const addWatermark = (
++  ctx: CanvasRenderingContext2D,
++  canvasWidth: number,
++  canvasHeight: number,
++  sizeScale: number
++) => {
+   const centerX = canvasWidth / 2;
+   const centerY = canvasHeight / 2;
+   
+   ctx.save();
+   ctx.globalAlpha = 0.5;
+   ctx.fillStyle = 'white';
+-  ctx.font = '100px Arial, sans-serif';
++  // Scale font with canvas so downsized images keep the same relative watermark
++  ctx.font = `${Math.max(24, Math.round(100 * sizeScale))}px Arial, sans-serif`;
+   ctx.textAlign = 'center';
+   ctx.textBaseline = 'middle';
+   
+   ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+-  ctx.shadowBlur = 4;
+-  ctx.shadowOffsetX = 2;
+-  ctx.shadowOffsetY = 2;
++  ctx.shadowBlur = Math.max(1, 4 * sizeScale);
++  ctx.shadowOffsetX = Math.max(1, 2 * sizeScale);
++  ctx.shadowOffsetY = Math.max(1, 2 * sizeScale);
+   
+   ctx.fillText('AuraEye™', centerX, centerY);
+   
+   ctx.restore();
+ };
+ 
+-// Process image with aura visualization and watermark - EXACT copy from home-page.tsx
++// Process image with aura visualization and watermark - same particle layers/counts as before.
++// Image is downsized first so the effect runs on fewer pixels (avoids mobile hangs).
+ const processImageWithVibeAuraEffect = (
+   imageBase64: string, 
+   dominantColor: string, 
+@@ -104,11 +122,20 @@
+     const canvas = document.createElement('canvas');
+     const ctx = canvas.getContext('2d');
+     if (!ctx) return;
++
++    // Downsize before particle work; scale absolute radii so the look stays the same
++    const longestSide = Math.max(img.width, img.height);
++    const sizeScale =
++      longestSide > VIBE_AURA_MAX_DIMENSION
++        ? VIBE_AURA_MAX_DIMENSION / longestSide
++        : 1;
++    const drawWidth = Math.max(1, Math.round(img.width * sizeScale));
++    const drawHeight = Math.max(1, Math.round(img.height * sizeScale));
+     
+-    canvas.width = img.width;
+-    canvas.height = img.height;
++    canvas.width = drawWidth;
++    canvas.height = drawHeight;
+     
+-    ctx.drawImage(img, 0, 0, img.width, img.height);
++    ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+     
+     const colorRGB = getColorRGB(dominantColor);
+     
+@@ -134,7 +161,7 @@
+       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+       if (distanceFromCenter < personRadius * 1.5) continue;
+       
+-      const radius = 30 + seededRandom() * 150;
++      const radius = (30 + seededRandom() * 150) * sizeScale;
+       const opacity = 0.45 + seededRandom() * 0.5;
+       
+       ctx.save();
+@@ -164,7 +191,7 @@
+       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+       if (distanceFromCenter < personRadius * 1.4) continue;
+       
+-      const radius = 20 + seededRandom() * 80;
++      const radius = (20 + seededRandom() * 80) * sizeScale;
+       const opacity = 0.35 + seededRandom() * 0.45;
+       
+       ctx.save();
+@@ -193,7 +220,7 @@
+       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+       if (distanceFromCenter < personRadius * 1.3) continue;
+       
+-      const radius = 8 + seededRandom() * 40;
++      const radius = (8 + seededRandom() * 40) * sizeScale;
+       const opacity = 0.3 + seededRandom() * 0.4;
+       
+       ctx.save();
+@@ -222,7 +249,7 @@
+       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+       if (distanceFromCenter < personRadius * 1.3) continue;
+       
+-      const radius = 4 + seededRandom() * 20;
++      const radius = (4 + seededRandom() * 20) * sizeScale;
+       const opacity = 0.25 + seededRandom() * 0.35;
+       
+       ctx.save();
+@@ -252,7 +279,7 @@
+       
+       if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
+       
+-      const radius = 15 + seededRandom() * 60;
++      const radius = (15 + seededRandom() * 60) * sizeScale;
+       const opacity = 0.3 + seededRandom() * 0.45;
+       
+       ctx.save();
+@@ -281,7 +308,7 @@
+       const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+       if (distanceFromCenter < personRadius * 1.2) continue;
+       
+-      const radius = 60 + seededRandom() * 120;
++      const radius = (60 + seededRandom() * 120) * sizeScale;
+       const opacity = 0.15 + seededRandom() * 0.2;
+       
+       ctx.save();
+@@ -301,7 +328,7 @@
+     ctx.restore();
+     
+     ctx.globalCompositeOperation = 'source-over';
+-    addWatermark(ctx, canvas.width, canvas.height);
++    addWatermark(ctx, canvas.width, canvas.height, sizeScale);
+     
+     const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.95);
+     setProcessedImage(processedImageBase64);
+@@ -323,8 +350,58 @@
+   const [showThankYou, setShowThankYou] = useState(false);
+   const [showPostMeditationOptions, setShowPostMeditationOptions] = useState(false);
+   const [showPremiumPdf, setShowPremiumPdf] = useState(false);
++  const [meditationVideoUrl, setMeditationVideoUrl] = useState<string | null>(null);
++  const [demoPdfUrl, setDemoPdfUrl] = useState<string | null>(null);
++  const [isMeditationVideoLoading, setIsMeditationVideoLoading] = useState(false);
++  const [isDemoPdfLoading, setIsDemoPdfLoading] = useState(false);
+   const videoRef = useRef<HTMLVideoElement>(null);
+ 
++  // Lazy-load meditation video only when that modal opens
++  useEffect(() => {
++    if (!showMeditationVideo || meditationVideoUrl) return;
++
++    let cancelled = false;
++    setIsMeditationVideoLoading(true);
++
++    loadMeditationVideo()
++      .then((url) => {
++        if (!cancelled) setMeditationVideoUrl(url);
++      })
++      .catch((error) => {
++        console.error("Failed to lazy-load meditation video:", error);
++      })
++      .finally(() => {
++        if (!cancelled) setIsMeditationVideoLoading(false);
++      });
++
++    return () => {
++      cancelled = true;
++    };
++  }, [showMeditationVideo, meditationVideoUrl]);
++
++  // Lazy-load demo PDF only when that modal opens
++  useEffect(() => {
++    if (!showPremiumPdf || demoPdfUrl) return;
++
++    let cancelled = false;
++    setIsDemoPdfLoading(true);
++
++    loadDemoPdfReport()
++      .then((url) => {
++        if (!cancelled) setDemoPdfUrl(url);
++      })
++      .catch((error) => {
++        console.error("Failed to lazy-load demo PDF:", error);
++      })
++      .finally(() => {
++        if (!cancelled) setIsDemoPdfLoading(false);
++      });
++
++    return () => {
++      cancelled = true;
++    };
++  }, [showPremiumPdf, demoPdfUrl]);
++
+   // Process image with smokey aura clouds around person (face visible in center)
+   const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
+     processImageWithVibeAuraEffect(imageBase64, dominantColor, setProcessedImage);
+@@ -850,19 +927,26 @@
+               </button>
+             </div>
+             <div className="flex-1 overflow-auto p-6">
+-              <video
+-                ref={videoRef}
+-                controls
+-                autoPlay
+-                className="w-full rounded-lg"
+-                onEnded={() => {
+-                  setShowMeditationVideo(false);
+-                  setShowPostMeditationOptions(true);
+-                }}
+-              >
+-                <source src={meditationVideo} type="video/mp4" />
+-                Your browser does not support the video tag.
+-              </video>
++              {meditationVideoUrl ? (
++                <video
++                  ref={videoRef}
++                  controls
++                  autoPlay
++                  className="w-full rounded-lg"
++                  onEnded={() => {
++                    setShowMeditationVideo(false);
++                    setShowPostMeditationOptions(true);
++                  }}
++                >
++                  <source src={meditationVideoUrl} type="video/mp4" />
++                  Your browser does not support the video tag.
++                </video>
++              ) : (
++                <div className="flex flex-col items-center justify-center py-16 text-slate-600">
++                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mb-4"></div>
++                  <p>{isMeditationVideoLoading ? "Loading meditation video..." : "Preparing video..."}</p>
++                </div>
++              )}
+             </div>
+           </div>
+         </div>
+@@ -940,16 +1024,23 @@
+             </Button>
+ 
+             <div className="flex-grow w-full h-full overflow-hidden rounded-xl">
+-              <iframe
+-                src={`${demoPdfReport}#toolbar=0&navpanes=0&scrollbar=0`}
+-                className="w-full h-full border-0 bg-white"
+-                title="Premium Aura & Chakra Analysis Report"
+-                style={{
+-                  minHeight: '100%',
+-                  width: '100%',
+-                  display: 'block'
+-                }}
+-              />
++              {demoPdfUrl ? (
++                <iframe
++                  src={`${demoPdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
++                  className="w-full h-full border-0 bg-white"
++                  title="Premium Aura & Chakra Analysis Report"
++                  style={{
++                    minHeight: '100%',
++                    width: '100%',
++                    display: 'block'
++                  }}
++                />
++              ) : (
++                <div className="flex flex-col items-center justify-center h-full min-h-[320px] text-slate-600 bg-slate-50">
++                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
++                  <p>{isDemoPdfLoading ? "Loading demo report..." : "Preparing report..."}</p>
++                </div>
++              )}
+             </div>
+             
+             <div className="p-4 bg-white border-t flex flex-col sm:flex-row items-center justify-between gap-4">
