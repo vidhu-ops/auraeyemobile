@@ -27,6 +27,8 @@ const loadDemoPdfReport = () =>
 const VIBE_AURA_MAX_DIMENSION = 480;
 /** Particles per animation frame — same effect, UI can scroll between batches */
 const VIBE_AURA_PARTICLE_BATCH = 40;
+/** Make particles visibly larger on the downsized canvas */
+const VIBE_PARTICLE_SIZE_BOOST = 2.4;
 
 interface VibeResult {
   dominantColor: string;
@@ -165,11 +167,55 @@ const processImageWithVibeAuraEffect = (
         const personRadius = Math.min(canvas.width, canvas.height) * 0.25;
         const [r, g, b] = colorRGB.split(',').map((num) => parseInt(num.trim()));
 
+        // Soft light gradient around the person (same vibe color, 50% opacity peak)
+        {
+          const innerR = personRadius * 0.55;
+          const midR = personRadius * 1.35;
+          const outerR = Math.min(canvas.width, canvas.height) * 0.62;
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          const personGlow = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            innerR,
+            centerX,
+            centerY,
+            outerR
+          );
+          personGlow.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+          personGlow.addColorStop(0.28, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          personGlow.addColorStop(0.55, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          personGlow.addColorStop(0.82, `rgba(${r}, ${g}, ${b}, 0.22)`);
+          personGlow.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+          ctx.fillStyle = personGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Second pass for a richer halo like the reference scan
+          ctx.globalCompositeOperation = 'soft-light';
+          const softHalo = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            personRadius * 0.4,
+            centerX,
+            centerY,
+            midR * 1.4
+          );
+          softHalo.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+          softHalo.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          softHalo.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+          ctx.fillStyle = softHalo;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.restore();
+          await yieldToMain();
+        }
+
         let seed = dominantColor.charCodeAt(0) + canvas.width + canvas.height;
         const seededRandom = () => {
           seed = (seed * 9301 + 49297) % 233280;
           return seed / 233280;
         };
+        const particleRadius = (minPx: number, rangePx: number) =>
+          (minPx + seededRandom() * rangePx) * sizeScale * VIBE_PARTICLE_SIZE_BOOST;
 
         const drawParticles = async (
           particles: ParticleSpec[],
@@ -221,7 +267,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (30 + seededRandom() * 150) * sizeScale,
+              radius: particleRadius(30, 150),
               opacity: 0.45 + seededRandom() * 0.5,
             });
           }
@@ -243,7 +289,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (20 + seededRandom() * 80) * sizeScale,
+              radius: particleRadius(20, 80),
               opacity: 0.35 + seededRandom() * 0.45,
             });
           }
@@ -265,7 +311,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (8 + seededRandom() * 40) * sizeScale,
+              radius: particleRadius(8, 40),
               opacity: 0.3 + seededRandom() * 0.4,
             });
           }
@@ -287,7 +333,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (4 + seededRandom() * 20) * sizeScale,
+              radius: particleRadius(4, 20),
               opacity: 0.25 + seededRandom() * 0.35,
             });
           }
@@ -312,7 +358,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (15 + seededRandom() * 60) * sizeScale,
+              radius: particleRadius(15, 60),
               opacity: 0.3 + seededRandom() * 0.45,
             });
           }
@@ -334,7 +380,7 @@ const processImageWithVibeAuraEffect = (
             particles.push({
               x,
               y,
-              radius: (60 + seededRandom() * 120) * sizeScale,
+              radius: particleRadius(60, 120),
               opacity: 0.15 + seededRandom() * 0.2,
             });
           }
@@ -676,7 +722,7 @@ export default function VibePage() {
                 <div
                   className="relative w-full max-w-[400px] rounded-3xl overflow-hidden bg-slate-900"
                   style={{
-                    boxShadow: `0 0 28px ${getColorHex(vibeResult.dominantColor)}66`,
+                    boxShadow: `0 0 40px ${getColorHex(vibeResult.dominantColor)}80, 0 0 80px ${getColorHex(vibeResult.dominantColor)}55`,
                   }}
                 >
                   <img
