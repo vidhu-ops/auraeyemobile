@@ -1,12 +1,21 @@
-# What's My Vibe performance fix
+# What's My Vibe — hang / scroll / image fix
 
-This Cloud Agent repo (`auraeyemobile`) is empty; the live code is in `vidhu-ops/mobileauraeyefinal` (push was denied to that repo).
+## Why it still broke
+The previous downsize-only change was **not in your live app** (`mobileauraeyefinal` still had the old full-resolution sync canvas). Even at 900px, drawing ~5000 `shadowBlur` particles in one frame freezes phones after the scan finishes — that blocks scrolling and can leave the image looking broken.
 
-## Changes in `client/src/pages/vibe.tsx`
-1. **Lazy-load** the meditation MP4 (~9MB) and demo PDF (~1.6MB) only when their modals open.
-2. **Downsize** photos to max 900px before the aura particle canvas runs.
-3. Particle **layer types and counts are unchanged** (600/800/1000/1200/800/600). Absolute radii are scaled with the canvas so the visualization look stays the same.
+## This fix
+1. **Lazy-load** meditation video + demo PDF
+2. **Downsize** to max **480px** before aura drawing (matches on-screen size)
+3. **Chunk** particle drawing across animation frames (same 6 layers & counts: 600/800/1000/1200/800/600) so the UI stays scrollable
+4. **Fix image layout** — explicit `w-full max-w-[400px]`, `object-contain`, lighter glow (the old box had no width + huge shadows, so the photo could collapse / crop badly)
+5. Show the photo immediately, with an “Applying aura…” overlay while particles finish
 
-## How to apply
-- Copy `client/src/pages/vibe.tsx` over the same path in `mobileauraeyefinal` / Replit, **or**
-- From the app repo root: `patch -p0 < vibe-perf-fix.patch`
+## Apply to live app / Replit
+Replace `client/src/pages/vibe.tsx` with this file, or from the app repo root:
+
+```bash
+curl -L -o client/src/pages/vibe.tsx \
+  https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/vibe-perf-lazy-downsize-5e41/client/src/pages/vibe.tsx
+```
+
+Then republish.
