@@ -72,10 +72,10 @@ export const PHASE_LABELS: Record<string, string> = {
 };
 
 export const CRM_MODULES = [
-  { id: "direct-data", title: "Direct Data Control", description: "Edit users, healers, credits & records without SQL", phase: "1", color: "blue" },
-  { id: "users", title: "Users & activity", description: "Full timeline, journey phase, payments & credits", phase: "1", color: "blue" },
-  { id: "healers", title: "Healers / Practitioners", description: "Activity, sessions, licence & contract tracking", phase: "1", color: "blue" },
-  { id: "revenue", title: "Revenue & Payments", description: "Stripe txs, credits, refunds, entity split", phase: "1", color: "blue" },
+  { id: "direct-data", title: "Direct Data Control", description: "Create, import CSV/XLS, edit fields, credits & GDPR tools", phase: "1", color: "blue" },
+  { id: "users", title: "Users (clients)", description: "Client journey, activity timeline, credit expiry & their tickets", phase: "1", color: "blue" },
+  { id: "healers", title: "Healers / Practitioners", description: "Sessions, licence/contract, booking tickets", phase: "1", color: "blue" },
+  { id: "revenue", title: "Revenue & Payments", description: "Payments, credit expiry log, refund history", phase: "1", color: "blue" },
   { id: "notifications", title: "Monthly Notifications", description: "Needs-attention & inactive user queues", phase: "1", color: "blue" },
   { id: "tickets", title: "Support / Ticketing", description: "Track issues outside WhatsApp/email threads", phase: "2", color: "purple" },
   { id: "leads", title: "Lead Pipeline", description: "Prospect healers from first contact to onboarded", phase: "2", color: "purple" },
