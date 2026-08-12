@@ -121,7 +121,6 @@ export default function AdminCrmApp() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [creditAmount, setCreditAmount] = useState("5");
   const [creditValidityDays, setCreditValidityDays] = useState("30");
-  const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [quickActionOpen, setQuickActionOpen] = useState(false);
   const [userTypeFilter, setUserTypeFilter] = useState<"client" | "all">("client");
   const [selectedHealerId, setSelectedHealerId] = useState<number | null>(null);
