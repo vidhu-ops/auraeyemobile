@@ -1,0 +1,48 @@
+-- AuraEye Admin CRM — Phase 1 tables
+-- Run against your Postgres (Replit / Neon) once before using /admin CRM features.
+
+CREATE TABLE IF NOT EXISTS admin_audit_logs (
+  id SERIAL PRIMARY KEY,
+  actor_user_id INTEGER NOT NULL REFERENCES users(id),
+  actor_username TEXT NOT NULL,
+  action TEXT NOT NULL,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT,
+  previous_value TEXT,
+  new_value TEXT,
+  note TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS admin_audit_logs_actor_idx ON admin_audit_logs(actor_user_id);
+CREATE INDEX IF NOT EXISTS admin_audit_logs_entity_idx ON admin_audit_logs(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS admin_audit_logs_created_at_idx ON admin_audit_logs(created_at);
+
+CREATE TABLE IF NOT EXISTS practitioner_contracts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+  licence_status TEXT NOT NULL DEFAULT 'unknown',
+  contract_status TEXT NOT NULL DEFAULT 'unsigned',
+  start_date TEXT,
+  end_date TEXT,
+  renewal_date TEXT,
+  notes TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS support_tickets (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open',
+  priority TEXT NOT NULL DEFAULT 'normal',
+  channel TEXT DEFAULT 'crm',
+  assigned_to INTEGER REFERENCES users(id),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS support_tickets_status_idx ON support_tickets(status);
+CREATE INDEX IF NOT EXISTS support_tickets_user_idx ON support_tickets(user_id);

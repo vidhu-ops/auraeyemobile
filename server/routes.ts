@@ -1043,6 +1043,10 @@ function calculateSoulChakra(birthDate: string): number {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up user authentication routes
   setupAuth(app);
+
+  // AuraEye Admin CRM (Phase 1+)
+  const { registerCrmRoutes } = await import("./crm-routes");
+  registerCrmRoutes(app);
   
   // Change password endpoint
   app.post("/api/change-password", isAuthenticated, async (req, res) => {

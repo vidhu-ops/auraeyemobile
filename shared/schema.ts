@@ -682,3 +682,78 @@ export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
 export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSchema>;
 export type UserSubscription = typeof userSubscriptions.$inferSelect;
 export type InsertUserSubscription = z.infer<typeof insertUserSubscriptionSchema>;
+
+// ─── Admin CRM tables ─────────────────────────────────────────────────────────
+
+/** Audit trail for every direct CRM edit (who / what / before / after). */
+export const adminAuditLogs = pgTable("admin_audit_logs", {
+  id: serial("id").primaryKey(),
+  actorUserId: integer("actor_user_id").notNull().references(() => users.id),
+  actorUsername: text("actor_username").notNull(),
+  action: text("action").notNull(), // create | update | delete | credit_adjust | export | rollback
+  entityType: text("entity_type").notNull(), // user | healer | credit | payment | notification
+  entityId: text("entity_id"),
+  previousValue: text("previous_value"), // JSON snapshot
+  newValue: text("new_value"), // JSON snapshot
+  note: text("note"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  actorIdx: index("admin_audit_logs_actor_idx").on(table.actorUserId),
+  entityIdx: index("admin_audit_logs_entity_idx").on(table.entityType, table.entityId),
+  createdAtIdx: index("admin_audit_logs_created_at_idx").on(table.createdAt),
+}));
+
+export const insertAdminAuditLogSchema = createInsertSchema(adminAuditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+/** Optional practitioner licence / contract tracking for CRM. */
+export const practitionerContracts = pgTable("practitioner_contracts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  licenceStatus: text("licence_status").notNull().default("unknown"), // unknown | active | expired | pending
+  contractStatus: text("contract_status").notNull().default("unsigned"), // unsigned | active | expired | terminated
+  startDate: text("start_date"),
+  endDate: text("end_date"),
+  renewalDate: text("renewal_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPractitionerContractSchema = createInsertSchema(practitionerContracts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+/** Support tickets — Phase 2 scaffold so the CRM shell can list them. */
+export const supportTickets = pgTable("support_tickets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  status: text("status").notNull().default("open"), // open | in_progress | resolved | closed
+  priority: text("priority").notNull().default("normal"), // low | normal | high | urgent
+  channel: text("channel").default("crm"), // crm | email | whatsapp
+  assignedTo: integer("assigned_to").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  statusIdx: index("support_tickets_status_idx").on(table.status),
+  userIdx: index("support_tickets_user_idx").on(table.userId),
+}));
+
+export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
+export type InsertAdminAuditLog = z.infer<typeof insertAdminAuditLogSchema>;
+export type PractitionerContract = typeof practitionerContracts.$inferSelect;
+export type InsertPractitionerContract = z.infer<typeof insertPractitionerContractSchema>;
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
