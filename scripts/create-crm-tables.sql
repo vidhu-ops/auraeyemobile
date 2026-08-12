@@ -39,6 +39,10 @@ CREATE TABLE IF NOT EXISTS support_tickets (
   status TEXT NOT NULL DEFAULT 'open',
   priority TEXT NOT NULL DEFAULT 'normal',
   channel TEXT DEFAULT 'crm',
+  category TEXT DEFAULT 'general',
+  requester_name TEXT,
+  requester_email TEXT,
+  metadata TEXT,
   assigned_to INTEGER REFERENCES users(id),
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -46,6 +50,13 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 
 CREATE INDEX IF NOT EXISTS support_tickets_status_idx ON support_tickets(status);
 CREATE INDEX IF NOT EXISTS support_tickets_user_idx ON support_tickets(user_id);
+CREATE INDEX IF NOT EXISTS support_tickets_channel_idx ON support_tickets(channel);
+
+-- Upgrade existing support_tickets tables
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'general';
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS requester_name TEXT;
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS requester_email TEXT;
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS metadata TEXT;
 
 -- Staff logins for /admin (viewer / editor / support / owner)
 CREATE TABLE IF NOT EXISTS crm_staff (

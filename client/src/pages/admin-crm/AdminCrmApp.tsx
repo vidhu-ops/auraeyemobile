@@ -145,6 +145,8 @@ export default function AdminCrmApp() {
     role: "viewer",
   });
   const [ticketForm, setTicketForm] = useState({ subject: "", body: "", priority: "normal" });
+  const [ticketStatusFilter, setTicketStatusFilter] = useState("all");
+  const [ticketChannelFilter, setTicketChannelFilter] = useState("all");
   const [leadForm, setLeadForm] = useState({ name: "", email: "", mobileNumber: "", stage: "new", notes: "" });
   const [contractForm, setContractForm] = useState({
     licenceStatus: "unknown",
@@ -199,7 +201,14 @@ export default function AdminCrmApp() {
   });
 
   const ticketsQuery = useQuery<{ tickets: any[] }>({
-    queryKey: ["/api/crm/tickets"],
+    queryKey: ["/api/crm/tickets", ticketStatusFilter, ticketChannelFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (ticketStatusFilter !== "all") params.set("status", ticketStatusFilter);
+      if (ticketChannelFilter !== "all") params.set("channel", ticketChannelFilter);
+      const res = await apiRequest("GET", `/api/crm/tickets?${params.toString()}`);
+      return res.json();
+    },
     enabled: canUseCrm && !!crmAccess?.canManageTickets && section === "tickets",
   });
 
@@ -1385,6 +1394,36 @@ export default function AdminCrmApp() {
           )}
 
           {section === "tickets" && (
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-sm text-slate-400">Status:</span>
+                {["all", "open", "in_progress", "resolved", "closed"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setTicketStatusFilter(s)}
+                    className={`rounded-full px-3 py-1 text-xs border ${
+                      ticketStatusFilter === s ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"
+                    }`}
+                  >
+                    {s === "in_progress" ? "In progress" : s}
+                  </button>
+                ))}
+                <span className="text-sm text-slate-400 ml-2">Source:</span>
+                {["all", "contact", "help", "feedback", "booking", "crm"].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setTicketChannelFilter(c)}
+                    className={`rounded-full px-3 py-1 text-xs border ${
+                      ticketChannelFilter === c ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-slate-400">
+                Inbox includes contact-form messages, Help tickets, product feedback, healer booking messages, and manually created tickets.
+              </p>
             <div className="grid xl:grid-cols-3 gap-4">
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
@@ -1423,31 +1462,62 @@ export default function AdminCrmApp() {
               </Card>
               <Card className="bg-white/5 border-white/10 xl:col-span-2">
                 <CardHeader>
-                  <CardTitle className="text-base">Open tickets</CardTitle>
+                  <CardTitle className="text-base">
+                    Support inbox ({(ticketsQuery.data?.tickets || []).length})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {(ticketsQuery.data?.tickets || []).length === 0 && (
-                    <p className="text-sm text-slate-400">No tickets yet — create one on the left.</p>
+                  {ticketsQuery.isLoading && (
+                    <div className="py-8 flex justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
+                    </div>
+                  )}
+                  {(ticketsQuery.data?.tickets || []).length === 0 && !ticketsQuery.isLoading && (
+                    <p className="text-sm text-slate-400">
+                      No tickets yet. Contact form, Help → Submit a Ticket, feedback, and healer bookings will appear here.
+                    </p>
                   )}
                   {(ticketsQuery.data?.tickets || []).map((t: any) => (
                     <div key={t.id} className="rounded-xl border border-white/10 p-3 text-sm flex flex-wrap gap-3 justify-between">
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="font-medium">{t.subject}</div>
-                        <div className="text-xs text-slate-400 mt-1">
-                          {t.status} · {t.priority}
-                          {t.userId ? ` · user #${t.userId}` : ""}
+                        <div className="text-xs text-slate-400 mt-1 flex flex-wrap gap-2 items-center">
+                          <span className="rounded-full bg-white/10 px-2 py-0.5">{t.channel || "crm"}</span>
+                          <span>{t.status}</span>
+                          <span>{t.priority}</span>
+                          {t.category && <span>{t.category}</span>}
+                          {t.requesterName || t.requesterEmail ? (
+                            <span>
+                              {t.requesterName || ""}
+                              {t.requesterEmail ? ` · ${t.requesterEmail}` : ""}
+                            </span>
+                          ) : null}
+                          {t.username ? <span>@{t.username}</span> : t.userId ? <span>user #{t.userId}</span> : null}
+                          <span>{t.createdAt ? new Date(t.createdAt).toLocaleString() : ""}</span>
                         </div>
-                        <p className="text-xs text-slate-300 mt-2">{t.body}</p>
+                        <p className="text-xs text-slate-300 mt-2 whitespace-pre-wrap">{t.body}</p>
                       </div>
-                      <div className="flex gap-2 items-start">
-                        {t.status !== "resolved" && (
+                      <div className="flex gap-2 items-start shrink-0">
+                        {t.status === "open" && (
+                          <Button size="sm" variant="outline" onClick={() => updateTicketMutation.mutate({ id: t.id, status: "in_progress" })}>
+                            Start
+                          </Button>
+                        )}
+                        {t.status !== "resolved" && t.status !== "closed" && (
                           <Button size="sm" variant="outline" onClick={() => updateTicketMutation.mutate({ id: t.id, status: "resolved" })}>
                             Resolve
                           </Button>
                         )}
-                        {t.status === "open" && (
-                          <Button size="sm" variant="outline" onClick={() => updateTicketMutation.mutate({ id: t.id, status: "in_progress" })}>
-                            Start
+                        {t.userId && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedUserId(t.userId);
+                              setSection("users");
+                            }}
+                          >
+                            User
                           </Button>
                         )}
                       </div>
@@ -1455,6 +1525,7 @@ export default function AdminCrmApp() {
                   ))}
                 </CardContent>
               </Card>
+            </div>
             </div>
           )}
 

@@ -1047,6 +1047,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AuraEye Admin CRM (Phase 1+)
   const { registerCrmRoutes } = await import("./crm-routes");
   registerCrmRoutes(app);
+
+  // Public / authenticated support ticket intake (feeds CRM Support inbox)
+  const { createSupportTicket, subjectFromCategory } = await import("./support-tickets");
+
+  app.post("/api/support/tickets", async (req, res) => {
+    try {
+      const {
+        subject,
+        message,
+        body,
+        email,
+        name,
+        firstName,
+        lastName,
+        category,
+        priority,
+      } = req.body || {};
+
+      const text = String(message || body || "").trim();
+      const cat = String(category || "general");
+      const requesterName =
+        String(name || "").trim() ||
+        [firstName, lastName].filter(Boolean).join(" ").trim() ||
+        null;
+      const requesterEmail = String(email || "").trim() || null;
+      const subj =
+        String(subject || "").trim() ||
+        `${subjectFromCategory(cat)}${requesterName ? ` — ${requesterName}` : ""}`;
+
+      if (!text || text.length < 5) {
+        return res.status(400).json({ message: "Please include a message" });
+      }
+      if (!req.isAuthenticated?.() && !requesterEmail) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const ticket = await createSupportTicket({
+        subject: subj,
+        body: text,
+        userId: req.user?.id || null,
+        requesterName: requesterName || (req.user as any)?.name || (req.user as any)?.username || null,
+        requesterEmail: requesterEmail || (req.user as any)?.email || null,
+        channel: String(req.body?.channel || "contact"),
+        category: cat,
+        priority: priority || "normal",
+        metadata: { sourcePath: req.body?.sourcePath || "/contact" },
+      });
+
+      if (!ticket) {
+        return res.status(500).json({ message: "Failed to create support ticket" });
+      }
+
+      res.json({
+        success: true,
+        ticket: { id: ticket.id, status: ticket.status, createdAt: ticket.createdAt },
+        message: "Thanks — your message was received. Our team will follow up soon.",
+      });
+    } catch (error) {
+      console.error("Public support ticket error:", error);
+      res.status(500).json({ message: "Failed to submit support request" });
+    }
+  });
+
+  app.get("/api/support/tickets/mine", isAuthenticated, async (req, res) => {
+    try {
+      const { supportTickets } = await import("@shared/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      const { db } = await import("./db");
+      const tickets = await db
+        .select()
+        .from(supportTickets)
+        .where(eq(supportTickets.userId, req.user!.id))
+        .orderBy(desc(supportTickets.createdAt))
+        .limit(50);
+      res.json({ tickets });
+    } catch (error) {
+      console.error("My tickets error:", error);
+      res.status(500).json({ message: "Failed to load tickets" });
+    }
+  });
   
   // Change password endpoint
   app.post("/api/change-password", isAuthenticated, async (req, res) => {
@@ -2623,6 +2703,29 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         return res.status(404).json({ error: "Aura reading not found" });
       }
 
+      try {
+        const { createSupportTicket } = await import("./support-tickets");
+        const stars = "★".repeat(Number(rating)) + "☆".repeat(5 - Number(rating));
+        await createSupportTicket({
+          subject: `Aura feedback ${stars} (reading #${readingId})`,
+          body: [
+            `Rating: ${rating}/5`,
+            reviewText ? `Review: ${reviewText}` : "No written review",
+            `Aura reading ID: ${readingId}`,
+            req.user ? `User: ${(req.user as any).username} (#${req.user.id})` : "Anonymous / guest",
+          ].join("\n"),
+          userId: req.user?.id || updatedReading.userId || null,
+          requesterName: (req.user as any)?.name || (req.user as any)?.username || null,
+          requesterEmail: (req.user as any)?.email || null,
+          channel: "feedback",
+          category: "feedback",
+          priority: Number(rating) <= 2 ? "high" : "low",
+          metadata: { type: "aura_review", readingId, rating },
+        });
+      } catch (ticketErr) {
+        console.error("Aura review ticket create failed:", ticketErr);
+      }
+
       res.json(updatedReading);
     } catch (error) {
       console.error("Error saving review:", error);
@@ -2978,6 +3081,29 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const booking = await storage.createHealerBooking(bookingData);
 
       console.log(`✅ Booking created: ${booking.id}`);
+
+      try {
+        await createSupportTicket({
+          subject: `Healer booking · ${healer.name}`,
+          body: [
+            `Client: ${user.name || user.username} (#${user.id})`,
+            `Email: ${user.email || "n/a"}`,
+            `Healer: ${healer.name} (id ${healerId})`,
+            "",
+            "Message from client:",
+            message || "(no message)",
+          ].join("\n"),
+          userId: user.id,
+          requesterName: user.name || user.username,
+          requesterEmail: user.email || null,
+          channel: "booking",
+          category: "booking",
+          priority: "normal",
+          metadata: { type: "healer_booking", bookingId: booking.id, healerId },
+        });
+      } catch (ticketErr) {
+        console.error("Booking ticket create failed:", ticketErr);
+      }
 
       // Send email notification to healer with booking info
       const emailSent = await sendHealerBookingNotification(
@@ -3638,6 +3764,34 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ message: "Failed to update booking" });
       }
 
+      try {
+        const { createSupportTicket } = await import("./support-tickets");
+        const client = await storage.getUser(booking.userId);
+        await createSupportTicket({
+          subject: `Healer ${status} booking #${bookingId}`,
+          body: [
+            `Healer: ${(req.user as any)?.username || healerData?.name || "healer"}`,
+            `Client: ${client?.username || booking.userId}`,
+            `Status: ${status}`,
+            "",
+            "Healer response:",
+            healerResponse || "(no message)",
+            "",
+            "Original client message:",
+            booking.message || "(none)",
+          ].join("\n"),
+          userId: booking.userId,
+          requesterName: healerData?.name || (req.user as any)?.username || null,
+          requesterEmail: healerData?.email || (req.user as any)?.email || null,
+          channel: "booking",
+          category: "booking",
+          priority: status === "rejected" ? "high" : "normal",
+          metadata: { type: "healer_booking_response", bookingId, status },
+        });
+      } catch (ticketErr) {
+        console.error("Booking response ticket create failed:", ticketErr);
+      }
+
       // Award healer session achievements if booking was accepted
       if (status === 'accepted') {
         try {
@@ -3768,6 +3922,32 @@ function calculateDominantSoulChakra(birthDate: string): number {
       };
 
       const savedFeedback = await storage.saveVibeFeedback(vibeFeedbackData);
+
+      try {
+        const { createSupportTicket } = await import("./support-tickets");
+        const positive = String(feedback).toLowerCase() === "yes";
+        await createSupportTicket({
+          subject: `Vibe feedback · ${positive ? "accurate" : "not accurate"} · ${personalityColor}`,
+          body: [
+            `Was the vibe colour accurate? ${feedback}`,
+            `Colour: ${personalityColor}`,
+            `Meaning: ${colorMeaning}`,
+            sessionId ? `Session: ${sessionId}` : null,
+            req.user ? `User: ${(req.user as any).username} (#${req.user.id})` : "Guest",
+          ]
+            .filter(Boolean)
+            .join("\n"),
+          userId: req.user?.id || null,
+          requesterName: (req.user as any)?.name || (req.user as any)?.username || null,
+          requesterEmail: (req.user as any)?.email || null,
+          channel: "feedback",
+          category: "feedback",
+          priority: positive ? "low" : "normal",
+          metadata: { type: "vibe_feedback", personalityColor, sessionId },
+        });
+      } catch (ticketErr) {
+        console.error("Vibe feedback ticket create failed:", ticketErr);
+      }
       
       // Award achievement for vibe checks at different levels
       if (req.user?.id) {
@@ -5386,6 +5566,29 @@ function calculateDominantSoulChakra(birthDate: string): number {
       
       if (!updatedAnalysis) {
         return res.status(404).json({ message: "Object analysis not found" });
+      }
+
+      try {
+        const { createSupportTicket } = await import("./support-tickets");
+        const stars = "★".repeat(Number(rating)) + "☆".repeat(5 - Number(rating));
+        await createSupportTicket({
+          subject: `Object scan feedback ${stars} (#${id})`,
+          body: [
+            `Rating: ${rating}/5`,
+            reviewText ? `Review: ${reviewText}` : "No written review",
+            `Object analysis ID: ${id}`,
+            `User: ${(req.user as any).username} (#${req.user!.id})`,
+          ].join("\n"),
+          userId: req.user!.id,
+          requesterName: (req.user as any)?.name || (req.user as any)?.username || null,
+          requesterEmail: (req.user as any)?.email || null,
+          channel: "feedback",
+          category: "feedback",
+          priority: Number(rating) <= 2 ? "high" : "low",
+          metadata: { type: "object_review", analysisId: Number(id), rating },
+        });
+      } catch (ticketErr) {
+        console.error("Object review ticket create failed:", ticketErr);
       }
 
       res.json(updatedAnalysis);

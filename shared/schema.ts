@@ -757,7 +757,7 @@ export const insertPractitionerContractSchema = createInsertSchema(practitionerC
   updatedAt: true,
 });
 
-/** Support tickets — Phase 2 scaffold so the CRM shell can list them. */
+/** Support tickets — contact forms, feedback, healer messages, CRM-created. */
 export const supportTickets = pgTable("support_tickets", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -765,13 +765,18 @@ export const supportTickets = pgTable("support_tickets", {
   body: text("body").notNull(),
   status: text("status").notNull().default("open"), // open | in_progress | resolved | closed
   priority: text("priority").notNull().default("normal"), // low | normal | high | urgent
-  channel: text("channel").default("crm"), // crm | email | whatsapp
+  channel: text("channel").default("crm"), // crm | contact | help | feedback | booking | email | whatsapp
+  category: text("category").default("general"), // general | aura | healing | horoscope | account | feedback | booking | other
+  requesterName: text("requester_name"),
+  requesterEmail: text("requester_email"),
+  metadata: text("metadata"), // optional JSON string (bookingId, readingId, etc.)
   assignedTo: integer("assigned_to").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   statusIdx: index("support_tickets_status_idx").on(table.status),
-  userIdx: index("support_tickets_user_idx").on(table.userId),
+  userIdx: index("support_tickets_user_id_idx").on(table.userId),
+  channelIdx: index("support_tickets_channel_idx").on(table.channel),
 }));
 
 export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({

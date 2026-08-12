@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const contactFormSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -19,10 +21,19 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
+const SUBJECT_LABELS: Record<string, string> = {
+  aura: "Aura Reading",
+  healing: "Energy Healing",
+  horoscope: "Horoscope Questions",
+  account: "Account Support",
+  other: "Other",
+};
+
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
+  const { toast } = useToast();
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -36,14 +47,30 @@ export default function ContactForm() {
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    console.log("Contact form data:", data);
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    form.reset();
+    try {
+      const res = await apiRequest("POST", "/api/support/tickets", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        category: data.subject,
+        subject: `${SUBJECT_LABELS[data.subject] || data.subject} — ${data.firstName} ${data.lastName}`,
+        message: data.message,
+        channel: "contact",
+        sourcePath: "/contact",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Failed to send");
+      setIsSubmitted(true);
+      form.reset();
+    } catch (err: any) {
+      toast({
+        title: "Could not send message",
+        description: err.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -76,7 +103,7 @@ export default function ContactForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="lastName"
@@ -91,7 +118,7 @@ export default function ContactForm() {
             )}
           />
         </div>
-        
+
         <FormField
           control={form.control}
           name="email"
@@ -105,7 +132,7 @@ export default function ContactForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="subject"
@@ -130,7 +157,7 @@ export default function ContactForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="message"
@@ -144,15 +171,15 @@ export default function ContactForm() {
             </FormItem>
           )}
         />
-        
-        <Button 
-          type="submit" 
+
+        <Button
+          type="submit"
           className="w-full bg-primary hover:bg-primary-dark"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Sending...
             </>
           ) : "Send Message"}

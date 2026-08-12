@@ -1222,10 +1222,25 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  app.get("/api/crm/tickets", requireCrm("canManageTickets"), async (_req, res) => {
+  app.get("/api/crm/tickets", requireCrm("canManageTickets"), async (req, res) => {
     try {
-      const tickets = await db.select().from(supportTickets).orderBy(desc(supportTickets.createdAt)).limit(200);
-      res.json({ tickets });
+      const status = String(req.query.status || "all");
+      const channel = String(req.query.channel || "all");
+      let tickets = await db.select().from(supportTickets).orderBy(desc(supportTickets.createdAt)).limit(300);
+      if (status !== "all") tickets = tickets.filter((t) => t.status === status);
+      if (channel !== "all") tickets = tickets.filter((t) => t.channel === channel);
+
+      const enriched = await Promise.all(
+        tickets.map(async (t) => {
+          let username: string | null = null;
+          if (t.userId) {
+            const u = await storage.getUser(t.userId);
+            username = u?.username || null;
+          }
+          return { ...t, username };
+        })
+      );
+      res.json({ tickets: enriched });
     } catch (error) {
       console.error("CRM tickets error:", error);
       res.status(500).json({ message: "Failed to load tickets" });
@@ -1234,20 +1249,21 @@ export function registerCrmRoutes(app: Express) {
 
   app.post("/api/crm/tickets", requireCrm("canManageTickets"), async (req: AuthedRequest, res) => {
     try {
-      const { subject, body, userId, priority } = req.body;
+      const { subject, body, userId, priority, category, channel, requesterName, requesterEmail } = req.body;
       if (!subject || !body) return res.status(400).json({ message: "subject and body required" });
-      const [ticket] = await db
-        .insert(supportTickets)
-        .values({
-          subject,
-          body,
-          userId: userId || null,
-          priority: priority || "normal",
-          status: "open",
-          channel: "crm",
-          assignedTo: (req.user as any)?.id,
-        })
-        .returning();
+      const { createSupportTicket } = await import("./support-tickets");
+      const ticket = await createSupportTicket({
+        subject,
+        body,
+        userId: userId || null,
+        priority: priority || "normal",
+        category: category || "general",
+        channel: channel || "crm",
+        requesterName: requesterName || null,
+        requesterEmail: requesterEmail || null,
+        assignedTo: (req.user as any)?.id,
+      });
+      if (!ticket) return res.status(500).json({ message: "Failed to create ticket" });
       res.json({ ticket });
     } catch (error) {
       console.error("CRM create ticket error:", error);

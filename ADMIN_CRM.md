@@ -20,6 +20,7 @@ Replaces the minimal `/admin` healer tools panel with an operational CRM matchin
 
 **Phase 2**
 - Support ticketing (create / start / resolve in UI)
+  - **Also auto-ingests** contact form, Help “Submit a Ticket”, aura/object reviews, vibe feedback, healer booking messages & replies
 - Lead pipeline (new → contacted → qualified → onboarded / lost)
 
 **Phase 3**
