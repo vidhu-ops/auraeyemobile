@@ -855,14 +855,11 @@ export default function AdminCrmApp() {
                           onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })}
                           className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
                         >
-                          <option value="7">7 days</option>
-                          <option value="14">14 days</option>
-                          <option value="30">30 days</option>
-                          <option value="60">60 days</option>
-                          <option value="90">90 days</option>
-                          <option value="180">180 days</option>
-                          <option value="365">1 year</option>
-                          <option value="never">Never expire</option>
+                          <option value="3">3 days</option>
+                          <option value="30">1 month</option>
+                          <option value="60">2 months</option>
+                          <option value="90">3 months</option>
+                          <option value="180">6 months</option>
                         </select>
                       </div>
                       {(createForm.userType === "healer" || createForm.userType === "semi-healer") && (
@@ -1117,14 +1114,11 @@ export default function AdminCrmApp() {
                             onChange={(e) => setCreditValidityDays(e.target.value)}
                             className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
                           >
-                            <option value="7">Active for 7 days</option>
-                            <option value="14">Active for 14 days</option>
-                            <option value="30">Active for 30 days</option>
-                            <option value="60">Active for 60 days</option>
-                            <option value="90">Active for 90 days</option>
-                            <option value="180">Active for 180 days</option>
-                            <option value="365">Active for 1 year</option>
-                            <option value="never">Never expire</option>
+                            <option value="3">3 days</option>
+                            <option value="30">1 month</option>
+                            <option value="60">2 months</option>
+                            <option value="90">3 months</option>
+                            <option value="180">6 months</option>
                           </select>
                           <p className="text-[11px] text-slate-500">Expiry applies to Add and Set. Unused credits are removed when they expire.</p>
                           <div className="grid grid-cols-3 gap-2">
