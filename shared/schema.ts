@@ -307,6 +307,35 @@ export const insertCreditTransactionSchema = createInsertSchema(creditTransactio
   createdAt: true,
 });
 
+/**
+ * Credit grants with optional expiry.
+ * Remaining balance is consumed FIFO on use; expired remaining is zeroed and deducted from users.credits.
+ */
+export const creditGrants = pgTable("credit_grants", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(), // original grant size
+  remaining: integer("remaining").notNull(),
+  expiresAt: timestamp("expires_at"), // null = never expires
+  source: text("source").notNull().default("manual"), // crm_create | admin_add | purchase | registration | migrate
+  note: text("note"),
+  createdByUserId: integer("created_by_user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiredAt: timestamp("expired_at"), // when remaining was zeroed due to expiry
+}, (table) => ({
+  userIdx: index("credit_grants_user_id_idx").on(table.userId),
+  expiresIdx: index("credit_grants_expires_at_idx").on(table.expiresAt),
+}));
+
+export const insertCreditGrantSchema = createInsertSchema(creditGrants).omit({
+  id: true,
+  createdAt: true,
+  expiredAt: true,
+});
+
+export type CreditGrant = typeof creditGrants.$inferSelect;
+export type InsertCreditGrant = z.infer<typeof insertCreditGrantSchema>;
+
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),

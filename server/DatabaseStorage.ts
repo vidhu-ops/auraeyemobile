@@ -600,7 +600,7 @@ export class DatabaseStorage implements IStorage {
         });
     }
 
-    async addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    async addCredits(userId: number, amount: number, type: string, description: string, _expiresAt?: Date | null): Promise<boolean> {
         return await db.transaction(async (tx) => {
             const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
             if (!user) return false;

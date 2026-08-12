@@ -21,6 +21,7 @@ import {
   crmStaff,
   crmLeads,
 } from "../shared/schema";
+import { addCreditGrant, daysFromNow, listCreditGrants, replaceCreditBalance } from "./credit-grants";
 
 type AuthedRequest = Request & { user?: Express.User; crmAccess?: CrmPerms };
 
@@ -273,8 +274,13 @@ export function registerCrmRoutes(app: Express) {
       let issued = 0;
       let redeemed = 0;
       let refunded = 0;
+      let expired = 0;
       for (const row of creditRows) {
         const total = Number(row.total) || 0;
+        if (String(row.type).toLowerCase().includes("expire")) {
+          expired += Math.abs(total);
+          continue;
+        }
         if (total >= 0) issued += total;
         else redeemed += Math.abs(total);
         if (String(row.type).toLowerCase().includes("refund")) refunded += Math.abs(total);
@@ -307,7 +313,7 @@ export function registerCrmRoutes(app: Express) {
           openTickets: Number(openTickets[0]?.value || 0),
         },
         phases,
-        credits: { issued, redeemed, expired: 0, refunded },
+        credits: { issued, redeemed, expired, refunded },
         featureUsage: {
           auraScans: Number(auraCount?.value || 0),
           vibeChecks: Number(vibeCount?.value || 0),
@@ -524,6 +530,7 @@ export function registerCrmRoutes(app: Express) {
         },
         timeline,
         credits,
+        creditGrants: await listCreditGrants(id),
         payments,
         contract: contract[0] || null,
         phaseLabels: PHASE_LABELS,
@@ -531,6 +538,135 @@ export function registerCrmRoutes(app: Express) {
     } catch (error) {
       console.error("CRM user profile error:", error);
       res.status(500).json({ message: "Failed to load user profile" });
+    }
+  });
+
+  /** Create a client or healer account with starting credits + optional expiry */
+  app.post("/api/crm/users", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const {
+        username,
+        password,
+        name,
+        email,
+        mobileNumber,
+        userType = "client",
+        credits: creditAmount = 0,
+        creditValidityDays,
+        specialty,
+        description,
+        phone,
+      } = req.body || {};
+
+      if (!username || !password) {
+        return res.status(400).json({ message: "username and password are required" });
+      }
+      if (String(password).length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+      const allowedTypes = ["client", "healer", "semi-healer"];
+      if (!allowedTypes.includes(userType)) {
+        return res.status(400).json({ message: "userType must be client, healer, or semi-healer" });
+      }
+
+      const existing = await storage.getUserByUsername(username);
+      if (existing) return res.status(400).json({ message: "Username already exists" });
+
+      const creditsNum = Math.max(0, parseInt(String(creditAmount), 10) || 0);
+      let expiresAt: Date | null = null;
+      if (creditValidityDays !== undefined && creditValidityDays !== null && creditValidityDays !== "" && Number(creditValidityDays) > 0) {
+        expiresAt = daysFromNow(Number(creditValidityDays));
+      }
+
+      const hashed = await hashPassword(password);
+      const [user] = await db
+        .insert(users)
+        .values({
+          username: String(username).trim(),
+          password: hashed,
+          name: name || username,
+          email: email || null,
+          mobileNumber: mobileNumber || null,
+          userType,
+          credits: creditsNum,
+          isActive: true,
+        } as any)
+        .returning();
+
+      if (creditsNum > 0) {
+        await db.insert(creditTransactions).values({
+          userId: user.id,
+          username: user.username,
+          amount: creditsNum,
+          transactionType: "crm_create",
+          description: expiresAt
+            ? `CRM account create · ${creditsNum} credits · expires ${expiresAt.toISOString().slice(0, 10)}`
+            : `CRM account create · ${creditsNum} credits · no expiry`,
+          balanceAfter: creditsNum,
+        });
+        await addCreditGrant({
+          userId: user.id,
+          amount: creditsNum,
+          expiresAt,
+          source: "crm_create",
+          note: `Created by ${req.user?.username}`,
+          createdByUserId: (req.user as any)?.id,
+          updateBalance: false,
+          transactionType: "crm_create",
+        });
+      }
+
+      let healer = null as any;
+      if (userType === "healer" || userType === "semi-healer") {
+        try {
+          const existingHealer = await storage.getHealerByUsername(username);
+          if (!existingHealer) {
+            healer = await storage.createHealer({
+              username: user.username,
+              password: hashed,
+              name: name || username,
+              email: email || `${username}@auraeye.local`,
+              phone: phone || mobileNumber || "n/a",
+              specialty: specialty || (userType === "semi-healer" ? "Semi-healer" : "Energy healing"),
+              description: description || "Created via AuraEye Admin CRM",
+              experience: null as any,
+              location: null as any,
+              imageUrl: null as any,
+            } as any);
+          }
+        } catch (healerErr) {
+          console.error("CRM healer row create warning:", healerErr);
+        }
+      }
+
+      await writeAudit({
+        actor: req.user,
+        action: "create",
+        entityType: "user",
+        entityId: user.id,
+        newValue: {
+          username: user.username,
+          userType,
+          credits: creditsNum,
+          expiresAt,
+          creditValidityDays: creditValidityDays || null,
+        },
+        note: "CRM created account",
+      });
+
+      const { password: _pw, ...safe } = user as any;
+      res.json({
+        user: { ...safe, credits: creditsNum },
+        healer,
+        credits: creditsNum,
+        expiresAt,
+        message: `${userType} account created. ${creditsNum} credits${
+          expiresAt ? ` expire on ${expiresAt.toISOString().slice(0, 10)}` : " (no expiry)"
+        }.`,
+      });
+    } catch (error) {
+      console.error("CRM create user error:", error);
+      res.status(500).json({ message: "Failed to create account" });
     }
   });
 
@@ -582,32 +718,66 @@ export function registerCrmRoutes(app: Express) {
   app.post("/api/crm/users/:id/credits", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
-      const { amount, operation, description } = req.body;
+      const { amount, operation, description, creditValidityDays } = req.body;
       const parsed = parseInt(amount, 10);
-      if (!parsed || !["add", "subtract", "set"].includes(operation)) {
+      if (Number.isNaN(parsed) || !["add", "subtract", "set"].includes(operation)) {
         return res.status(400).json({ message: "amount and operation (add|subtract|set) required" });
+      }
+
+      let expiresAt: Date | null = null;
+      if (
+        creditValidityDays !== undefined &&
+        creditValidityDays !== null &&
+        creditValidityDays !== "" &&
+        Number(creditValidityDays) > 0
+      ) {
+        expiresAt = daysFromNow(Number(creditValidityDays));
       }
 
       const before = await storage.getUserCredits(id);
       let after = before;
+
       if (operation === "add") {
-        await storage.addCredits(id, parsed, "admin_add", description || `CRM credit add by ${req.user?.username}`);
-        after = before + parsed;
+        if (parsed <= 0) return res.status(400).json({ message: "amount must be positive for add" });
+        const result = await addCreditGrant({
+          userId: id,
+          amount: parsed,
+          expiresAt,
+          source: "admin_add",
+          note: description || `CRM credit add by ${req.user?.username}`,
+          createdByUserId: (req.user as any)?.id,
+          transactionType: "admin_add",
+          updateBalance: true,
+        });
+        if (!result) {
+          await storage.addCredits(
+            id,
+            parsed,
+            "admin_add",
+            description || `CRM credit add by ${req.user?.username}`,
+            expiresAt
+          );
+          after = before + parsed;
+        } else {
+          after = result.creditsAfter;
+        }
       } else if (operation === "subtract") {
-        const ok = await storage.deductCredits(id, parsed, "admin_subtract", description || `CRM credit deduct by ${req.user?.username}`);
+        const ok = await storage.deductCredits(
+          id,
+          parsed,
+          "admin_subtract",
+          description || `CRM credit deduct by ${req.user?.username}`
+        );
         if (!ok) return res.status(400).json({ message: "Insufficient credits or update failed" });
         after = before - parsed;
       } else {
-        await storage.updateUserCredits(id, parsed);
-        await storage.createCreditTransaction({
+        after = await replaceCreditBalance({
           userId: id,
-          username: (await storage.getUser(id))?.username || "unknown",
-          amount: parsed - before,
-          transactionType: "admin_set",
-          description: description || `CRM credit set by ${req.user?.username}`,
-          balanceAfter: parsed,
+          newCredits: parsed,
+          expiresAt,
+          createdByUserId: (req.user as any)?.id,
+          note: description || `CRM credit set by ${req.user?.username}`,
         });
-        after = parsed;
       }
 
       await writeAudit({
@@ -616,11 +786,11 @@ export function registerCrmRoutes(app: Express) {
         entityType: "credit",
         entityId: id,
         previousValue: { credits: before },
-        newValue: { credits: after, operation, amount: parsed },
+        newValue: { credits: after, operation, amount: parsed, expiresAt, creditValidityDays },
         note: description,
       });
 
-      res.json({ success: true, creditsBefore: before, creditsAfter: after });
+      res.json({ success: true, creditsBefore: before, creditsAfter: after, expiresAt });
     } catch (error) {
       console.error("CRM credit adjust error:", error);
       res.status(500).json({ message: "Failed to adjust credits" });

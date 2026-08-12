@@ -6,7 +6,9 @@ Replaces the minimal `/admin` healer tools panel with an operational CRM matchin
 
 **Phase 1**
 - Dashboard KPIs (users, active / needs-attention / inactive-long-quiet, healers, 30d revenue, credits)
-- Direct Data Control (edit user fields + credit add/subtract/set)
+- Direct Data Control (edit user fields + credit add/subtract/set **with expiry**)
+- **Create user / healer accounts** from CRM (username, password, starting credits, how long credits stay active)
+- Credit grants expire automatically; unused balance is removed when the grant ends
 - Complete User Profile with **full activity timeline** (aura, vibe, numerology, objects, journals, meditations, logins, payments, credits)
 - Healer / Practitioner list + licence/contract editor in UI
 - Revenue & payments view (GBP/INR entity soft filter + refund log)
@@ -51,9 +53,9 @@ Replaces the minimal `/admin` healer tools panel with an operational CRM matchin
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/api/crm/overview` | KPIs + health + notification cards |
-| GET | `/api/crm/users` | Searchable user list |
+| GET/POST | `/api/crm/users` | List users / **create** user or healer |
 | GET/PATCH | `/api/crm/users/:id` | Profile + timeline + direct edit |
-| POST | `/api/crm/users/:id/credits` | Credit adjust |
+| POST | `/api/crm/users/:id/credits` | Credit adjust (+ optional `creditValidityDays`) |
 | GET | `/api/crm/users/:id/export` | GDPR export |
 | POST | `/api/crm/users/:id/erase` | Erasure |
 | GET/POST/PATCH | `/api/crm/staff` | Staff logins & roles |

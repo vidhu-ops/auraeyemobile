@@ -118,6 +118,19 @@ export default function AdminCrmApp() {
   const [phaseFilter, setPhaseFilter] = useState("all");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [creditAmount, setCreditAmount] = useState("5");
+  const [creditValidityDays, setCreditValidityDays] = useState("30");
+  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    username: "",
+    password: "",
+    name: "",
+    email: "",
+    mobileNumber: "",
+    userType: "client",
+    credits: "10",
+    creditValidityDays: "30",
+    specialty: "",
+  });
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
@@ -250,20 +263,68 @@ export default function AdminCrmApp() {
 
   const creditMutation = useMutation({
     mutationFn: async (operation: "add" | "subtract" | "set") => {
-      const res = await apiRequest("POST", `/api/crm/users/${selectedUserId}/credits`, {
+      const payload: Record<string, unknown> = {
         amount: creditAmount,
         operation,
         description: `CRM ${operation} via admin panel`,
-      });
+      };
+      if (operation === "add" || operation === "set") {
+        payload.creditValidityDays =
+          creditValidityDays === "never" || creditValidityDays === "" ? null : Number(creditValidityDays);
+      }
+      const res = await apiRequest("POST", `/api/crm/users/${selectedUserId}/credits`, payload);
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: "Credits updated", description: `Balance is now ${data.creditsAfter}` });
+      const expiryNote = data.expiresAt
+        ? ` · expire ${new Date(data.expiresAt).toLocaleDateString()}`
+        : "";
+      toast({ title: "Credits updated", description: `Balance is now ${data.creditsAfter}${expiryNote}` });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users", selectedUserId] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
     },
     onError: (err: any) => toast({ title: "Credit update failed", description: err.message, variant: "destructive" }),
+  });
+
+  const createAccountMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/crm/users", {
+        username: createForm.username.trim(),
+        password: createForm.password,
+        name: createForm.name || createForm.username,
+        email: createForm.email || null,
+        mobileNumber: createForm.mobileNumber || null,
+        userType: createForm.userType,
+        credits: Number(createForm.credits) || 0,
+        creditValidityDays:
+          createForm.creditValidityDays === "never" || createForm.creditValidityDays === ""
+            ? null
+            : Number(createForm.creditValidityDays),
+        specialty: createForm.specialty || undefined,
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Account created", description: data.message });
+      setCreateForm({
+        username: "",
+        password: "",
+        name: "",
+        email: "",
+        mobileNumber: "",
+        userType: "client",
+        credits: "10",
+        creditValidityDays: "30",
+        specialty: "",
+      });
+      setShowCreateAccount(false);
+      if (data.user?.id) setSelectedUserId(data.user.id);
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/healers"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
+    },
+    onError: (err: any) => toast({ title: "Create failed", description: err.message, variant: "destructive" }),
   });
 
   const eraseMutation = useMutation({
@@ -717,6 +778,118 @@ export default function AdminCrmApp() {
           )}
 
           {(section === "users" || section === "direct-data") && (
+            <div className="space-y-4">
+              {crmAccess?.canEditUsers && (
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader className="pb-2">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <UserPlus className="h-4 w-4 text-emerald-300" /> Create user or healer
+                      </CardTitle>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-white/15"
+                        onClick={() => setShowCreateAccount((v) => !v)}
+                      >
+                        {showCreateAccount ? "Hide form" : "New account"}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  {showCreateAccount && (
+                    <CardContent className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+                      <Input
+                        value={createForm.username}
+                        onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+                        placeholder="Username *"
+                        className="bg-black/20 border-white/10"
+                      />
+                      <Input
+                        type="password"
+                        value={createForm.password}
+                        onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                        placeholder="Password * (min 6)"
+                        className="bg-black/20 border-white/10"
+                      />
+                      <Input
+                        value={createForm.name}
+                        onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                        placeholder="Display name"
+                        className="bg-black/20 border-white/10"
+                      />
+                      <Input
+                        value={createForm.email}
+                        onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                        placeholder="Email"
+                        className="bg-black/20 border-white/10"
+                      />
+                      <Input
+                        value={createForm.mobileNumber}
+                        onChange={(e) => setCreateForm({ ...createForm, mobileNumber: e.target.value })}
+                        placeholder="Mobile"
+                        className="bg-black/20 border-white/10"
+                      />
+                      <select
+                        value={createForm.userType}
+                        onChange={(e) => setCreateForm({ ...createForm, userType: e.target.value })}
+                        className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                      >
+                        <option value="client">User (client)</option>
+                        <option value="healer">Healer</option>
+                        <option value="semi-healer">Semi-healer</option>
+                      </select>
+                      <div>
+                        <label className="text-[11px] text-slate-400 mb-1 block">Starting credits</label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={createForm.credits}
+                          onChange={(e) => setCreateForm({ ...createForm, credits: e.target.value })}
+                          className="bg-black/20 border-white/10"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] text-slate-400 mb-1 block">Credits active for</label>
+                        <select
+                          value={createForm.creditValidityDays}
+                          onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })}
+                          className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                        >
+                          <option value="7">7 days</option>
+                          <option value="14">14 days</option>
+                          <option value="30">30 days</option>
+                          <option value="60">60 days</option>
+                          <option value="90">90 days</option>
+                          <option value="180">180 days</option>
+                          <option value="365">1 year</option>
+                          <option value="never">Never expire</option>
+                        </select>
+                      </div>
+                      {(createForm.userType === "healer" || createForm.userType === "semi-healer") && (
+                        <Input
+                          value={createForm.specialty}
+                          onChange={(e) => setCreateForm({ ...createForm, specialty: e.target.value })}
+                          placeholder="Specialty (optional)"
+                          className="bg-black/20 border-white/10"
+                        />
+                      )}
+                      <div className="md:col-span-2 xl:col-span-3 flex flex-wrap items-center gap-3">
+                        <Button
+                          className="bg-indigo-600 hover:bg-indigo-500"
+                          disabled={createAccountMutation.isPending}
+                          onClick={() => createAccountMutation.mutate()}
+                        >
+                          {createAccountMutation.isPending ? "Creating…" : "Create account"}
+                        </Button>
+                        <p className="text-xs text-slate-400">
+                          They can log in immediately. Credits expire automatically after the chosen period.
+                        </p>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              )}
+
             <div className="grid xl:grid-cols-5 gap-4">
               <Card className="bg-white/5 border-white/10 xl:col-span-3">
                 <CardHeader className="pb-3">
@@ -936,8 +1109,24 @@ export default function AdminCrmApp() {
                           <Input
                             value={creditAmount}
                             onChange={(e) => setCreditAmount(e.target.value)}
+                            placeholder="Amount"
                             className="bg-black/20 border-white/10"
                           />
+                          <select
+                            value={creditValidityDays}
+                            onChange={(e) => setCreditValidityDays(e.target.value)}
+                            className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                          >
+                            <option value="7">Active for 7 days</option>
+                            <option value="14">Active for 14 days</option>
+                            <option value="30">Active for 30 days</option>
+                            <option value="60">Active for 60 days</option>
+                            <option value="90">Active for 90 days</option>
+                            <option value="180">Active for 180 days</option>
+                            <option value="365">Active for 1 year</option>
+                            <option value="never">Never expire</option>
+                          </select>
+                          <p className="text-[11px] text-slate-500">Expiry applies to Add and Set. Unused credits are removed when they expire.</p>
                           <div className="grid grid-cols-3 gap-2">
                             <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("add")}>
                               Add
@@ -948,6 +1137,27 @@ export default function AdminCrmApp() {
                             <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("set")}>
                               Set
                             </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {(profileQuery.data.creditGrants || []).length > 0 && (
+                        <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="text-sm font-medium">Credit grants / expiry</div>
+                          <div className="max-h-40 overflow-y-auto space-y-1.5">
+                            {(profileQuery.data.creditGrants || []).map((g: any) => (
+                              <div key={g.id} className="text-xs rounded-lg bg-black/20 px-2 py-1.5 flex justify-between gap-2">
+                                <span>
+                                  {g.remaining}/{g.amount} left
+                                  {g.remaining <= 0 ? " · used/expired" : ""}
+                                </span>
+                                <span className="text-slate-400">
+                                  {g.expiresAt
+                                    ? `expires ${new Date(g.expiresAt).toLocaleDateString()}`
+                                    : "no expiry"}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
@@ -1012,6 +1222,7 @@ export default function AdminCrmApp() {
                   )}
                 </CardContent>
               </Card>
+            </div>
             </div>
           )}
 

@@ -83,3 +83,20 @@ CREATE TABLE IF NOT EXISTS crm_leads (
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- Credit grants with optional expiry (remaining consumed FIFO; expired remaining deducted)
+CREATE TABLE IF NOT EXISTS credit_grants (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  amount INTEGER NOT NULL,
+  remaining INTEGER NOT NULL,
+  expires_at TIMESTAMP,
+  source TEXT NOT NULL DEFAULT 'manual',
+  note TEXT,
+  created_by_user_id INTEGER REFERENCES users(id),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  expired_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS credit_grants_user_id_idx ON credit_grants(user_id);
+CREATE INDEX IF NOT EXISTS credit_grants_expires_at_idx ON credit_grants(expires_at);
