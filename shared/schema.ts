@@ -307,6 +307,35 @@ export const insertCreditTransactionSchema = createInsertSchema(creditTransactio
   createdAt: true,
 });
 
+/**
+ * Credit grants with optional expiry.
+ * Remaining balance is consumed FIFO on use; expired remaining is zeroed and deducted from users.credits.
+ */
+export const creditGrants = pgTable("credit_grants", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(), // original grant size
+  remaining: integer("remaining").notNull(),
+  expiresAt: timestamp("expires_at"), // null = never expires
+  source: text("source").notNull().default("manual"), // crm_create | admin_add | purchase | registration | migrate
+  note: text("note"),
+  createdByUserId: integer("created_by_user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiredAt: timestamp("expired_at"), // when remaining was zeroed due to expiry
+}, (table) => ({
+  userIdx: index("credit_grants_user_id_idx").on(table.userId),
+  expiresIdx: index("credit_grants_expires_at_idx").on(table.expiresAt),
+}));
+
+export const insertCreditGrantSchema = createInsertSchema(creditGrants).omit({
+  id: true,
+  createdAt: true,
+  expiredAt: true,
+});
+
+export type CreditGrant = typeof creditGrants.$inferSelect;
+export type InsertCreditGrant = z.infer<typeof insertCreditGrantSchema>;
+
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -728,7 +757,7 @@ export const insertPractitionerContractSchema = createInsertSchema(practitionerC
   updatedAt: true,
 });
 
-/** Support tickets — Phase 2 scaffold so the CRM shell can list them. */
+/** Support tickets — contact forms, feedback, healer messages, CRM-created. */
 export const supportTickets = pgTable("support_tickets", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -736,13 +765,18 @@ export const supportTickets = pgTable("support_tickets", {
   body: text("body").notNull(),
   status: text("status").notNull().default("open"), // open | in_progress | resolved | closed
   priority: text("priority").notNull().default("normal"), // low | normal | high | urgent
-  channel: text("channel").default("crm"), // crm | email | whatsapp
+  channel: text("channel").default("crm"), // crm | contact | help | feedback | booking | email | whatsapp
+  category: text("category").default("general"), // general | aura | healing | horoscope | account | feedback | booking | other
+  requesterName: text("requester_name"),
+  requesterEmail: text("requester_email"),
+  metadata: text("metadata"), // optional JSON string (bookingId, readingId, etc.)
   assignedTo: integer("assigned_to").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   statusIdx: index("support_tickets_status_idx").on(table.status),
-  userIdx: index("support_tickets_user_idx").on(table.userId),
+  userIdx: index("support_tickets_user_id_idx").on(table.userId),
+  channelIdx: index("support_tickets_channel_idx").on(table.channel),
 }));
 
 export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
@@ -757,3 +791,63 @@ export type PractitionerContract = typeof practitionerContracts.$inferSelect;
 export type InsertPractitionerContract = z.infer<typeof insertPractitionerContractSchema>;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
+
+/**
+ * CRM staff access for the /admin panel.
+ * - owner: full access (also the classic `admin` username)
+ * - viewer: read-only dashboard + profiles
+ * - editor: can edit users/credits/healers (not staff mgmt / erase)
+ * - support: tickets + view users
+ */
+export const crmStaff = pgTable("crm_staff", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  role: text("role").notNull().default("viewer"), // owner | viewer | editor | support
+  displayName: text("display_name"),
+  canViewUsers: boolean("can_view_users").default(true),
+  canEditUsers: boolean("can_edit_users").default(false),
+  canEditCredits: boolean("can_edit_credits").default(false),
+  canViewRevenue: boolean("can_view_revenue").default(true),
+  canManageHealers: boolean("can_manage_healers").default(false),
+  canManageTickets: boolean("can_manage_tickets").default(false),
+  canManageStaff: boolean("can_manage_staff").default(false),
+  canExportData: boolean("can_export_data").default(false),
+  canEraseUsers: boolean("can_erase_users").default(false),
+  canViewAudit: boolean("can_view_audit").default(false),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdx: index("crm_staff_user_id_idx").on(table.userId),
+}));
+
+export const insertCrmStaffSchema = createInsertSchema(crmStaff).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+/** Lead pipeline for prospective healers/partners (Phase 2). */
+export const crmLeads = pgTable("crm_leads", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email"),
+  mobileNumber: text("mobile_number"),
+  source: text("source").default("manual"),
+  stage: text("stage").notNull().default("new"), // new | contacted | qualified | onboarded | lost
+  notes: text("notes"),
+  ownerUserId: integer("owner_user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmLeadSchema = createInsertSchema(crmLeads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type CrmStaff = typeof crmStaff.$inferSelect;
+export type InsertCrmStaff = z.infer<typeof insertCrmStaffSchema>;
+export type CrmLead = typeof crmLeads.$inferSelect;
+export type InsertCrmLead = z.infer<typeof insertCrmLeadSchema>;

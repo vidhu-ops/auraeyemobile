@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { eq, desc, sql, or, count } from "drizzle-orm";
 import { db } from "./db";
 import { storage } from "./storage";
+import { hashPassword } from "./auth";
 import {
   users,
   auraReadings,
@@ -14,19 +15,143 @@ import {
   practitionerContracts,
   supportTickets,
   notifications,
+  journals,
+  meditationSessions,
+  loginSessions,
+  crmStaff,
+  crmLeads,
 } from "../shared/schema";
+import { addCreditGrant, daysFromNow, listCreditGrants, replaceCreditBalance } from "./credit-grants";
 
-type AuthedRequest = Request & { user?: Express.User };
+type AuthedRequest = Request & { user?: Express.User; crmAccess?: CrmPerms };
 
-function requireAdmin(req: AuthedRequest, res: Response, next: NextFunction) {
-  if (!req.isAuthenticated?.() || !req.user) {
-    return res.status(401).json({ message: "Authentication required" });
+type CrmPerms = {
+  role: string;
+  canViewUsers: boolean;
+  canEditUsers: boolean;
+  canEditCredits: boolean;
+  canViewRevenue: boolean;
+  canManageHealers: boolean;
+  canManageTickets: boolean;
+  canManageStaff: boolean;
+  canExportData: boolean;
+  canEraseUsers: boolean;
+  canViewAudit: boolean;
+};
+
+const OWNER_PERMS: CrmPerms = {
+  role: "owner",
+  canViewUsers: true,
+  canEditUsers: true,
+  canEditCredits: true,
+  canViewRevenue: true,
+  canManageHealers: true,
+  canManageTickets: true,
+  canManageStaff: true,
+  canExportData: true,
+  canEraseUsers: true,
+  canViewAudit: true,
+};
+
+const ROLE_DEFAULTS: Record<string, Omit<CrmPerms, "role">> = {
+  viewer: {
+    canViewUsers: true,
+    canEditUsers: false,
+    canEditCredits: false,
+    canViewRevenue: true,
+    canManageHealers: false,
+    canManageTickets: false,
+    canManageStaff: false,
+    canExportData: false,
+    canEraseUsers: false,
+    canViewAudit: false,
+  },
+  editor: {
+    canViewUsers: true,
+    canEditUsers: true,
+    canEditCredits: true,
+    canViewRevenue: true,
+    canManageHealers: true,
+    canManageTickets: true,
+    canManageStaff: false,
+    canExportData: true,
+    canEraseUsers: false,
+    canViewAudit: true,
+  },
+  support: {
+    canViewUsers: true,
+    canEditUsers: false,
+    canEditCredits: false,
+    canViewRevenue: false,
+    canManageHealers: false,
+    canManageTickets: true,
+    canManageStaff: false,
+    canExportData: false,
+    canEraseUsers: false,
+    canViewAudit: false,
+  },
+  owner: {
+    canViewUsers: true,
+    canEditUsers: true,
+    canEditCredits: true,
+    canViewRevenue: true,
+    canManageHealers: true,
+    canManageTickets: true,
+    canManageStaff: true,
+    canExportData: true,
+    canEraseUsers: true,
+    canViewAudit: true,
+  },
+};
+
+/** Journey phases — "dormant" replaces unclear "churned" */
+export const PHASE_LABELS: Record<string, string> = {
+  new: "New",
+  active: "Active",
+  "at-risk": "Needs attention",
+  dormant: "Inactive — long quiet",
+};
+
+async function resolveCrmAccess(user: any): Promise<CrmPerms | null> {
+  if (!user) return null;
+  if (user.username === "admin" || user.userType === "admin") return OWNER_PERMS;
+  try {
+    const rows = await db.select().from(crmStaff).where(eq(crmStaff.userId, user.id)).limit(1);
+    const row = rows[0];
+    if (!row || row.isActive === false) return null;
+    return {
+      role: row.role,
+      canViewUsers: !!row.canViewUsers,
+      canEditUsers: !!row.canEditUsers,
+      canEditCredits: !!row.canEditCredits,
+      canViewRevenue: !!row.canViewRevenue,
+      canManageHealers: !!row.canManageHealers,
+      canManageTickets: !!row.canManageTickets,
+      canManageStaff: !!row.canManageStaff,
+      canExportData: !!row.canExportData,
+      canEraseUsers: !!row.canEraseUsers,
+      canViewAudit: !!row.canViewAudit,
+    };
+  } catch {
+    return null;
   }
-  const u = req.user as any;
-  if (u.username !== "admin" && u.userType !== "admin") {
-    return res.status(403).json({ message: "Access denied: Admin only" });
-  }
-  return next();
+}
+
+function requireCrm(permission?: keyof CrmPerms) {
+  return async (req: AuthedRequest, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated?.() || !req.user) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    const access = await resolveCrmAccess(req.user);
+    if (!access) {
+      return res.status(403).json({ message: "Access denied: CRM staff only" });
+    }
+    if (permission && permission !== "role" && !access[permission]) {
+      return res.status(403).json({ message: `Access denied: missing permission ${permission}` });
+    }
+    req.crmAccess = access;
+    return next();
+  };
 }
 
 async function writeAudit(params: {
@@ -65,57 +190,56 @@ function classifyPhase(user: {
   createdAt?: Date | string | null;
   lastActivityAt?: Date | string | null;
 }) {
-  if (user.isActive === false) return "churned";
+  if (user.isActive === false) return "dormant";
   const created = user.createdAt ? new Date(user.createdAt).getTime() : 0;
   const last = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : created;
   const now = Date.now();
   const ageDays = (now - created) / (1000 * 60 * 60 * 24);
   const idleDays = (now - last) / (1000 * 60 * 60 * 24);
   if (ageDays <= 14) return "new";
-  if (idleDays > 90) return "churned";
+  if (idleDays > 90) return "dormant";
   if (idleDays > 30) return "at-risk";
   return "active";
 }
 
+async function lastActivityMap() {
+  const [recentAura, recentVibe, recentNum, recentObj, recentCredits] = await Promise.all([
+    db.select({ userId: auraReadings.userId, lastAt: sql<Date>`max(${auraReadings.createdAt})` }).from(auraReadings).groupBy(auraReadings.userId),
+    db.select({ userId: vibeReadings.userId, lastAt: sql<Date>`max(${vibeReadings.createdAt})` }).from(vibeReadings).groupBy(vibeReadings.userId),
+    db.select({ userId: numerologyReadings.userId, lastAt: sql<Date>`max(${numerologyReadings.createdAt})` }).from(numerologyReadings).groupBy(numerologyReadings.userId),
+    db.select({ userId: objectAnalyses.userId, lastAt: sql<Date>`max(${objectAnalyses.createdAt})` }).from(objectAnalyses).groupBy(objectAnalyses.userId),
+    db.select({ userId: creditTransactions.userId, lastAt: sql<Date>`max(${creditTransactions.createdAt})` }).from(creditTransactions).groupBy(creditTransactions.userId),
+  ]);
+  const lastMap = new Map<number, Date>();
+  const bump = (userId: number | null | undefined, lastAt: Date) => {
+    if (!userId) return;
+    const prev = lastMap.get(userId);
+    const cur = new Date(lastAt);
+    if (!prev || cur > prev) lastMap.set(userId, cur);
+  };
+  for (const row of recentAura) bump(row.userId, row.lastAt);
+  for (const row of recentVibe) bump(row.userId, row.lastAt);
+  for (const row of recentNum) bump(row.userId, row.lastAt);
+  for (const row of recentObj) bump(row.userId, row.lastAt);
+  for (const row of recentCredits) bump(row.userId, row.lastAt);
+  return lastMap;
+}
+
 export function registerCrmRoutes(app: Express) {
-  // ── Overview / KPIs ──────────────────────────────────────────────────────
-  app.get("/api/crm/overview", requireAdmin, async (_req, res) => {
+  app.get("/api/crm/me", requireCrm(), async (req: AuthedRequest, res) => {
+    res.json({ access: req.crmAccess });
+  });
+
+  app.get("/api/crm/overview", requireCrm(), async (_req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
       const clients = allUsers.filter((u: any) => u.userType === "client");
       const healers = allUsers.filter(
         (u: any) => u.userType === "healer" || u.userType === "semi-healer" || u.userType === "semi_healer"
       );
+      const lastMap = await lastActivityMap();
 
-      // Last activity approx from latest credit txn / reading timestamps batched
-      const recentAura = await db
-        .select({
-          userId: auraReadings.userId,
-          lastAt: sql<Date>`max(${auraReadings.createdAt})`,
-        })
-        .from(auraReadings)
-        .groupBy(auraReadings.userId);
-
-      const recentVibe = await db
-        .select({
-          userId: vibeReadings.userId,
-          lastAt: sql<Date>`max(${vibeReadings.createdAt})`,
-        })
-        .from(vibeReadings)
-        .groupBy(vibeReadings.userId);
-
-      const lastMap = new Map<number, Date>();
-      for (const row of recentAura) {
-        if (row.userId) lastMap.set(row.userId, new Date(row.lastAt));
-      }
-      for (const row of recentVibe) {
-        if (!row.userId) continue;
-        const prev = lastMap.get(row.userId);
-        const cur = new Date(row.lastAt);
-        if (!prev || cur > prev) lastMap.set(row.userId, cur);
-      }
-
-      const phases = { new: 0, active: 0, "at-risk": 0, churned: 0 };
+      const phases = { new: 0, active: 0, "at-risk": 0, dormant: 0 };
       for (const u of clients) {
         const phase = classifyPhase({
           isActive: u.isActive,
@@ -150,11 +274,16 @@ export function registerCrmRoutes(app: Express) {
       let issued = 0;
       let redeemed = 0;
       let refunded = 0;
+      let expired = 0;
       for (const row of creditRows) {
         const total = Number(row.total) || 0;
+        if (String(row.type).toLowerCase().includes("expire")) {
+          expired += Math.abs(total);
+          continue;
+        }
         if (total >= 0) issued += total;
         else redeemed += Math.abs(total);
-        if (String(row.type).includes("refund")) refunded += Math.abs(total);
+        if (String(row.type).toLowerCase().includes("refund")) refunded += Math.abs(total);
       }
 
       const openTickets = await db
@@ -162,25 +291,35 @@ export function registerCrmRoutes(app: Express) {
         .from(supportTickets)
         .where(or(eq(supportTickets.status, "open"), eq(supportTickets.status, "in_progress")));
 
-      const auditRecent = await db
-        .select()
-        .from(adminAuditLogs)
-        .orderBy(desc(adminAuditLogs.createdAt))
-        .limit(8);
+      const auditRecent = await db.select().from(adminAuditLogs).orderBy(desc(adminAuditLogs.createdAt)).limit(8);
+
+      // Feature usage counts for analytics card
+      const [auraCount] = await db.select({ value: count() }).from(auraReadings);
+      const [vibeCount] = await db.select({ value: count() }).from(vibeReadings);
+      const [numCount] = await db.select({ value: count() }).from(numerologyReadings);
+      const [objCount] = await db.select({ value: count() }).from(objectAnalyses);
 
       res.json({
+        phaseLabels: PHASE_LABELS,
         kpis: {
           totalUsers: clients.length,
           activeUsers: phases.active,
           atRiskUsers: phases["at-risk"],
-          churnedUsers: phases.churned,
+          dormantUsers: phases.dormant,
+          churnedUsers: phases.dormant, // back-compat
           healers: healers.filter((h: any) => h.isActive !== false).length,
           activeHealers: healers.filter((h: any) => h.isActive !== false).length,
           mrr: mrrCents / 100,
           openTickets: Number(openTickets[0]?.value || 0),
         },
         phases,
-        credits: { issued, redeemed, expired: 0, refunded },
+        credits: { issued, redeemed, expired, refunded },
+        featureUsage: {
+          auraScans: Number(auraCount?.value || 0),
+          vibeChecks: Number(vibeCount?.value || 0),
+          numerology: Number(numCount?.value || 0),
+          objectScans: Number(objCount?.value || 0),
+        },
         revenueBySource: [
           { name: "Aura Scans", value: 42 },
           { name: "Quiz Reports", value: 25 },
@@ -197,21 +336,21 @@ export function registerCrmRoutes(app: Express) {
         ],
         monthlyNotifications: [
           {
-            id: "inactive",
-            title: `${phases["at-risk"]} users at-risk`,
-            detail: "No reading activity in 30+ days",
+            id: "at-risk",
+            title: `${phases["at-risk"]} users need attention`,
+            detail: "Quiet for 30+ days — good time to check in",
             badge: "New",
           },
           {
-            id: "churned",
-            title: `${phases.churned} churned / inactive`,
-            detail: "Soft-deleted or 90+ days idle",
+            id: "dormant",
+            title: `${phases.dormant} inactive (long quiet)`,
+            detail: "No meaningful activity for 90+ days, or deactivated",
             badge: "New",
           },
           {
             id: "new",
             title: `${phases.new} new users this fortnight`,
-            detail: "Created in the last 14 days",
+            detail: "Joined in the last 14 days",
             badge: "New",
           },
         ],
@@ -222,13 +361,12 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Users list + search ──────────────────────────────────────────────────
-  app.get("/api/crm/users", requireAdmin, async (req, res) => {
+  app.get("/api/crm/users", requireCrm("canViewUsers"), async (req, res) => {
     try {
       const q = String(req.query.q || "").trim().toLowerCase();
       const type = String(req.query.type || "all");
       const phaseFilter = String(req.query.phase || "all");
-      const limit = Math.min(parseInt(String(req.query.limit || "100"), 10) || 100, 500);
+      const limit = Math.min(parseInt(String(req.query.limit || "200"), 10) || 200, 500);
 
       let allUsers = await storage.getAllUsers();
       if (type === "client") allUsers = allUsers.filter((u: any) => u.userType === "client");
@@ -244,13 +382,15 @@ export function registerCrmRoutes(app: Express) {
         });
       }
 
+      const lastMap = await lastActivityMap();
+
       const enriched = await Promise.all(
         allUsers.slice(0, limit).map(async (u: any) => {
-          const credits = await storage.getUserCredits(u.id);
+          const lastActivityAt = lastMap.get(u.id) || u.createdAt;
           const phase = classifyPhase({
             isActive: u.isActive,
             createdAt: u.createdAt,
-            lastActivityAt: u.createdAt,
+            lastActivityAt,
           });
           return {
             id: u.id,
@@ -259,67 +399,141 @@ export function registerCrmRoutes(app: Express) {
             email: u.email,
             mobileNumber: u.mobileNumber,
             userType: u.userType,
-            credits,
+            credits: await storage.getUserCredits(u.id),
             soulEnergy: u.soulEnergy || 0,
             isActive: u.isActive !== false,
             phase,
+            phaseLabel: PHASE_LABELS[phase] || phase,
+            lastActivityAt,
             createdAt: u.createdAt,
           };
         })
       );
 
+      // Accept both dormant and legacy churned filter
+      const normalizedFilter = phaseFilter === "churned" ? "dormant" : phaseFilter;
       const filtered =
-        phaseFilter === "all" ? enriched : enriched.filter((u) => u.phase === phaseFilter);
+        normalizedFilter === "all" ? enriched : enriched.filter((u) => u.phase === normalizedFilter);
 
-      res.json({ users: filtered, total: filtered.length });
+      res.json({ users: filtered, total: filtered.length, phaseLabels: PHASE_LABELS });
     } catch (error) {
       console.error("CRM users list error:", error);
       res.status(500).json({ message: "Failed to load users" });
     }
   });
 
-  // ── Complete user profile ────────────────────────────────────────────────
-  app.get("/api/crm/users/:id", requireAdmin, async (req, res) => {
+  app.get("/api/crm/users/:id", requireCrm("canViewUsers"), async (req, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const user = await storage.getUser(id);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      const [aura, vibes, numerology, objects, credits, payments, contract] = await Promise.all([
-        db.select().from(auraReadings).where(eq(auraReadings.userId, id)).orderBy(desc(auraReadings.createdAt)).limit(50),
-        db.select().from(vibeReadings).where(eq(vibeReadings.userId, id)).orderBy(desc(vibeReadings.createdAt)).limit(50),
-        db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, id)).orderBy(desc(numerologyReadings.createdAt)).limit(50),
-        db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, id)).orderBy(desc(objectAnalyses.createdAt)).limit(50),
-        storage.getCreditTransactionsByUser(id),
-        db.select().from(paymentTransactions).where(eq(paymentTransactions.userId, id)).orderBy(desc(paymentTransactions.createdAt)).limit(50),
-        db.select().from(practitionerContracts).where(eq(practitionerContracts.userId, id)).limit(1),
-      ]);
+      const [aura, vibes, numerology, objects, credits, payments, contract, journalRows, meditations, logins] =
+        await Promise.all([
+          db.select().from(auraReadings).where(eq(auraReadings.userId, id)).orderBy(desc(auraReadings.createdAt)).limit(100),
+          db.select().from(vibeReadings).where(eq(vibeReadings.userId, id)).orderBy(desc(vibeReadings.createdAt)).limit(100),
+          db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, id)).orderBy(desc(numerologyReadings.createdAt)).limit(100),
+          db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, id)).orderBy(desc(objectAnalyses.createdAt)).limit(100),
+          storage.getCreditTransactionsByUser(id),
+          db.select().from(paymentTransactions).where(eq(paymentTransactions.userId, id)).orderBy(desc(paymentTransactions.createdAt)).limit(100),
+          db.select().from(practitionerContracts).where(eq(practitionerContracts.userId, id)).limit(1),
+          db.select().from(journals).where(eq(journals.userId, id)).orderBy(desc(journals.createdAt)).limit(50),
+          db.select().from(meditationSessions).where(eq(meditationSessions.userId, id)).orderBy(desc(meditationSessions.createdAt)).limit(50),
+          db.select().from(loginSessions).where(eq(loginSessions.userId, id)).orderBy(desc(loginSessions.loginDate)).limit(50),
+        ]);
 
-      const lastActivity =
-        [aura[0]?.createdAt, vibes[0]?.createdAt, numerology[0]?.createdAt, objects[0]?.createdAt, credits[0]?.createdAt]
-          .filter(Boolean)
-          .map((d) => new Date(d as any).getTime())
-          .sort((a, b) => b - a)[0] || user.createdAt;
+      const timeline = [
+        ...aura.map((r) => ({
+          at: r.createdAt,
+          type: "aura_scan",
+          title: `Aura scan · ${r.name || "Untitled"}`,
+          detail: r.dominantColor ? `Dominant colour: ${r.dominantColor}` : undefined,
+        })),
+        ...vibes.map((r) => ({
+          at: r.createdAt,
+          type: "vibe_check",
+          title: "What's My Vibe check",
+          detail: r.personalityColor ? `Vibe colour: ${r.personalityColor}` : undefined,
+        })),
+        ...numerology.map((r) => ({
+          at: r.createdAt,
+          type: "numerology",
+          title: `Numerology · ${r.name}`,
+          detail: `Life path ${r.lifePathNumber}`,
+        })),
+        ...objects.map((r) => ({
+          at: r.createdAt,
+          type: "object_scan",
+          title: `Object scan · ${r.objectName || r.name}`,
+          detail: r.auraColor ? `Aura: ${r.auraColor}` : undefined,
+        })),
+        ...credits.slice(0, 50).map((c) => ({
+          at: c.createdAt,
+          type: "credit",
+          title: `Credits ${c.amount >= 0 ? "+" : ""}${c.amount}`,
+          detail: c.description,
+        })),
+        ...payments.map((p) => ({
+          at: p.createdAt,
+          type: "payment",
+          title: `Payment £${((p.amount || 0) / 100).toFixed(2)}`,
+          detail: p.status,
+        })),
+        ...journalRows.map((j: any) => ({
+          at: j.createdAt,
+          type: "journal",
+          title: "Journal entry",
+          detail: (j.reflections || j.gratitude || j.mood || "").slice(0, 80),
+        })),
+        ...meditations.map((m: any) => ({
+          at: m.createdAt,
+          type: "meditation",
+          title: "Meditation session",
+          detail: m.meditationTitle || undefined,
+        })),
+        ...logins.map((l: any) => ({
+          at: l.loginDate || l.createdAt,
+          type: "login",
+          title: "Logged in",
+          detail: undefined,
+        })),
+      ]
+        .filter((e) => e.at)
+        .sort((a, b) => new Date(b.at as any).getTime() - new Date(a.at as any).getTime())
+        .slice(0, 150);
 
+      const lastActivityAt = timeline[0]?.at || user.createdAt;
       const phase = classifyPhase({
         isActive: user.isActive,
         createdAt: user.createdAt,
-        lastActivityAt: lastActivity as any,
+        lastActivityAt: lastActivityAt as any,
       });
 
       const { password, ...safeUser } = user as any;
 
       res.json({
-        user: { ...safeUser, credits: await storage.getUserCredits(id), phase },
+        user: {
+          ...safeUser,
+          credits: await storage.getUserCredits(id),
+          phase,
+          phaseLabel: PHASE_LABELS[phase],
+          lastActivityAt,
+        },
         activity: {
           auraReadings: aura.map((r) => ({ id: r.id, name: r.name, dominantColor: r.dominantColor, createdAt: r.createdAt })),
           vibeReadings: vibes.map((r) => ({ id: r.id, personalityColor: r.personalityColor, createdAt: r.createdAt })),
-          numerologyReadings: numerology.map((r) => ({ id: r.id, name: (r as any).name, createdAt: r.createdAt })),
-          objectAnalyses: objects.map((r) => ({ id: r.id, createdAt: r.createdAt })),
+          numerologyReadings: numerology.map((r) => ({ id: r.id, name: r.name, createdAt: r.createdAt })),
+          objectAnalyses: objects.map((r) => ({ id: r.id, name: r.name, objectName: r.objectName, createdAt: r.createdAt })),
+          journals: journalRows.length,
+          meditations: meditations.length,
+          logins: logins.length,
         },
+        timeline,
         credits,
+        creditGrants: await listCreditGrants(id),
         payments,
         contract: contract[0] || null,
+        phaseLabels: PHASE_LABELS,
       });
     } catch (error) {
       console.error("CRM user profile error:", error);
@@ -327,8 +541,136 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Direct data control: update user ─────────────────────────────────────
-  app.patch("/api/crm/users/:id", requireAdmin, async (req: AuthedRequest, res) => {
+  /** Create a client or healer account with starting credits + optional expiry */
+  app.post("/api/crm/users", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const {
+        username,
+        password,
+        name,
+        email,
+        mobileNumber,
+        userType = "client",
+        credits: creditAmount = 0,
+        creditValidityDays,
+        specialty,
+        description,
+        phone,
+      } = req.body || {};
+
+      if (!username || !password) {
+        return res.status(400).json({ message: "username and password are required" });
+      }
+      if (String(password).length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+      const allowedTypes = ["client", "healer", "semi-healer"];
+      if (!allowedTypes.includes(userType)) {
+        return res.status(400).json({ message: "userType must be client, healer, or semi-healer" });
+      }
+
+      const existing = await storage.getUserByUsername(username);
+      if (existing) return res.status(400).json({ message: "Username already exists" });
+
+      const creditsNum = Math.max(0, parseInt(String(creditAmount), 10) || 0);
+      let expiresAt: Date | null = null;
+      if (creditValidityDays !== undefined && creditValidityDays !== null && creditValidityDays !== "" && Number(creditValidityDays) > 0) {
+        expiresAt = daysFromNow(Number(creditValidityDays));
+      }
+
+      const hashed = await hashPassword(password);
+      const [user] = await db
+        .insert(users)
+        .values({
+          username: String(username).trim(),
+          password: hashed,
+          name: name || username,
+          email: email || null,
+          mobileNumber: mobileNumber || null,
+          userType,
+          credits: creditsNum,
+          isActive: true,
+        } as any)
+        .returning();
+
+      if (creditsNum > 0) {
+        await db.insert(creditTransactions).values({
+          userId: user.id,
+          username: user.username,
+          amount: creditsNum,
+          transactionType: "crm_create",
+          description: expiresAt
+            ? `CRM account create · ${creditsNum} credits · expires ${expiresAt.toISOString().slice(0, 10)}`
+            : `CRM account create · ${creditsNum} credits · no expiry`,
+          balanceAfter: creditsNum,
+        });
+        await addCreditGrant({
+          userId: user.id,
+          amount: creditsNum,
+          expiresAt,
+          source: "crm_create",
+          note: `Created by ${req.user?.username}`,
+          createdByUserId: (req.user as any)?.id,
+          updateBalance: false,
+          transactionType: "crm_create",
+        });
+      }
+
+      let healer = null as any;
+      if (userType === "healer" || userType === "semi-healer") {
+        try {
+          const existingHealer = await storage.getHealerByUsername(username);
+          if (!existingHealer) {
+            healer = await storage.createHealer({
+              username: user.username,
+              password: hashed,
+              name: name || username,
+              email: email || `${username}@auraeye.local`,
+              phone: phone || mobileNumber || "n/a",
+              specialty: specialty || (userType === "semi-healer" ? "Semi-healer" : "Energy healing"),
+              description: description || "Created via AuraEye Admin CRM",
+              experience: null as any,
+              location: null as any,
+              imageUrl: null as any,
+            } as any);
+          }
+        } catch (healerErr) {
+          console.error("CRM healer row create warning:", healerErr);
+        }
+      }
+
+      await writeAudit({
+        actor: req.user,
+        action: "create",
+        entityType: "user",
+        entityId: user.id,
+        newValue: {
+          username: user.username,
+          userType,
+          credits: creditsNum,
+          expiresAt,
+          creditValidityDays: creditValidityDays || null,
+        },
+        note: "CRM created account",
+      });
+
+      const { password: _pw, ...safe } = user as any;
+      res.json({
+        user: { ...safe, credits: creditsNum },
+        healer,
+        credits: creditsNum,
+        expiresAt,
+        message: `${userType} account created. ${creditsNum} credits${
+          expiresAt ? ` expire on ${expiresAt.toISOString().slice(0, 10)}` : " (no expiry)"
+        }.`,
+      });
+    } catch (error) {
+      console.error("CRM create user error:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  app.patch("/api/crm/users/:id", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const existing = await storage.getUser(id);
@@ -373,36 +715,69 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Credit adjust + log ──────────────────────────────────────────────────
-  app.post("/api/crm/users/:id/credits", requireAdmin, async (req: AuthedRequest, res) => {
+  app.post("/api/crm/users/:id/credits", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
-      const { amount, operation, description } = req.body;
+      const { amount, operation, description, creditValidityDays } = req.body;
       const parsed = parseInt(amount, 10);
-      if (!parsed || !["add", "subtract", "set"].includes(operation)) {
+      if (Number.isNaN(parsed) || !["add", "subtract", "set"].includes(operation)) {
         return res.status(400).json({ message: "amount and operation (add|subtract|set) required" });
+      }
+
+      let expiresAt: Date | null = null;
+      if (
+        creditValidityDays !== undefined &&
+        creditValidityDays !== null &&
+        creditValidityDays !== "" &&
+        Number(creditValidityDays) > 0
+      ) {
+        expiresAt = daysFromNow(Number(creditValidityDays));
       }
 
       const before = await storage.getUserCredits(id);
       let after = before;
+
       if (operation === "add") {
-        await storage.addCredits(id, parsed, "admin_add", description || `CRM credit add by ${req.user?.username}`);
-        after = before + parsed;
+        if (parsed <= 0) return res.status(400).json({ message: "amount must be positive for add" });
+        const result = await addCreditGrant({
+          userId: id,
+          amount: parsed,
+          expiresAt,
+          source: "admin_add",
+          note: description || `CRM credit add by ${req.user?.username}`,
+          createdByUserId: (req.user as any)?.id,
+          transactionType: "admin_add",
+          updateBalance: true,
+        });
+        if (!result) {
+          await storage.addCredits(
+            id,
+            parsed,
+            "admin_add",
+            description || `CRM credit add by ${req.user?.username}`,
+            expiresAt
+          );
+          after = before + parsed;
+        } else {
+          after = result.creditsAfter;
+        }
       } else if (operation === "subtract") {
-        const ok = await storage.deductCredits(id, parsed, "admin_subtract", description || `CRM credit deduct by ${req.user?.username}`);
+        const ok = await storage.deductCredits(
+          id,
+          parsed,
+          "admin_subtract",
+          description || `CRM credit deduct by ${req.user?.username}`
+        );
         if (!ok) return res.status(400).json({ message: "Insufficient credits or update failed" });
         after = before - parsed;
       } else {
-        await storage.updateUserCredits(id, parsed);
-        await storage.createCreditTransaction({
+        after = await replaceCreditBalance({
           userId: id,
-          username: (await storage.getUser(id))?.username || "unknown",
-          amount: parsed - before,
-          transactionType: "admin_set",
-          description: description || `CRM credit set by ${req.user?.username}`,
-          balanceAfter: parsed,
+          newCredits: parsed,
+          expiresAt,
+          createdByUserId: (req.user as any)?.id,
+          note: description || `CRM credit set by ${req.user?.username}`,
         });
-        after = parsed;
       }
 
       await writeAudit({
@@ -411,19 +786,18 @@ export function registerCrmRoutes(app: Express) {
         entityType: "credit",
         entityId: id,
         previousValue: { credits: before },
-        newValue: { credits: after, operation, amount: parsed },
+        newValue: { credits: after, operation, amount: parsed, expiresAt, creditValidityDays },
         note: description,
       });
 
-      res.json({ success: true, creditsBefore: before, creditsAfter: after });
+      res.json({ success: true, creditsBefore: before, creditsAfter: after, expiresAt });
     } catch (error) {
       console.error("CRM credit adjust error:", error);
       res.status(500).json({ message: "Failed to adjust credits" });
     }
   });
 
-  // ── GDPR export ──────────────────────────────────────────────────────────
-  app.get("/api/crm/users/:id/export", requireAdmin, async (req: AuthedRequest, res) => {
+  app.get("/api/crm/users/:id/export", requireCrm("canExportData"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const user = await storage.getUser(id);
@@ -457,15 +831,13 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // Soft-delete / erasure request
-  app.post("/api/crm/users/:id/erase", requireAdmin, async (req: AuthedRequest, res) => {
+  app.post("/api/crm/users/:id/erase", requireCrm("canEraseUsers"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const existing = await storage.getUser(id);
       if (!existing) return res.status(404).json({ message: "User not found" });
 
       await storage.deleteUser(id);
-      // Scrub PII fields while keeping row for referential integrity
       await db
         .update(users)
         .set({
@@ -494,13 +866,137 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Healers ──────────────────────────────────────────────────────────────
-  app.get("/api/crm/healers", requireAdmin, async (_req, res) => {
+  // ── Staff management (create CRM logins) ─────────────────────────────────
+  app.get("/api/crm/staff", requireCrm("canManageStaff"), async (_req, res) => {
+    try {
+      const staff = await db.select().from(crmStaff).orderBy(desc(crmStaff.createdAt));
+      const enriched = await Promise.all(
+        staff.map(async (s) => {
+          const u = await storage.getUser(s.userId);
+          return {
+            ...s,
+            username: u?.username,
+            email: u?.email,
+            name: u?.name,
+          };
+        })
+      );
+      res.json({ staff: enriched, roleDefaults: ROLE_DEFAULTS });
+    } catch (error) {
+      console.error("CRM staff list error:", error);
+      res.status(500).json({ message: "Failed to load staff" });
+    }
+  });
+
+  app.post("/api/crm/staff", requireCrm("canManageStaff"), async (req: AuthedRequest, res) => {
+    try {
+      const { username, password, displayName, role = "viewer" } = req.body || {};
+      if (!username || !password) {
+        return res.status(400).json({ message: "username and password are required" });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+      if (!ROLE_DEFAULTS[role] && role !== "owner") {
+        return res.status(400).json({ message: "role must be viewer, editor, support, or owner" });
+      }
+
+      const existing = await storage.getUserByUsername(username);
+      if (existing) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const defaults = ROLE_DEFAULTS[role] || ROLE_DEFAULTS.viewer;
+      const user = await storage.createUser({
+        username,
+        password: await hashPassword(password),
+        userType: "client",
+        name: displayName || username,
+        email: null as any,
+        mobileNumber: null as any,
+        credits: 0,
+      } as any);
+
+      const [staff] = await db
+        .insert(crmStaff)
+        .values({
+          userId: user.id,
+          role,
+          displayName: displayName || username,
+          ...defaults,
+        })
+        .returning();
+
+      await writeAudit({
+        actor: req.user,
+        action: "create",
+        entityType: "crm_staff",
+        entityId: staff.id,
+        newValue: { username, role, permissions: defaults },
+        note: "Created CRM staff login",
+      });
+
+      res.json({
+        staff: { ...staff, username },
+        message: `${username} can now log in and open /admin (${role})`,
+      });
+    } catch (error) {
+      console.error("CRM create staff error:", error);
+      res.status(500).json({ message: "Failed to create staff user" });
+    }
+  });
+
+  app.patch("/api/crm/staff/:id", requireCrm("canManageStaff"), async (req: AuthedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const [existing] = await db.select().from(crmStaff).where(eq(crmStaff.id, id)).limit(1);
+      if (!existing) return res.status(404).json({ message: "Staff not found" });
+
+      const body = req.body || {};
+      const patch: Record<string, unknown> = { updatedAt: new Date() };
+      if (body.role && ROLE_DEFAULTS[body.role]) {
+        Object.assign(patch, { role: body.role }, ROLE_DEFAULTS[body.role]);
+      }
+      for (const key of [
+        "displayName",
+        "canViewUsers",
+        "canEditUsers",
+        "canEditCredits",
+        "canViewRevenue",
+        "canManageHealers",
+        "canManageTickets",
+        "canManageStaff",
+        "canExportData",
+        "canEraseUsers",
+        "canViewAudit",
+        "isActive",
+      ]) {
+        if (key in body) patch[key] = body[key];
+      }
+
+      const [updated] = await db.update(crmStaff).set(patch as any).where(eq(crmStaff.id, id)).returning();
+      await writeAudit({
+        actor: req.user,
+        action: "update",
+        entityType: "crm_staff",
+        entityId: id,
+        previousValue: existing,
+        newValue: updated,
+      });
+      res.json({ staff: updated });
+    } catch (error) {
+      console.error("CRM update staff error:", error);
+      res.status(500).json({ message: "Failed to update staff" });
+    }
+  });
+
+  app.get("/api/crm/healers", requireCrm("canViewUsers"), async (_req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
       const healers = allUsers.filter(
         (u: any) => u.userType === "healer" || u.userType === "semi-healer" || u.userType === "semi_healer"
       );
+      const lastMap = await lastActivityMap();
 
       const rows = await Promise.all(
         healers.map(async (u: any) => {
@@ -518,6 +1014,7 @@ export function registerCrmRoutes(app: Express) {
             credits: await storage.getUserCredits(u.id),
             isActive: u.isActive !== false,
             healerSessionCount: u.healerSessionCount || 0,
+            lastActivityAt: lastMap.get(u.id) || u.createdAt,
             contract: contracts[0] || null,
             createdAt: u.createdAt,
           };
@@ -531,7 +1028,7 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  app.put("/api/crm/healers/:id/contract", requireAdmin, async (req: AuthedRequest, res) => {
+  app.put("/api/crm/healers/:id/contract", requireCrm("canManageHealers"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const body = req.body || {};
@@ -591,11 +1088,11 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Revenue ──────────────────────────────────────────────────────────────
-  app.get("/api/crm/revenue", requireAdmin, async (_req, res) => {
+  app.get("/api/crm/revenue", requireCrm("canViewRevenue"), async (req, res) => {
     try {
-      const payments = await db.select().from(paymentTransactions).orderBy(desc(paymentTransactions.createdAt)).limit(200);
-      const credits = await db.select().from(creditTransactions).orderBy(desc(creditTransactions.createdAt)).limit(200);
+      const entity = String(req.query.entity || "all"); // gbp | inr | all — soft filter for multi-entity
+      const payments = await db.select().from(paymentTransactions).orderBy(desc(paymentTransactions.createdAt)).limit(300);
+      const credits = await db.select().from(creditTransactions).orderBy(desc(creditTransactions.createdAt)).limit(300);
 
       const completed = payments.filter((p) => p.status === "completed");
       const refunded = payments.filter((p) => p.status === "refunded");
@@ -603,9 +1100,33 @@ export function registerCrmRoutes(app: Express) {
       const totalRefunds = refunded.reduce((s, p) => s + (p.amount || 0), 0) / 100;
 
       res.json({
+        entity,
+        entities: [
+          { id: "gbp", label: "AuraEye Solutions Ltd (GBP)" },
+          { id: "inr", label: "Healer Nishant Academy / India (INR)" },
+        ],
         summary: { totalRevenue, totalRefunds, completedCount: completed.length, refundedCount: refunded.length },
         payments,
         recentCredits: credits,
+        refundLog: [
+          ...refunded.map((p) => ({
+            kind: "payment_refund",
+            id: p.id,
+            userId: p.userId,
+            amount: (p.amount || 0) / 100,
+            at: p.completedAt || p.createdAt,
+          })),
+          ...credits
+            .filter((c) => String(c.transactionType).toLowerCase().includes("refund") || c.amount < 0 && String(c.description || "").toLowerCase().includes("refund"))
+            .map((c) => ({
+              kind: "credit_refund",
+              id: c.id,
+              userId: c.userId,
+              amount: c.amount,
+              at: c.createdAt,
+              description: c.description,
+            })),
+        ],
       });
     } catch (error) {
       console.error("CRM revenue error:", error);
@@ -613,8 +1134,7 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── Audit log + rollback snapshot restore for simple field edits ─────────
-  app.get("/api/crm/audit-logs", requireAdmin, async (req, res) => {
+  app.get("/api/crm/audit-logs", requireCrm("canViewAudit"), async (req, res) => {
     try {
       const limit = Math.min(parseInt(String(req.query.limit || "100"), 10) || 100, 500);
       const logs = await db.select().from(adminAuditLogs).orderBy(desc(adminAuditLogs.createdAt)).limit(limit);
@@ -625,7 +1145,7 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  app.post("/api/crm/audit-logs/:id/rollback", requireAdmin, async (req: AuthedRequest, res) => {
+  app.post("/api/crm/audit-logs/:id/rollback", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);
       const [log] = await db.select().from(adminAuditLogs).where(eq(adminAuditLogs.id, id)).limit(1);
@@ -661,14 +1181,16 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // ── CSV export helper for users ──────────────────────────────────────────
-  app.get("/api/crm/users.csv", requireAdmin, async (req: AuthedRequest, res) => {
+  app.get("/api/crm/users.csv", requireCrm("canExportData"), async (req: AuthedRequest, res) => {
     try {
       const allUsers = await storage.getAllUsers();
-      const header = ["id", "username", "name", "email", "mobileNumber", "userType", "credits", "isActive", "createdAt"];
+      const lastMap = await lastActivityMap();
+      const header = ["id", "username", "name", "email", "mobileNumber", "userType", "credits", "phase", "phaseLabel", "isActive", "lastActivityAt", "createdAt"];
       const lines = [header.join(",")];
       for (const u of allUsers) {
         const credits = await storage.getUserCredits(u.id);
+        const lastActivityAt = lastMap.get(u.id) || u.createdAt;
+        const phase = classifyPhase({ isActive: u.isActive, createdAt: u.createdAt, lastActivityAt });
         const row = [
           u.id,
           JSON.stringify(u.username || ""),
@@ -677,7 +1199,10 @@ export function registerCrmRoutes(app: Express) {
           JSON.stringify(u.mobileNumber || ""),
           JSON.stringify(u.userType || ""),
           credits,
+          phase,
+          JSON.stringify(PHASE_LABELS[phase] || phase),
           u.isActive !== false,
+          lastActivityAt ? new Date(lastActivityAt).toISOString() : "",
           u.createdAt ? new Date(u.createdAt).toISOString() : "",
         ];
         lines.push(row.join(","));
@@ -697,37 +1222,115 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
-  // Support tickets scaffold
-  app.get("/api/crm/tickets", requireAdmin, async (_req, res) => {
+  app.get("/api/crm/tickets", requireCrm("canManageTickets"), async (req, res) => {
     try {
-      const tickets = await db.select().from(supportTickets).orderBy(desc(supportTickets.createdAt)).limit(100);
-      res.json({ tickets });
+      const status = String(req.query.status || "all");
+      const channel = String(req.query.channel || "all");
+      let tickets = await db.select().from(supportTickets).orderBy(desc(supportTickets.createdAt)).limit(300);
+      if (status !== "all") tickets = tickets.filter((t) => t.status === status);
+      if (channel !== "all") tickets = tickets.filter((t) => t.channel === channel);
+
+      const enriched = await Promise.all(
+        tickets.map(async (t) => {
+          let username: string | null = null;
+          if (t.userId) {
+            const u = await storage.getUser(t.userId);
+            username = u?.username || null;
+          }
+          return { ...t, username };
+        })
+      );
+      res.json({ tickets: enriched });
     } catch (error) {
       console.error("CRM tickets error:", error);
       res.status(500).json({ message: "Failed to load tickets" });
     }
   });
 
-  app.post("/api/crm/tickets", requireAdmin, async (req: AuthedRequest, res) => {
+  app.post("/api/crm/tickets", requireCrm("canManageTickets"), async (req: AuthedRequest, res) => {
     try {
-      const { subject, body, userId, priority } = req.body;
+      const { subject, body, userId, priority, category, channel, requesterName, requesterEmail } = req.body;
       if (!subject || !body) return res.status(400).json({ message: "subject and body required" });
-      const [ticket] = await db
-        .insert(supportTickets)
-        .values({
-          subject,
-          body,
-          userId: userId || null,
-          priority: priority || "normal",
-          status: "open",
-          channel: "crm",
-          assignedTo: (req.user as any)?.id,
-        })
-        .returning();
+      const { createSupportTicket } = await import("./support-tickets");
+      const ticket = await createSupportTicket({
+        subject,
+        body,
+        userId: userId || null,
+        priority: priority || "normal",
+        category: category || "general",
+        channel: channel || "crm",
+        requesterName: requesterName || null,
+        requesterEmail: requesterEmail || null,
+        assignedTo: (req.user as any)?.id,
+      });
+      if (!ticket) return res.status(500).json({ message: "Failed to create ticket" });
       res.json({ ticket });
     } catch (error) {
       console.error("CRM create ticket error:", error);
       res.status(500).json({ message: "Failed to create ticket" });
+    }
+  });
+
+  app.patch("/api/crm/tickets/:id", requireCrm("canManageTickets"), async (req: AuthedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const patch: Record<string, unknown> = { updatedAt: new Date() };
+      for (const key of ["status", "priority", "subject", "body", "assignedTo"]) {
+        if (key in (req.body || {})) patch[key] = req.body[key];
+      }
+      const [ticket] = await db.update(supportTickets).set(patch as any).where(eq(supportTickets.id, id)).returning();
+      res.json({ ticket });
+    } catch (error) {
+      console.error("CRM update ticket error:", error);
+      res.status(500).json({ message: "Failed to update ticket" });
+    }
+  });
+
+  app.get("/api/crm/leads", requireCrm("canViewUsers"), async (_req, res) => {
+    try {
+      const leads = await db.select().from(crmLeads).orderBy(desc(crmLeads.updatedAt)).limit(200);
+      res.json({ leads });
+    } catch (error) {
+      console.error("CRM leads error:", error);
+      res.status(500).json({ message: "Failed to load leads" });
+    }
+  });
+
+  app.post("/api/crm/leads", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const { name, email, mobileNumber, source, stage, notes } = req.body || {};
+      if (!name) return res.status(400).json({ message: "name required" });
+      const [lead] = await db
+        .insert(crmLeads)
+        .values({
+          name,
+          email: email || null,
+          mobileNumber: mobileNumber || null,
+          source: source || "manual",
+          stage: stage || "new",
+          notes: notes || null,
+          ownerUserId: (req.user as any)?.id,
+        })
+        .returning();
+      res.json({ lead });
+    } catch (error) {
+      console.error("CRM create lead error:", error);
+      res.status(500).json({ message: "Failed to create lead" });
+    }
+  });
+
+  app.patch("/api/crm/leads/:id", requireCrm("canEditUsers"), async (req, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const patch: Record<string, unknown> = { updatedAt: new Date() };
+      for (const key of ["name", "email", "mobileNumber", "source", "stage", "notes"]) {
+        if (key in (req.body || {})) patch[key] = req.body[key];
+      }
+      const [lead] = await db.update(crmLeads).set(patch as any).where(eq(crmLeads.id, id)).returning();
+      res.json({ lead });
+    } catch (error) {
+      console.error("CRM update lead error:", error);
+      res.status(500).json({ message: "Failed to update lead" });
     }
   });
 }

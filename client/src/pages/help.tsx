@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Wind, 
   Palette, 
@@ -15,11 +17,15 @@ import {
   Users,
   Mail,
   Phone,
-  ChevronDown
+  ChevronDown,
+  Loader2
 } from "lucide-react";
 import { Link } from "wouter";
 import MobileNavigation from "@/components/layout/mobile-navigation";
 import BreathingGuide from "@/components/breathing-guide";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const faqs = [
   {
@@ -107,7 +113,7 @@ const helpSections = [
     color: "from-emerald-400 to-green-400",
     items: [
       { name: "FAQ", type: "Help", description: "Common questions answered" },
-      { name: "Submit A Ticket", type: "Email", description: "support@auraeye.com" },
+      { name: "Submit A Ticket", type: "Email", description: "Send a support request" },
       { name: "Community", type: "Connect", description: "Join our healing community" }
     ]
   }
@@ -119,6 +125,11 @@ export default function HelpPage() {
   const [selectedBreathingExercise, setSelectedBreathingExercise] = useState<{ name: string; duration: string } | null>(null);
   const [faqOpen, setFaqOpen] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const [ticketSubmitting, setTicketSubmitting] = useState(false);
+  const [ticketForm, setTicketForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 pb-20">
@@ -264,12 +275,23 @@ export default function HelpPage() {
                                 onClick={() => {
                                   if ((item as any).name === "FAQ") {
                                     setFaqOpen(true);
+                                  } else if ((item as any).name === "Submit A Ticket") {
+                                    setTicketForm({
+                                      name: user?.name || user?.username || "",
+                                      email: (user as any)?.email || "",
+                                      subject: "",
+                                      message: "",
+                                    });
+                                    setTicketOpen(true);
+                                  } else if ((item as any).name === "Community") {
+                                    window.location.href = "/contact";
                                   }
                                 }}
                               >
                                 {(item as any).name === "FAQ" && <HelpCircle className="h-4 w-4 mr-1" />}
                                 {(item as any).type === "Email" ? <Mail className="h-4 w-4" /> : <Users className="h-4 w-4" />}
                                 {(item as any).name === "FAQ" && "View"}
+                                {(item as any).name === "Submit A Ticket" && "Open"}
                               </Button>
                             )}
                           </div>
@@ -359,6 +381,92 @@ export default function HelpPage() {
               ))}
             </div>
           </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Support ticket modal → CRM Support inbox */}
+      <Dialog open={ticketOpen} onOpenChange={setTicketOpen}>
+        <DialogContent className="max-w-lg bg-slate-900 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-white flex items-center gap-2">
+              <Mail className="h-5 w-5 text-emerald-400" />
+              Submit a support ticket
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Your message goes straight to the AuraEye support inbox.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="Your name"
+              value={ticketForm.name}
+              onChange={(e) => setTicketForm({ ...ticketForm, name: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Input
+              type="email"
+              placeholder="Email"
+              value={ticketForm.email}
+              onChange={(e) => setTicketForm({ ...ticketForm, email: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Input
+              placeholder="Subject"
+              value={ticketForm.subject}
+              onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Textarea
+              placeholder="How can we help?"
+              rows={4}
+              value={ticketForm.message}
+              onChange={(e) => setTicketForm({ ...ticketForm, message: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-500"
+              disabled={ticketSubmitting}
+              onClick={async () => {
+                if (!ticketForm.message.trim() || ticketForm.message.trim().length < 5) {
+                  toast({ title: "Please enter a message", variant: "destructive" });
+                  return;
+                }
+                if (!ticketForm.email.trim() && !user) {
+                  toast({ title: "Email is required", variant: "destructive" });
+                  return;
+                }
+                setTicketSubmitting(true);
+                try {
+                  const res = await apiRequest("POST", "/api/support/tickets", {
+                    name: ticketForm.name,
+                    email: ticketForm.email,
+                    subject: ticketForm.subject || "Help request",
+                    message: ticketForm.message,
+                    category: "help",
+                    channel: "help",
+                    sourcePath: "/help",
+                  });
+                  const json = await res.json();
+                  if (!res.ok) throw new Error(json.message || "Failed");
+                  toast({ title: "Ticket submitted", description: "Our team will get back to you soon." });
+                  setTicketOpen(false);
+                  setTicketForm({ name: "", email: "", subject: "", message: "" });
+                } catch (err: any) {
+                  toast({ title: "Could not submit", description: err.message, variant: "destructive" });
+                } finally {
+                  setTicketSubmitting(false);
+                }
+              }}
+            >
+              {ticketSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sending…
+                </>
+              ) : (
+                "Submit ticket"
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

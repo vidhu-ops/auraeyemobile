@@ -317,9 +317,39 @@ export function setupAuth(app: Express) {
         user = { ...user, userType: "healer" };
       }
       
+      // Attach CRM staff permissions for /admin panel access
+      let crmAccess = null as any;
+      try {
+        const { db } = await import("./db");
+        const { crmStaff } = await import("@shared/schema");
+        const { eq } = await import("drizzle-orm");
+        if (user.username === "admin" || user.userType === "admin") {
+          crmAccess = {
+            role: "owner",
+            canViewUsers: true,
+            canEditUsers: true,
+            canEditCredits: true,
+            canViewRevenue: true,
+            canManageHealers: true,
+            canManageTickets: true,
+            canManageStaff: true,
+            canExportData: true,
+            canEraseUsers: true,
+            canViewAudit: true,
+          };
+        } else {
+          const rows = await db.select().from(crmStaff).where(eq(crmStaff.userId, user.id)).limit(1);
+          if (rows[0] && rows[0].isActive !== false) {
+            crmAccess = rows[0];
+          }
+        }
+      } catch (crmErr) {
+        console.error("CRM access lookup failed:", crmErr);
+      }
+
       // Remove password from response
       const { password, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
+      res.json({ ...userWithoutPassword, crmAccess });
     } catch (error) {
       console.error("Error checking healer status:", error);
       // Fallback to original user data

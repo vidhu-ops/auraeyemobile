@@ -129,7 +129,7 @@ export interface IStorage {
   // Credit management
   getUserCredits(userId: number): Promise<number>;
   deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean>;
-  addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean>;
+  addCredits(userId: number, amount: number, type: string, description: string, expiresAt?: Date | null): Promise<boolean>;
   getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]>;
   createCreditTransaction(transaction: InsertCreditTransaction): Promise<CreditTransaction>;
   createNotification(notification: { userId: number; title: string; message: string; type?: string }): Promise<any>;
@@ -799,56 +799,95 @@ export class DatabaseStorage implements IStorage {
 
   // Credit management
   async getUserCredits(userId: number): Promise<number> {
+    try {
+      const { expireCreditsForUser } = await import("./credit-grants");
+      await expireCreditsForUser(userId);
+    } catch (e) {
+      console.error("Credit expiry check failed:", e);
+    }
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     return user?.credits || 0;
   }
 
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
-    return await db.transaction(async (tx) => {
-      const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
-      if (!user) {
-        console.error(`DeductCredits: User ${userId} not found`);
-        return false;
-      }
-      
-      const currentCredits = Number(user.credits || 0);
-      if (currentCredits < amount) {
-        console.log(`DeductCredits: User ${userId} has insufficient credits (${currentCredits} < ${amount})`);
-        return false;
-      }
+    try {
+      const { expireCreditsForUser, consumeCreditGrants } = await import("./credit-grants");
+      await expireCreditsForUser(userId);
+      const ok = await db.transaction(async (tx) => {
+        const [user] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
+        if (!user) {
+          console.error(`DeductCredits: User ${userId} not found`);
+          return false;
+        }
 
-      const newCredits = currentCredits - amount;
-      await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
-      await tx.insert(creditTransactions).values({
-        userId,
-        username: user.username,
-        amount: -amount,
-        transactionType: type,
-        description,
-        balanceAfter: newCredits,
+        const currentCredits = Number(user.credits || 0);
+        if (currentCredits < amount) {
+          console.log(`DeductCredits: User ${userId} has insufficient credits (${currentCredits} < ${amount})`);
+          return false;
+        }
+
+        const newCredits = currentCredits - amount;
+        await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
+        await tx.insert(creditTransactions).values({
+          userId,
+          username: user.username,
+          amount: -amount,
+          transactionType: type,
+          description,
+          balanceAfter: newCredits,
+        });
+        console.log(`DeductCredits SUCCESS: User ${userId}, deducted ${amount}, new balance ${newCredits}`);
+        return true;
       });
-      console.log(`DeductCredits SUCCESS: User ${userId}, deducted ${amount}, new balance ${newCredits}`);
-      return true;
-    });
+      if (ok) await consumeCreditGrants(userId, amount);
+      return ok;
+    } catch (error) {
+      console.error("DeductCredits error:", error);
+      return false;
+    }
   }
 
-  async addCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
-    return await db.transaction(async (tx) => {
-      const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
-      if (!user) return false;
-
-      const newCredits = (user.credits || 0) + amount;
-      await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
-      await tx.insert(creditTransactions).values({
+  async addCredits(
+    userId: number,
+    amount: number,
+    type: string,
+    description: string,
+    expiresAt?: Date | null
+  ): Promise<boolean> {
+    try {
+      const { addCreditGrant } = await import("./credit-grants");
+      const result = await addCreditGrant({
         userId,
-        username: user.username,
         amount,
+        expiresAt: expiresAt === undefined ? null : expiresAt,
+        source: type,
+        note: description,
         transactionType: type,
-        description,
-        balanceAfter: newCredits,
+        updateBalance: true,
       });
-      return true;
-    });
+      if (result) return true;
+
+      // Fallback if grants table missing
+      return await db.transaction(async (tx) => {
+        const [user] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
+        if (!user) return false;
+
+        const newCredits = (user.credits || 0) + amount;
+        await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
+        await tx.insert(creditTransactions).values({
+          userId,
+          username: user.username,
+          amount,
+          transactionType: type,
+          description,
+          balanceAfter: newCredits,
+        });
+        return true;
+      });
+    } catch (error) {
+      console.error("AddCredits error:", error);
+      return false;
+    }
   }
 
   async getCreditTransactionsByUser(userId: number): Promise<CreditTransaction[]> {
