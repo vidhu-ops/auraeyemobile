@@ -55,6 +55,8 @@ import {
   type CrmSection,
   type CrmUserRow,
 } from "./types";
+import QuickActionDialog from "./QuickActionDialog";
+import { FileImportPanel } from "./FileImportPanel";
 
 const PIE_COLORS = ["#6366f1", "#06b6d4", "#a855f7", "#f59e0b", "#94a3b8"];
 
@@ -119,7 +121,9 @@ export default function AdminCrmApp() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [creditAmount, setCreditAmount] = useState("5");
   const [creditValidityDays, setCreditValidityDays] = useState("30");
-  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [quickActionOpen, setQuickActionOpen] = useState(false);
+  const [userTypeFilter, setUserTypeFilter] = useState<"client" | "all">("client");
+  const [selectedHealerId, setSelectedHealerId] = useState<number | null>(null);
   const [createForm, setCreateForm] = useState({
     username: "",
     password: "",
@@ -167,16 +171,37 @@ export default function AdminCrmApp() {
   });
 
   const usersQuery = useQuery<{ users: CrmUserRow[] }>({
-    queryKey: ["/api/crm/users", userQuery, phaseFilter],
+    queryKey: ["/api/crm/users", userQuery, phaseFilter, section === "users" ? "client" : userTypeFilter],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (userQuery) params.set("q", userQuery);
       if (phaseFilter !== "all") params.set("phase", phaseFilter);
+      // Users page = clients only; Direct Data can browse everyone
+      if (section === "users") params.set("type", "client");
+      else if (userTypeFilter !== "all") params.set("type", userTypeFilter);
       params.set("limit", "200");
       const res = await apiRequest("GET", `/api/crm/users?${params.toString()}`);
       return res.json();
     },
-    enabled: canUseCrm && !!crmAccess?.canViewUsers && (section === "users" || section === "direct-data" || section === "dashboard"),
+    enabled: canUseCrm && !!crmAccess?.canViewUsers && (section === "users" || section === "direct-data"),
+  });
+
+  const userTicketsQuery = useQuery<{ tickets: any[] }>({
+    queryKey: ["/api/crm/tickets", "by-user", selectedUserId],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/crm/tickets?userId=${selectedUserId}`);
+      return res.json();
+    },
+    enabled: canUseCrm && !!crmAccess?.canManageTickets && !!selectedUserId && (section === "users" || section === "healers"),
+  });
+
+  const healerTicketsQuery = useQuery<{ tickets: any[] }>({
+    queryKey: ["/api/crm/tickets", "booking", selectedHealerId],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/crm/tickets?channel=booking`);
+      return res.json();
+    },
+    enabled: canUseCrm && !!crmAccess?.canManageTickets && section === "healers",
   });
 
   const healersQuery = useQuery<{ healers: any[] }>({
@@ -454,7 +479,7 @@ export default function AdminCrmApp() {
     const items: { id: CrmSection; label: string; icon: any; show: boolean }[] = [
       { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
       { id: "direct-data", label: "Direct Data Control", icon: Database, show: !!crmAccess?.canViewUsers },
-      { id: "users", label: "Users & activity", icon: Users, show: !!crmAccess?.canViewUsers },
+      { id: "users", label: "Users (clients)", icon: Users, show: !!crmAccess?.canViewUsers },
       { id: "healers", label: "Healers / Practitioners", icon: UserCog, show: !!crmAccess?.canViewUsers },
       { id: "revenue", label: "Revenue & Payments", icon: Wallet, show: !!crmAccess?.canViewRevenue },
       { id: "notifications", label: "Monthly Notifications", icon: Bell, show: !!crmAccess?.canViewUsers },
@@ -566,7 +591,12 @@ export default function AdminCrmApp() {
                 AuraEye Solutions Ltd (GBP)
               </div>
               {crmAccess?.canEditUsers && (
-                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500" onClick={() => setSection("direct-data")}>
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500" onClick={() => setQuickActionOpen(true)}>
+                  + Quick Action
+                </Button>
+              )}
+              {!crmAccess?.canEditUsers && crmAccess?.canManageTickets && (
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500" onClick={() => setQuickActionOpen(true)}>
                   + Quick Action
                 </Button>
               )}
@@ -786,574 +816,469 @@ export default function AdminCrmApp() {
             </>
           )}
 
-          {(section === "users" || section === "direct-data") && (
+
+          {section === "users" && (
             <div className="space-y-4">
-              {crmAccess?.canEditUsers && (
-                <Card className="bg-white/5 border-white/10">
-                  <CardHeader className="pb-2">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <CardTitle className="text-base flex items-center gap-2">
-                        <UserPlus className="h-4 w-4 text-emerald-300" /> Create user or healer
-                      </CardTitle>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-white/15"
-                        onClick={() => setShowCreateAccount((v) => !v)}
-                      >
-                        {showCreateAccount ? "Hide form" : "New account"}
-                      </Button>
+              <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-sky-300" /> Clients & members</h2>
+                <p className="text-sm text-slate-400 mt-1">Journey phase, activity timeline, credits, and support tickets for each client. Editing lives in Direct Data Control.</p>
+              </div>
+              <div className="grid xl:grid-cols-5 gap-4">
+                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                      <CardTitle className="text-base">Client directory</CardTitle>
+                      <div className="flex flex-wrap gap-2">
+                        <div className="relative">
+                          <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-slate-500" />
+                          <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search clients…" className="pl-8 bg-black/20 border-white/10 w-48" />
+                        </div>
+                        <select value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)} className="rounded-md bg-black/20 border border-white/10 text-sm px-2">
+                          <option value="all">All phases</option>
+                          <option value="new">{PHASE_LABELS.new}</option>
+                          <option value="active">{PHASE_LABELS.active}</option>
+                          <option value="at-risk">{PHASE_LABELS["at-risk"]}</option>
+                          <option value="dormant">{PHASE_LABELS.dormant}</option>
+                        </select>
+                        {crmAccess?.canExportData && (
+                          <a href="/api/crm/users.csv"><Button size="sm" variant="outline" className="border-white/15"><Download className="h-4 w-4 mr-1" /> CSV</Button></a>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
-                  {showCreateAccount && (
-                    <CardContent className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-                      <Input
-                        value={createForm.username}
-                        onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
-                        placeholder="Username *"
-                        className="bg-black/20 border-white/10"
-                      />
-                      <Input
-                        type="password"
-                        value={createForm.password}
-                        onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                        placeholder="Password * (min 6)"
-                        className="bg-black/20 border-white/10"
-                      />
-                      <Input
-                        value={createForm.name}
-                        onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                        placeholder="Display name"
-                        className="bg-black/20 border-white/10"
-                      />
-                      <Input
-                        value={createForm.email}
-                        onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                        placeholder="Email"
-                        className="bg-black/20 border-white/10"
-                      />
-                      <Input
-                        value={createForm.mobileNumber}
-                        onChange={(e) => setCreateForm({ ...createForm, mobileNumber: e.target.value })}
-                        placeholder="Mobile"
-                        className="bg-black/20 border-white/10"
-                      />
-                      <select
-                        value={createForm.userType}
-                        onChange={(e) => setCreateForm({ ...createForm, userType: e.target.value })}
-                        className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                      >
-                        <option value="client">User (client)</option>
-                        <option value="healer">Healer</option>
-                        <option value="semi-healer">Semi-healer</option>
-                      </select>
-                      <div>
-                        <label className="text-[11px] text-slate-400 mb-1 block">Starting credits</label>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={createForm.credits}
-                          onChange={(e) => setCreateForm({ ...createForm, credits: e.target.value })}
-                          className="bg-black/20 border-white/10"
-                        />
+                  <CardContent>
+                    {usersQuery.isLoading ? (
+                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-slate-400 border-b border-white/10">
+                              <th className="pb-2 pr-3">Client</th>
+                              <th className="pb-2 pr-3">Journey</th>
+                              <th className="pb-2 pr-3">Credits</th>
+                              <th className="pb-2">Last active</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(usersQuery.data?.users || []).map((u) => (
+                              <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedUserId === u.id ? "bg-indigo-500/10" : ""}`}>
+                                <td className="py-2.5 pr-3">
+                                  <div className="font-medium">{u.name || u.username}</div>
+                                  <div className="text-xs text-slate-400">{u.email || u.username}</div>
+                                </td>
+                                <td className="py-2.5 pr-3"><span className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(u.phase)}`}>{phaseLabel(u.phase, u.phaseLabel)}</span></td>
+                                <td className="py-2.5 pr-3 font-mono text-emerald-300">{u.credits}</td>
+                                <td className="py-2.5 text-xs text-slate-400">{u.lastActivityAt ? new Date(u.lastActivityAt).toLocaleDateString() : "—"}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                      <div>
-                        <label className="text-[11px] text-slate-400 mb-1 block">Credits active for</label>
-                        <select
-                          value={createForm.creditValidityDays}
-                          onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })}
-                          className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                        >
-                          <option value="3">3 days</option>
-                          <option value="30">1 month</option>
-                          <option value="60">2 months</option>
-                          <option value="90">3 months</option>
-                          <option value="180">6 months</option>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                  <CardHeader className="pb-2"><CardTitle className="text-base">Client profile & support</CardTitle></CardHeader>
+                  <CardContent>
+                    {!selectedUserId && <p className="text-sm text-slate-400">Select a client to see activity, credit grants, and their tickets.</p>}
+                    {selectedUserId && profileQuery.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>}
+                    {selectedUserId && profileQuery.data && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-2">
+                          <div>
+                            <div className="text-lg font-semibold">{profileQuery.data.user.name || profileQuery.data.user.username}</div>
+                            <div className="text-xs text-slate-400">Credits: {profileQuery.data.user.credits} · {profileQuery.data.user.email || "no email"}</div>
+                          </div>
+                          <span className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(profileQuery.data.user.phase)}`}>{phaseLabel(profileQuery.data.user.phase, profileQuery.data.user.phaseLabel)}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="rounded-lg bg-black/20 p-2">Aura: {profileQuery.data.activity.auraReadings.length}</div>
+                          <div className="rounded-lg bg-black/20 p-2">Vibe: {profileQuery.data.activity.vibeReadings.length}</div>
+                          <div className="rounded-lg bg-black/20 p-2">Numerology: {profileQuery.data.activity.numerologyReadings.length}</div>
+                          <div className="rounded-lg bg-black/20 p-2">Payments: {profileQuery.data.payments.length}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium mb-2 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-300" /> Activity</div>
+                          <div className="max-h-48 overflow-y-auto space-y-2">
+                            {(profileQuery.data.timeline || []).slice(0, 25).map((ev: any, idx: number) => (
+                              <div key={`${ev.type}-${idx}`} className={`rounded-lg bg-black/20 border-l-2 pl-3 py-2 ${timelineTone(ev.type)}`}>
+                                <div className="text-xs font-medium">{ev.title}</div>
+                                <div className="text-[10px] text-slate-500">{ev.at ? new Date(ev.at).toLocaleString() : ""}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {(profileQuery.data.creditGrants || []).length > 0 && (
+                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                            <div className="text-sm font-medium">Credit expiry</div>
+                            {(profileQuery.data.creditGrants || []).map((g: any) => (
+                              <div key={g.id} className="text-xs flex justify-between gap-2 bg-black/20 rounded px-2 py-1.5">
+                                <span>{g.remaining}/{g.amount} left</span>
+                                <span className="text-slate-400">{g.expiresAt ? `expires ${new Date(g.expiresAt).toLocaleDateString()}` : "no expiry"}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {crmAccess?.canManageTickets && (
+                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                            <div className="text-sm font-medium flex items-center gap-2"><Ticket className="h-4 w-4" /> Support tickets</div>
+                            {(userTicketsQuery.data?.tickets || []).length === 0 && <p className="text-xs text-slate-400">No tickets for this client.</p>}
+                            {(userTicketsQuery.data?.tickets || []).slice(0, 8).map((t: any) => (
+                              <div key={t.id} className="text-xs rounded bg-black/20 p-2">
+                                <div className="font-medium">{t.subject}</div>
+                                <div className="text-slate-400">{t.status} · {t.channel} · {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ""}</div>
+                              </div>
+                            ))}
+                            <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => { setQuickActionOpen(true); }}>New ticket</Button>
+                          </div>
+                        )}
+                        {crmAccess?.canEditUsers && (
+                          <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("direct-data")}>Open in Direct Data Control</Button>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {section === "direct-data" && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Database className="h-5 w-5 text-indigo-300" /> Direct Data Control</h2>
+                <p className="text-sm text-slate-400 mt-1">Create accounts, import CSV/XLS, edit fields, adjust credits with expiry, and run GDPR tools — without SQL.</p>
+              </div>
+              <div className="grid xl:grid-cols-2 gap-4">
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle className="text-base flex items-center gap-2"><UserPlus className="h-4 w-4 text-emerald-300" /> Create account</CardTitle>
+                      <Button size="sm" onClick={() => setQuickActionOpen(true)}>Quick Action</Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="grid sm:grid-cols-2 gap-2">
+                    <Input value={createForm.username} onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })} placeholder="Username *" className="bg-black/20 border-white/10" />
+                    <Input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} placeholder="Password *" className="bg-black/20 border-white/10" />
+                    <Input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} placeholder="Name" className="bg-black/20 border-white/10" />
+                    <Input value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} placeholder="Email" className="bg-black/20 border-white/10" />
+                    <select value={createForm.userType} onChange={(e) => setCreateForm({ ...createForm, userType: e.target.value })} className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                      <option value="client">User (client)</option>
+                      <option value="healer">Healer</option>
+                      <option value="semi-healer">Semi-healer</option>
+                    </select>
+                    <Input type="number" value={createForm.credits} onChange={(e) => setCreateForm({ ...createForm, credits: e.target.value })} placeholder="Credits" className="bg-black/20 border-white/10" />
+                    <select value={createForm.creditValidityDays} onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })} className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                      <option value="3">3 days</option>
+                      <option value="30">1 month</option>
+                      <option value="60">2 months</option>
+                      <option value="90">3 months</option>
+                      <option value="180">6 months</option>
+                    </select>
+                    <Button className="bg-indigo-600 hover:bg-indigo-500" disabled={!crmAccess?.canEditUsers || createAccountMutation.isPending} onClick={() => createAccountMutation.mutate()}>
+                      {createAccountMutation.isPending ? "Creating…" : "Create"}
+                    </Button>
+                  </CardContent>
+                </Card>
+                <FileImportPanel target="users" disabled={!crmAccess?.canEditUsers} />
+              </div>
+
+              <div className="grid xl:grid-cols-5 gap-4">
+                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <CardTitle className="text-base">Find any record to edit</CardTitle>
+                      <div className="flex flex-wrap gap-2">
+                        <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search…" className="bg-black/20 border-white/10 w-40" />
+                        <select value={userTypeFilter} onChange={(e) => setUserTypeFilter(e.target.value as any)} className="rounded-md bg-black/20 border border-white/10 text-sm px-2">
+                          <option value="all">All types</option>
+                          <option value="client">Clients</option>
                         </select>
                       </div>
-                      {(createForm.userType === "healer" || createForm.userType === "semi-healer") && (
-                        <Input
-                          value={createForm.specialty}
-                          onChange={(e) => setCreateForm({ ...createForm, specialty: e.target.value })}
-                          placeholder="Specialty (optional)"
-                          className="bg-black/20 border-white/10"
-                        />
-                      )}
-                      <div className="md:col-span-2 xl:col-span-3 flex flex-wrap items-center gap-3">
-                        <Button
-                          className="bg-indigo-600 hover:bg-indigo-500"
-                          disabled={createAccountMutation.isPending}
-                          onClick={() => createAccountMutation.mutate()}
-                        >
-                          {createAccountMutation.isPending ? "Creating…" : "Create account"}
-                        </Button>
-                        <p className="text-xs text-slate-400">
-                          They can log in immediately. Credits expire automatically after the chosen period.
-                        </p>
-                      </div>
-                    </CardContent>
-                  )}
-                </Card>
-              )}
-
-            <div className="grid xl:grid-cols-5 gap-4">
-              <Card className="bg-white/5 border-white/10 xl:col-span-3">
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Users className="h-4 w-4 text-sky-300" />
-                      {section === "direct-data" ? "Direct Data Control" : "Users & activity"}
-                    </CardTitle>
-                    <div className="flex flex-wrap gap-2">
-                      <div className="relative">
-                        <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-slate-500" />
-                        <Input
-                          value={userQuery}
-                          onChange={(e) => setUserQuery(e.target.value)}
-                          placeholder="Search users…"
-                          className="pl-8 bg-black/20 border-white/10 w-48"
-                        />
-                      </div>
-                      <select
-                        value={phaseFilter}
-                        onChange={(e) => setPhaseFilter(e.target.value)}
-                        className="rounded-md bg-black/20 border border-white/10 text-sm px-2"
-                      >
-                        <option value="all">All phases</option>
-                        <option value="new">{PHASE_LABELS.new}</option>
-                        <option value="active">{PHASE_LABELS.active}</option>
-                        <option value="at-risk">{PHASE_LABELS["at-risk"]}</option>
-                        <option value="dormant">{PHASE_LABELS.dormant}</option>
-                      </select>
-                      {crmAccess?.canExportData && (
-                        <a href="/api/crm/users.csv">
-                          <Button size="sm" variant="outline" className="border-white/15">
-                            <Download className="h-4 w-4 mr-1" /> CSV
-                          </Button>
-                        </a>
-                      )}
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {usersQuery.isLoading ? (
-                    <div className="py-10 flex justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto max-h-80">
                       <table className="w-full text-sm">
-                        <thead>
-                          <tr className="text-left text-slate-400 border-b border-white/10">
-                            <th className="pb-2 pr-3">User</th>
-                            <th className="pb-2 pr-3">Type</th>
-                            <th className="pb-2 pr-3">Journey</th>
-                            <th className="pb-2 pr-3">Credits</th>
-                            <th className="pb-2">Last active</th>
-                          </tr>
-                        </thead>
+                        <thead><tr className="text-left text-slate-400 border-b border-white/10"><th className="pb-2">User</th><th className="pb-2">Type</th><th className="pb-2">Credits</th></tr></thead>
                         <tbody>
                           {(usersQuery.data?.users || []).map((u) => (
-                            <tr
-                              key={u.id}
-                              onClick={() => setSelectedUserId(u.id)}
-                              className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${
-                                selectedUserId === u.id ? "bg-indigo-500/10" : ""
-                              }`}
-                            >
-                              <td className="py-2.5 pr-3">
-                                <div className="font-medium">{u.name || u.username}</div>
-                                <div className="text-xs text-slate-400">{u.email || u.username}</div>
-                              </td>
-                              <td className="py-2.5 pr-3 text-slate-300">{u.userType}</td>
-                              <td className="py-2.5 pr-3">
-                                <span className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(u.phase)}`}>
-                                  {phaseLabel(u.phase, u.phaseLabel)}
-                                </span>
-                              </td>
-                              <td className="py-2.5 pr-3 font-mono text-emerald-300">{u.credits}</td>
-                              <td className="py-2.5 text-xs text-slate-400">
-                                {u.lastActivityAt ? new Date(u.lastActivityAt).toLocaleDateString() : "—"}
-                              </td>
+                            <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedUserId === u.id ? "bg-indigo-500/10" : ""}`}>
+                              <td className="py-2"><div className="font-medium">{u.name || u.username}</div><div className="text-xs text-slate-400">{u.email || ""}</div></td>
+                              <td className="py-2">{u.userType}</td>
+                              <td className="py-2 font-mono text-emerald-300">{u.credits}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-white/5 border-white/10 xl:col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Complete User Profile</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {!selectedUserId && (
-                    <p className="text-sm text-slate-400">
-                      Select a user to see their full activity timeline, payments, credits, and journey phase.
-                    </p>
-                  )}
-                  {selectedUserId && profileQuery.isLoading && (
-                    <div className="py-8 flex justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
-                    </div>
-                  )}
-                  {selectedUserId && profileQuery.data && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <div>
-                          <div className="text-lg font-semibold">
-                            {profileQuery.data.user.name || profileQuery.data.user.username}
+                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                  <CardHeader className="pb-2"><CardTitle className="text-base">Edit record</CardTitle></CardHeader>
+                  <CardContent>
+                    {!selectedUserId && <p className="text-sm text-slate-400">Select a record to edit fields, credits, contracts, or erase.</p>}
+                    {selectedUserId && profileQuery.data && (
+                      <div className="space-y-3">
+                        <div className="text-sm font-semibold">{profileQuery.data.user.name || profileQuery.data.user.username} <span className="text-slate-400">#{selectedUserId}</span></div>
+                        {crmAccess?.canEditUsers ? (
+                          <div className="space-y-2">
+                            <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} placeholder="Name" className="bg-black/20 border-white/10" />
+                            <Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} placeholder="Email" className="bg-black/20 border-white/10" />
+                            <Input value={editForm.mobileNumber} onChange={(e) => setEditForm({ ...editForm, mobileNumber: e.target.value })} placeholder="Mobile" className="bg-black/20 border-white/10" />
+                            <select value={editForm.userType} onChange={(e) => setEditForm({ ...editForm, userType: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                              <option value="client">client</option>
+                              <option value="healer">healer</option>
+                              <option value="semi-healer">semi-healer</option>
+                            </select>
+                            <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} /> Active</label>
+                            <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={() => updateUserMutation.mutate()}>Save changes</Button>
                           </div>
-                          <div className="text-xs text-slate-400">
-                            Credits: {profileQuery.data.user.credits}
-                            {profileQuery.data.user.lastActivityAt
-                              ? ` · Last active ${new Date(profileQuery.data.user.lastActivityAt).toLocaleString()}`
-                              : ""}
-                          </div>
-                        </div>
-                        <span
-                          className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(
-                            profileQuery.data.user.phase
-                          )}`}
-                        >
-                          {phaseLabel(profileQuery.data.user.phase, profileQuery.data.user.phaseLabel)}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="rounded-lg bg-black/20 p-2">Aura: {profileQuery.data.activity.auraReadings.length}</div>
-                        <div className="rounded-lg bg-black/20 p-2">Vibe: {profileQuery.data.activity.vibeReadings.length}</div>
-                        <div className="rounded-lg bg-black/20 p-2">
-                          Numerology: {profileQuery.data.activity.numerologyReadings.length}
-                        </div>
-                        <div className="rounded-lg bg-black/20 p-2">Payments: {profileQuery.data.payments.length}</div>
-                        <div className="rounded-lg bg-black/20 p-2">Journals: {profileQuery.data.activity.journals || 0}</div>
-                        <div className="rounded-lg bg-black/20 p-2">Logins: {profileQuery.data.activity.logins || 0}</div>
-                      </div>
-
-                      <div>
-                        <div className="text-sm font-medium mb-2 flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-indigo-300" /> Activity timeline
-                        </div>
-                        <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
-                          {(profileQuery.data.timeline || []).length === 0 && (
-                            <p className="text-xs text-slate-400">No recorded activity yet.</p>
-                          )}
-                          {(profileQuery.data.timeline || []).slice(0, 40).map((ev: any, idx: number) => (
-                            <div
-                              key={`${ev.type}-${idx}`}
-                              className={`rounded-lg bg-black/20 border-l-2 pl-3 py-2 pr-2 ${timelineTone(ev.type)}`}
-                            >
-                              <div className="text-xs font-medium">{ev.title}</div>
-                              {ev.detail && <div className="text-[11px] text-slate-400 mt-0.5">{ev.detail}</div>}
-                              <div className="text-[10px] text-slate-500 mt-1">
-                                {ev.at ? new Date(ev.at).toLocaleString() : ""}
-                              </div>
+                        ) : <p className="text-xs text-slate-400">View only</p>}
+                        {crmAccess?.canEditCredits && (
+                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                            <div className="text-sm font-medium">Credits + expiry</div>
+                            <Input value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="bg-black/20 border-white/10" />
+                            <select value={creditValidityDays} onChange={(e) => setCreditValidityDays(e.target.value)} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                              <option value="3">3 days</option>
+                              <option value="30">1 month</option>
+                              <option value="60">2 months</option>
+                              <option value="90">3 months</option>
+                              <option value="180">6 months</option>
+                            </select>
+                            <div className="grid grid-cols-3 gap-2">
+                              <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("add")}>Add</Button>
+                              <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("subtract")}>Subtract</Button>
+                              <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("set")}>Set</Button>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {crmAccess?.canEditUsers ? (
-                        <div className="space-y-2">
-                          <Input
-                            value={editForm.name}
-                            onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                            placeholder="Name"
-                            className="bg-black/20 border-white/10"
-                          />
-                          <Input
-                            value={editForm.email}
-                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                            placeholder="Email"
-                            className="bg-black/20 border-white/10"
-                          />
-                          <Input
-                            value={editForm.mobileNumber}
-                            onChange={(e) => setEditForm({ ...editForm, mobileNumber: e.target.value })}
-                            placeholder="Mobile"
-                            className="bg-black/20 border-white/10"
-                          />
-                          <select
-                            value={editForm.userType}
-                            onChange={(e) => setEditForm({ ...editForm, userType: e.target.value })}
-                            className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                          >
-                            <option value="client">client</option>
-                            <option value="healer">healer</option>
-                            <option value="semi-healer">semi-healer</option>
-                          </select>
-                          <label className="flex items-center gap-2 text-sm text-slate-300">
-                            <input
-                              type="checkbox"
-                              checked={editForm.isActive}
-                              onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
-                            />
-                            Active account
-                          </label>
-                          <Button
-                            className="w-full bg-indigo-600 hover:bg-indigo-500"
-                            disabled={updateUserMutation.isPending}
-                            onClick={() => updateUserMutation.mutate()}
-                          >
-                            Save changes
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-400">
-                          Profile fields are view-only for your role.
-                        </div>
-                      )}
-
-                      {crmAccess?.canEditCredits && (
-                        <div className="rounded-xl border border-white/10 p-3 space-y-2">
-                          <div className="text-sm font-medium flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" /> Credits
                           </div>
-                          <Input
-                            value={creditAmount}
-                            onChange={(e) => setCreditAmount(e.target.value)}
-                            placeholder="Amount"
-                            className="bg-black/20 border-white/10"
-                          />
-                          <select
-                            value={creditValidityDays}
-                            onChange={(e) => setCreditValidityDays(e.target.value)}
-                            className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                          >
-                            <option value="3">3 days</option>
-                            <option value="30">1 month</option>
-                            <option value="60">2 months</option>
-                            <option value="90">3 months</option>
-                            <option value="180">6 months</option>
-                          </select>
-                          <p className="text-[11px] text-slate-500">Expiry applies to Add and Set. Unused credits are removed when they expire.</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("add")}>
-                              Add
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("subtract")}>
-                              Subtract
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => creditMutation.mutate("set")}>
-                              Set
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-
-                      {(profileQuery.data.creditGrants || []).length > 0 && (
-                        <div className="rounded-xl border border-white/10 p-3 space-y-2">
-                          <div className="text-sm font-medium">Credit grants / expiry</div>
-                          <div className="max-h-40 overflow-y-auto space-y-1.5">
-                            {(profileQuery.data.creditGrants || []).map((g: any) => (
-                              <div key={g.id} className="text-xs rounded-lg bg-black/20 px-2 py-1.5 flex justify-between gap-2">
-                                <span>
-                                  {g.remaining}/{g.amount} left
-                                  {g.remaining <= 0 ? " · used/expired" : ""}
-                                </span>
-                                <span className="text-slate-400">
-                                  {g.expiresAt
-                                    ? `expires ${new Date(g.expiresAt).toLocaleDateString()}`
-                                    : "no expiry"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {(profileQuery.data.user.userType === "healer" ||
-                        profileQuery.data.user.userType === "semi-healer") &&
-                        crmAccess?.canManageHealers && (
+                        )}
+                        {(profileQuery.data.user.userType === "healer" || profileQuery.data.user.userType === "semi-healer") && crmAccess?.canManageHealers && (
                           <div className="rounded-xl border border-white/10 p-3 space-y-2">
                             <div className="text-sm font-medium">Licence & contract</div>
-                            <select
-                              value={contractForm.licenceStatus}
-                              onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })}
-                              className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                            >
+                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
                               <option value="unknown">Licence: unknown</option>
                               <option value="valid">Licence: valid</option>
                               <option value="expired">Licence: expired</option>
                               <option value="pending">Licence: pending</option>
                             </select>
-                            <select
-                              value={contractForm.contractStatus}
-                              onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })}
-                              className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
-                            >
+                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
                               <option value="unsigned">Contract: unsigned</option>
                               <option value="signed">Contract: signed</option>
                               <option value="expired">Contract: expired</option>
                             </select>
-                            <Input
-                              value={contractForm.notes}
-                              onChange={(e) => setContractForm({ ...contractForm, notes: e.target.value })}
-                              placeholder="Notes"
-                              className="bg-black/20 border-white/10"
-                            />
-                            <Button size="sm" className="w-full" onClick={() => contractMutation.mutate()}>
-                              Save contract
-                            </Button>
+                            <Button size="sm" className="w-full" onClick={() => contractMutation.mutate()}>Save contract</Button>
                           </div>
                         )}
-
-                      <div className="grid grid-cols-2 gap-2">
-                        {crmAccess?.canExportData && (
-                          <a href={`/api/crm/users/${selectedUserId}/export`} target="_blank" rel="noreferrer">
-                            <Button variant="outline" className="w-full border-white/15">
-                              <Download className="h-4 w-4 mr-1" /> GDPR Export
-                            </Button>
-                          </a>
-                        )}
-                        {crmAccess?.canEraseUsers && (
-                          <Button
-                            variant="destructive"
-                            className="w-full"
-                            onClick={() => {
-                              if (confirm("Erase PII and deactivate this user?")) eraseMutation.mutate();
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Erase
-                          </Button>
-                        )}
+                        <div className="grid grid-cols-2 gap-2">
+                          {crmAccess?.canExportData && <a href={`/api/crm/users/${selectedUserId}/export`} target="_blank" rel="noreferrer"><Button variant="outline" className="w-full border-white/15"><Download className="h-4 w-4 mr-1" /> Export</Button></a>}
+                          {crmAccess?.canEraseUsers && <Button variant="destructive" className="w-full" onClick={() => { if (confirm("Erase PII and deactivate?")) eraseMutation.mutate(); }}><Trash2 className="h-4 w-4 mr-1" /> Erase</Button>}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           )}
+
 
           {section === "healers" && (
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <UserCog className="h-4 w-4 text-fuchsia-300" /> Healer / Practitioner Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {healersQuery.isLoading ? (
-                  <div className="py-10 flex justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-slate-400 border-b border-white/10">
-                          <th className="pb-2 pr-3">Healer</th>
-                          <th className="pb-2 pr-3">Type</th>
-                          <th className="pb-2 pr-3">Credits</th>
-                          <th className="pb-2 pr-3">Sessions</th>
-                          <th className="pb-2 pr-3">Licence</th>
-                          <th className="pb-2">Contract</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(healersQuery.data?.healers || []).map((h: any) => (
-                          <tr
-                            key={h.id}
-                            className="border-b border-white/5 hover:bg-white/5 cursor-pointer"
-                            onClick={() => {
-                              setSelectedUserId(h.id);
-                              setSection("users");
-                            }}
-                          >
-                            <td className="py-2.5 pr-3">
-                              <div className="font-medium">{h.name || h.username}</div>
-                              <div className="text-xs text-slate-400">{h.email || "—"}</div>
-                            </td>
-                            <td className="py-2.5 pr-3">{h.userType}</td>
-                            <td className="py-2.5 pr-3 font-mono text-emerald-300">{h.credits}</td>
-                            <td className="py-2.5 pr-3">{h.healerSessionCount}</td>
-                            <td className="py-2.5 pr-3">{h.contract?.licenceStatus || "unknown"}</td>
-                            <td className="py-2.5">{h.contract?.contractStatus || "unsigned"}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/5 p-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold flex items-center gap-2"><UserCog className="h-5 w-5 text-fuchsia-300" /> Healers / Practitioners</h2>
+                  <p className="text-sm text-slate-400 mt-1">Sessions, credits, licence/contract status, and booking-related support tickets.</p>
+                </div>
+                {crmAccess?.canEditUsers && (
+                  <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500" onClick={() => setQuickActionOpen(true)}>Add healer</Button>
                 )}
-                <p className="text-xs text-slate-400 mt-4">
-                  Click a healer to open their profile, activity, and licence/contract editor.
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="grid xl:grid-cols-5 gap-4">
+                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                  <CardHeader><CardTitle className="text-base">Practitioner directory</CardTitle></CardHeader>
+                  <CardContent>
+                    {healersQuery.isLoading ? (
+                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-slate-400 border-b border-white/10">
+                              <th className="pb-2 pr-3">Healer</th>
+                              <th className="pb-2 pr-3">Type</th>
+                              <th className="pb-2 pr-3">Credits</th>
+                              <th className="pb-2 pr-3">Sessions</th>
+                              <th className="pb-2 pr-3">Licence</th>
+                              <th className="pb-2">Contract</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(healersQuery.data?.healers || []).map((h: any) => (
+                              <tr key={h.id} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedHealerId === h.id ? "bg-fuchsia-500/10" : ""}`}
+                                onClick={() => { setSelectedHealerId(h.id); setSelectedUserId(h.id); }}>
+                                <td className="py-2.5 pr-3">
+                                  <div className="font-medium">{h.name || h.username}</div>
+                                  <div className="text-xs text-slate-400">{h.email || "—"}</div>
+                                </td>
+                                <td className="py-2.5 pr-3">{h.userType}</td>
+                                <td className="py-2.5 pr-3 font-mono text-emerald-300">{h.credits}</td>
+                                <td className="py-2.5 pr-3">{h.healerSessionCount}</td>
+                                <td className="py-2.5 pr-3">{h.contract?.licenceStatus || "unknown"}</td>
+                                <td className="py-2.5">{h.contract?.contractStatus || "unsigned"}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                  <CardHeader><CardTitle className="text-base">Practitioner detail</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    {!selectedHealerId && <p className="text-sm text-slate-400">Select a practitioner to manage contract and see booking tickets.</p>}
+                    {selectedHealerId && profileQuery.data && (
+                      <>
+                        <div className="text-lg font-semibold">{profileQuery.data.user.name || profileQuery.data.user.username}</div>
+                        <div className="text-xs text-slate-400">Credits {profileQuery.data.user.credits} · Sessions {profileQuery.data.user.healerSessionCount || 0}</div>
+                        {crmAccess?.canManageHealers && (
+                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                            <div className="text-sm font-medium">Licence & contract</div>
+                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                              <option value="unknown">Licence: unknown</option>
+                              <option value="valid">Licence: valid</option>
+                              <option value="expired">Licence: expired</option>
+                              <option value="pending">Licence: pending</option>
+                            </select>
+                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                              <option value="unsigned">Contract: unsigned</option>
+                              <option value="signed">Contract: signed</option>
+                              <option value="expired">Contract: expired</option>
+                            </select>
+                            <Input value={contractForm.notes} onChange={(e) => setContractForm({ ...contractForm, notes: e.target.value })} placeholder="Notes" className="bg-black/20 border-white/10" />
+                            <Button size="sm" className="w-full" onClick={() => contractMutation.mutate()}>Save contract</Button>
+                          </div>
+                        )}
+                        {crmAccess?.canManageTickets && (
+                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                            <div className="text-sm font-medium flex items-center gap-2"><Ticket className="h-4 w-4" /> Booking / support tickets</div>
+                            {(healerTicketsQuery.data?.tickets || []).filter((t: any) => String(t.metadata || "").includes(String(selectedHealerId)) || t.userId === selectedHealerId).slice(0, 8).map((t: any) => (
+                              <div key={t.id} className="text-xs rounded bg-black/20 p-2">
+                                <div className="font-medium">{t.subject}</div>
+                                <div className="text-slate-400">{t.status} · {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ""}</div>
+                              </div>
+                            ))}
+                            {(healerTicketsQuery.data?.tickets || []).length === 0 && <p className="text-xs text-slate-400">No booking tickets yet.</p>}
+                            <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("tickets")}>Open full inbox</Button>
+                          </div>
+                        )}
+                        {crmAccess?.canEditUsers && (
+                          <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("direct-data")}>Edit in Direct Data</Button>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           )}
+
 
           {section === "revenue" && (
             <div className="space-y-4">
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Wallet className="h-5 w-5 text-emerald-300" /> Revenue, credits & refunds</h2>
+                <p className="text-sm text-slate-400 mt-1">Payments, credit expiry log, and refund history in one place.</p>
+              </div>
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-slate-400">Entity:</span>
                 {["all", "gbp", "inr"].map((e) => (
-                  <button
-                    key={e}
-                    onClick={() => setEntityFilter(e)}
-                    className={`rounded-full px-3 py-1 text-xs border ${
-                      entityFilter === e ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"
-                    }`}
-                  >
+                  <button key={e} onClick={() => setEntityFilter(e)} className={`rounded-full px-3 py-1 text-xs border ${entityFilter === e ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"}`}>
                     {e === "all" ? "All" : e.toUpperCase()}
                   </button>
                 ))}
               </div>
-              <div className="grid xl:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
+                {[
+                  { label: "Completed revenue", value: `£${(revenueQuery.data?.summary?.totalRevenue || 0).toLocaleString()}`, tone: "text-emerald-300" },
+                  { label: "Refunds", value: `£${(revenueQuery.data?.summary?.totalRefunds || 0).toLocaleString()}`, tone: "text-rose-300" },
+                  { label: "Credits expired", value: (revenueQuery.data?.summary?.expiredCredits || 0).toLocaleString(), tone: "text-amber-300" },
+                  { label: "Grants expiring ≤14d", value: (revenueQuery.data?.summary?.expiringSoonCount || 0).toLocaleString(), tone: "text-sky-300" },
+                ].map((c) => (
+                  <Card key={c.label} className="bg-white/5 border-white/10"><CardContent className="p-4"><div className="text-xs text-slate-400 mb-1">{c.label}</div><div className={`text-xl font-semibold ${c.tone}`}>{c.value}</div></CardContent></Card>
+                ))}
+              </div>
+              <div className="grid xl:grid-cols-2 gap-4">
                 <Card className="bg-white/5 border-white/10">
-                  <CardHeader>
-                    <CardTitle className="text-base">Revenue summary</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Completed revenue</span>
-                      <span className="font-mono">£{(revenueQuery.data?.summary?.totalRevenue || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Refunds</span>
-                      <span className="font-mono text-rose-300">
-                        £{(revenueQuery.data?.summary?.totalRefunds || 0).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Completed txns</span>
-                      <span>{revenueQuery.data?.summary?.completedCount || 0}</span>
-                    </div>
+                  <CardHeader><CardTitle className="text-base">Refund log</CardTitle></CardHeader>
+                  <CardContent className="space-y-2 max-h-72 overflow-y-auto">
+                    {(revenueQuery.data?.refundLog || []).length === 0 && <p className="text-sm text-slate-400">No refunds recorded yet.</p>}
+                    {(revenueQuery.data?.refundLog || []).slice(0, 40).map((r: any, i: number) => (
+                      <div key={`${r.kind}-${r.id}-${i}`} className="text-xs rounded-lg bg-black/20 p-2 flex justify-between gap-2">
+                        <div>
+                          <div className="font-medium">{r.kind === "payment_refund" ? "Payment refund" : "Credit refund"}</div>
+                          <div className="text-slate-400">User #{r.userId}{r.username ? ` · @${r.username}` : ""} · {r.description || ""}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono text-rose-300">{typeof r.amount === "number" ? r.amount : r.amount}</div>
+                          <div className="text-slate-500">{r.at ? new Date(r.at).toLocaleDateString() : ""}</div>
+                        </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
-                <Card className="bg-white/5 border-white/10 xl:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="text-base">Recent payments</CardTitle>
-                  </CardHeader>
-                  <CardContent className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-slate-400 border-b border-white/10">
-                          <th className="pb-2">User</th>
-                          <th className="pb-2">Amount</th>
-                          <th className="pb-2">Status</th>
-                          <th className="pb-2">When</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(revenueQuery.data?.payments || []).slice(0, 30).map((p: any) => (
-                          <tr key={p.id} className="border-b border-white/5">
-                            <td className="py-2">{p.userId}</td>
-                            <td className="py-2 font-mono">£{((p.amount || 0) / 100).toFixed(2)}</td>
-                            <td className="py-2">{p.status}</td>
-                            <td className="py-2 text-slate-400">
-                              {p.createdAt ? new Date(p.createdAt).toLocaleString() : ""}
-                            </td>
-                          </tr>
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader><CardTitle className="text-base">Credit expiry log</CardTitle></CardHeader>
+                  <CardContent className="space-y-2 max-h-72 overflow-y-auto">
+                    {(revenueQuery.data?.expiryLog || []).length === 0 && <p className="text-sm text-slate-400">No expiries yet. Expiring grants appear below.</p>}
+                    {(revenueQuery.data?.expiryLog || []).slice(0, 40).map((r: any, i: number) => (
+                      <div key={`exp-${r.id}-${i}`} className="text-xs rounded-lg bg-black/20 p-2 flex justify-between gap-2">
+                        <div>
+                          <div className="font-medium">Expired credits</div>
+                          <div className="text-slate-400">@{r.username || r.userId} · {r.description || ""}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono text-amber-300">-{r.amount}</div>
+                          <div className="text-slate-500">{r.at ? new Date(r.at).toLocaleDateString() : ""}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {(revenueQuery.data?.expiringSoon || []).length > 0 && (
+                      <div className="pt-2 border-t border-white/10 space-y-2">
+                        <div className="text-sm font-medium text-sky-200">Expiring soon</div>
+                        {(revenueQuery.data?.expiringSoon || []).map((g: any) => (
+                          <div key={g.id} className="text-xs rounded-lg bg-sky-500/10 p-2 flex justify-between">
+                            <span>User #{g.userId} · {g.remaining} left</span>
+                            <span>{g.expiresAt ? new Date(g.expiresAt).toLocaleDateString() : ""}</span>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader><CardTitle className="text-base">Recent payments</CardTitle></CardHeader>
+                <CardContent className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="text-left text-slate-400 border-b border-white/10"><th className="pb-2">User</th><th className="pb-2">Amount</th><th className="pb-2">Status</th><th className="pb-2">When</th></tr></thead>
+                    <tbody>
+                      {(revenueQuery.data?.payments || []).slice(0, 30).map((p: any) => (
+                        <tr key={p.id} className="border-b border-white/5">
+                          <td className="py-2">{p.userId}</td>
+                          <td className="py-2 font-mono">£{((p.amount || 0) / 100).toFixed(2)}</td>
+                          <td className="py-2">{p.status}</td>
+                          <td className="py-2 text-slate-400">{p.createdAt ? new Date(p.createdAt).toLocaleString() : ""}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </CardContent>
+              </Card>
             </div>
           )}
 
@@ -1530,6 +1455,12 @@ export default function AdminCrmApp() {
           )}
 
           {section === "leads" && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4">
+                <h2 className="text-lg font-semibold">Lead Pipeline</h2>
+                <p className="text-sm text-slate-400 mt-1">Add leads manually or upload CSV/XLS. Track from first contact to onboarded.</p>
+              </div>
+              <FileImportPanel target="leads" disabled={!crmAccess?.canEditUsers} />
             <div className="grid xl:grid-cols-3 gap-4">
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
@@ -1607,6 +1538,7 @@ export default function AdminCrmApp() {
                   )}
                 </CardContent>
               </Card>
+            </div>
             </div>
           )}
 
@@ -1877,9 +1809,18 @@ export default function AdminCrmApp() {
             <span>Open Tickets: {kpis?.openTickets ?? 0}</span>
             <span>MRR (30d): £{(kpis?.mrr ?? 0).toLocaleString()}</span>
           </div>
-          <div>AuraEye Admin CRM · v1.1.0 · Staff roles + activity</div>
+          <div>AuraEye Admin CRM · v1.2.0 · Distinct pages + imports</div>
         </footer>
       </div>
+
+      <QuickActionDialog
+        open={quickActionOpen}
+        onClose={() => setQuickActionOpen(false)}
+        canEditUsers={!!crmAccess?.canEditUsers}
+        canEditCredits={!!crmAccess?.canEditCredits}
+        canManageTickets={!!crmAccess?.canManageTickets}
+        selectedUserId={selectedUserId}
+      />
     </div>
   );
 }

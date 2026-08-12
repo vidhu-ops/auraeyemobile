@@ -1099,34 +1099,86 @@ export function registerCrmRoutes(app: Express) {
       const totalRevenue = completed.reduce((s, p) => s + (p.amount || 0), 0) / 100;
       const totalRefunds = refunded.reduce((s, p) => s + (p.amount || 0), 0) / 100;
 
+      const expiryLog = credits
+        .filter((c) => String(c.transactionType).toLowerCase().includes("expire"))
+        .map((c) => ({
+          kind: "credit_expiry",
+          id: c.id,
+          userId: c.userId,
+          username: c.username,
+          amount: Math.abs(c.amount),
+          at: c.createdAt,
+          description: c.description,
+        }));
+
+      let activeGrants: any[] = [];
+      let expiringSoon: any[] = [];
+      try {
+        const { creditGrants } = await import("../shared/schema");
+        const { gt, and, isNotNull, asc, sql: dsql } = await import("drizzle-orm");
+        const now = new Date();
+        const soon = new Date();
+        soon.setDate(soon.getDate() + 14);
+        activeGrants = await db
+          .select()
+          .from(creditGrants)
+          .where(gt(creditGrants.remaining, 0))
+          .orderBy(asc(dsql`coalesce(${creditGrants.expiresAt}, '9999-12-31')`))
+          .limit(100);
+        expiringSoon = activeGrants.filter(
+          (g) => g.expiresAt && new Date(g.expiresAt) <= soon && new Date(g.expiresAt) > now
+        );
+      } catch (grantErr) {
+        console.error("Credit grants load warning:", grantErr);
+      }
+
+      const refundLog = [
+        ...refunded.map((p) => ({
+          kind: "payment_refund",
+          id: p.id,
+          userId: p.userId,
+          amount: (p.amount || 0) / 100,
+          at: p.completedAt || p.createdAt,
+          description: p.status,
+        })),
+        ...credits
+          .filter(
+            (c) =>
+              String(c.transactionType).toLowerCase().includes("refund") ||
+              (c.amount < 0 && String(c.description || "").toLowerCase().includes("refund"))
+          )
+          .map((c) => ({
+            kind: "credit_refund",
+            id: c.id,
+            userId: c.userId,
+            username: c.username,
+            amount: c.amount,
+            at: c.createdAt,
+            description: c.description,
+          })),
+      ].sort((a, b) => new Date(b.at as any).getTime() - new Date(a.at as any).getTime());
+
       res.json({
         entity,
         entities: [
           { id: "gbp", label: "AuraEye Solutions Ltd (GBP)" },
           { id: "inr", label: "Healer Nishant Academy / India (INR)" },
         ],
-        summary: { totalRevenue, totalRefunds, completedCount: completed.length, refundedCount: refunded.length },
+        summary: {
+          totalRevenue,
+          totalRefunds,
+          completedCount: completed.length,
+          refundedCount: refunded.length,
+          expiredCredits: expiryLog.reduce((s, e) => s + e.amount, 0),
+          activeGrantCount: activeGrants.length,
+          expiringSoonCount: expiringSoon.length,
+        },
         payments,
         recentCredits: credits,
-        refundLog: [
-          ...refunded.map((p) => ({
-            kind: "payment_refund",
-            id: p.id,
-            userId: p.userId,
-            amount: (p.amount || 0) / 100,
-            at: p.completedAt || p.createdAt,
-          })),
-          ...credits
-            .filter((c) => String(c.transactionType).toLowerCase().includes("refund") || c.amount < 0 && String(c.description || "").toLowerCase().includes("refund"))
-            .map((c) => ({
-              kind: "credit_refund",
-              id: c.id,
-              userId: c.userId,
-              amount: c.amount,
-              at: c.createdAt,
-              description: c.description,
-            })),
-        ],
+        refundLog,
+        expiryLog,
+        activeGrants: activeGrants.slice(0, 50),
+        expiringSoon,
       });
     } catch (error) {
       console.error("CRM revenue error:", error);
@@ -1226,9 +1278,11 @@ export function registerCrmRoutes(app: Express) {
     try {
       const status = String(req.query.status || "all");
       const channel = String(req.query.channel || "all");
+      const userIdFilter = req.query.userId ? parseInt(String(req.query.userId), 10) : null;
       let tickets = await db.select().from(supportTickets).orderBy(desc(supportTickets.createdAt)).limit(300);
       if (status !== "all") tickets = tickets.filter((t) => t.status === status);
       if (channel !== "all") tickets = tickets.filter((t) => t.channel === channel);
+      if (userIdFilter) tickets = tickets.filter((t) => t.userId === userIdFilter);
 
       const enriched = await Promise.all(
         tickets.map(async (t) => {
@@ -1331,6 +1385,180 @@ export function registerCrmRoutes(app: Express) {
     } catch (error) {
       console.error("CRM update lead error:", error);
       res.status(500).json({ message: "Failed to update lead" });
+    }
+  });
+
+  /** Bulk import users from CSV/XLS rows (JSON array from client parser) */
+  app.post("/api/crm/users/import", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+      if (!rows.length) return res.status(400).json({ message: "rows array required" });
+      if (rows.length > 500) return res.status(400).json({ message: "Max 500 rows per import" });
+
+      const results: { row: number; username?: string; ok: boolean; error?: string; id?: number }[] = [];
+      let created = 0;
+
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i] || {};
+        const username = String(r.username || r.Username || r.user || "").trim();
+        const password = String(r.password || r.Password || "ChangeMe123").trim();
+        const name = String(r.name || r.Name || username).trim();
+        const email = String(r.email || r.Email || "").trim() || null;
+        const mobileNumber = String(r.mobileNumber || r.mobile || r.phone || r.Phone || "").trim() || null;
+        const userTypeRaw = String(r.userType || r.type || r.Type || "client").trim().toLowerCase();
+        const userType = ["healer", "semi-healer", "semi_healer"].includes(userTypeRaw)
+          ? userTypeRaw === "semi_healer"
+            ? "semi-healer"
+            : userTypeRaw
+          : "client";
+        const creditsNum = Math.max(0, parseInt(String(r.credits ?? r.Credits ?? 0), 10) || 0);
+        const validityRaw = r.creditValidityDays ?? r.validityDays ?? r.validity ?? null;
+        let expiresAt: Date | null = null;
+        if (validityRaw !== null && validityRaw !== undefined && validityRaw !== "" && Number(validityRaw) > 0) {
+          expiresAt = daysFromNow(Number(validityRaw));
+        }
+
+        if (!username) {
+          results.push({ row: i + 1, ok: false, error: "username required" });
+          continue;
+        }
+        try {
+          const existing = await storage.getUserByUsername(username);
+          if (existing) {
+            results.push({ row: i + 1, username, ok: false, error: "username exists" });
+            continue;
+          }
+          const hashed = await hashPassword(password.length >= 6 ? password : "ChangeMe123");
+          const [user] = await db
+            .insert(users)
+            .values({
+              username,
+              password: hashed,
+              name,
+              email,
+              mobileNumber,
+              userType,
+              credits: creditsNum,
+              isActive: true,
+            } as any)
+            .returning();
+
+          if (creditsNum > 0) {
+            await db.insert(creditTransactions).values({
+              userId: user.id,
+              username: user.username,
+              amount: creditsNum,
+              transactionType: "crm_import",
+              description: expiresAt
+                ? `CSV/XLS import · expires ${expiresAt.toISOString().slice(0, 10)}`
+                : "CSV/XLS import · no expiry",
+              balanceAfter: creditsNum,
+            });
+            await addCreditGrant({
+              userId: user.id,
+              amount: creditsNum,
+              expiresAt,
+              source: "crm_import",
+              note: `Imported by ${req.user?.username}`,
+              createdByUserId: (req.user as any)?.id,
+              updateBalance: false,
+            });
+          }
+
+          if (userType === "healer" || userType === "semi-healer") {
+            try {
+              const existingHealer = await storage.getHealerByUsername(username);
+              if (!existingHealer) {
+                await storage.createHealer({
+                  username,
+                  password: hashed,
+                  name,
+                  email: email || `${username}@auraeye.local`,
+                  phone: mobileNumber || "n/a",
+                  specialty: String(r.specialty || "Energy healing"),
+                  description: "Imported via CRM CSV/XLS",
+                } as any);
+              }
+            } catch (_) {}
+          }
+
+          created += 1;
+          results.push({ row: i + 1, username, ok: true, id: user.id });
+        } catch (rowErr: any) {
+          results.push({ row: i + 1, username, ok: false, error: rowErr?.message || "failed" });
+        }
+      }
+
+      await writeAudit({
+        actor: req.user,
+        action: "import",
+        entityType: "user",
+        newValue: { created, total: rows.length },
+        note: "CSV/XLS user import",
+      });
+
+      res.json({ created, total: rows.length, results });
+    } catch (error) {
+      console.error("CRM users import error:", error);
+      res.status(500).json({ message: "Failed to import users" });
+    }
+  });
+
+  /** Bulk import leads from CSV/XLS rows */
+  app.post("/api/crm/leads/import", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+      if (!rows.length) return res.status(400).json({ message: "rows array required" });
+      if (rows.length > 500) return res.status(400).json({ message: "Max 500 rows per import" });
+
+      const results: { row: number; name?: string; ok: boolean; error?: string; id?: number }[] = [];
+      let created = 0;
+
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i] || {};
+        const name = String(r.name || r.Name || "").trim();
+        const email = String(r.email || r.Email || "").trim() || null;
+        const mobileNumber = String(r.mobileNumber || r.mobile || r.phone || r.Phone || "").trim() || null;
+        const source = String(r.source || r.Source || "csv_import").trim();
+        const stage = String(r.stage || r.Stage || "new").trim().toLowerCase();
+        const notes = String(r.notes || r.Notes || "").trim() || null;
+
+        if (!name) {
+          results.push({ row: i + 1, ok: false, error: "name required" });
+          continue;
+        }
+        try {
+          const [lead] = await db
+            .insert(crmLeads)
+            .values({
+              name,
+              email,
+              mobileNumber,
+              source,
+              stage: ["new", "contacted", "qualified", "onboarded", "lost"].includes(stage) ? stage : "new",
+              notes,
+              ownerUserId: (req.user as any)?.id,
+            })
+            .returning();
+          created += 1;
+          results.push({ row: i + 1, name, ok: true, id: lead.id });
+        } catch (rowErr: any) {
+          results.push({ row: i + 1, name, ok: false, error: rowErr?.message || "failed" });
+        }
+      }
+
+      await writeAudit({
+        actor: req.user,
+        action: "import",
+        entityType: "crm_lead",
+        newValue: { created, total: rows.length },
+        note: "CSV/XLS lead import",
+      });
+
+      res.json({ created, total: rows.length, results });
+    } catch (error) {
+      console.error("CRM leads import error:", error);
+      res.status(500).json({ message: "Failed to import leads" });
     }
   });
 }
