@@ -7,14 +7,33 @@ export type CrmSection =
   | "direct-data"
   | "audit"
   | "tickets"
+  | "staff"
+  | "leads"
+  | "analytics"
   | "modules";
 
+export type CrmAccess = {
+  role: string;
+  canViewUsers: boolean;
+  canEditUsers: boolean;
+  canEditCredits: boolean;
+  canViewRevenue: boolean;
+  canManageHealers: boolean;
+  canManageTickets: boolean;
+  canManageStaff: boolean;
+  canExportData: boolean;
+  canEraseUsers: boolean;
+  canViewAudit: boolean;
+};
+
 export interface CrmOverview {
+  phaseLabels?: Record<string, string>;
   kpis: {
     totalUsers: number;
     activeUsers: number;
     atRiskUsers: number;
-    churnedUsers: number;
+    dormantUsers?: number;
+    churnedUsers?: number;
     healers: number;
     activeHealers: number;
     mrr: number;
@@ -22,6 +41,7 @@ export interface CrmOverview {
   };
   phases: Record<string, number>;
   credits: { issued: number; redeemed: number; expired: number; refunded: number };
+  featureUsage?: { auraScans: number; vibeChecks: number; numerology: number; objectScans: number };
   revenueBySource: { name: string; value: number }[];
   recentActivity: any[];
   systemHealth: { name: string; status: string }[];
@@ -39,23 +59,29 @@ export interface CrmUserRow {
   soulEnergy?: number;
   isActive: boolean;
   phase: string;
+  phaseLabel?: string;
+  lastActivityAt?: string;
   createdAt?: string;
 }
 
+export const PHASE_LABELS: Record<string, string> = {
+  new: "New",
+  active: "Active",
+  "at-risk": "Needs attention",
+  dormant: "Inactive — long quiet",
+};
+
 export const CRM_MODULES = [
   { id: "direct-data", title: "Direct Data Control", description: "Edit users, healers, credits & records without SQL", phase: "1", color: "blue" },
-  { id: "users", title: "Users", description: "Complete profiles, journey phase, activity & payments", phase: "1", color: "blue" },
-  { id: "healers", title: "Healers / Practitioners", description: "Onboarding, activity, payouts, licence tracking", phase: "1", color: "blue" },
-  { id: "revenue", title: "Revenue & Payments", description: "Stripe transactions, credits issued vs redeemed", phase: "1", color: "blue" },
-  { id: "notifications", title: "Monthly Notifications", description: "At-risk, inactive & renewal attention queue", phase: "1", color: "blue" },
-  { id: "tickets", title: "Support / Ticketing", description: "Centralize issues outside WhatsApp/email threads", phase: "2", color: "purple" },
-  { id: "comms", title: "Communication Tools", description: "Templated WhatsApp/email campaigns", phase: "2", color: "purple", soon: true },
-  { id: "pipeline", title: "Lead Pipeline", description: "Prospect healers from first contact to onboarded", phase: "2", color: "purple", soon: true },
-  { id: "roles", title: "Roles & Permissions", description: "Founder / support / hire access slices", phase: "3", color: "teal", soon: true },
-  { id: "analytics", title: "Analytics & Reporting", description: "Cohorts, top healers, feature usage", phase: "3", color: "teal", soon: true },
+  { id: "users", title: "Users & activity", description: "Full timeline, journey phase, payments & credits", phase: "1", color: "blue" },
+  { id: "healers", title: "Healers / Practitioners", description: "Activity, sessions, licence & contract tracking", phase: "1", color: "blue" },
+  { id: "revenue", title: "Revenue & Payments", description: "Stripe txs, credits, refunds, entity split", phase: "1", color: "blue" },
+  { id: "notifications", title: "Monthly Notifications", description: "Needs-attention & inactive user queues", phase: "1", color: "blue" },
+  { id: "tickets", title: "Support / Ticketing", description: "Track issues outside WhatsApp/email threads", phase: "2", color: "purple" },
+  { id: "leads", title: "Lead Pipeline", description: "Prospect healers from first contact to onboarded", phase: "2", color: "purple" },
+  { id: "staff", title: "Roles & Permissions", description: "Create viewer/editor staff logins for /admin", phase: "3", color: "teal" },
+  { id: "analytics", title: "Analytics & Reporting", description: "Feature usage across scans & numerology", phase: "3", color: "teal" },
   { id: "audit", title: "Audit Log", description: "Who changed what, when, and previous values", phase: "A", color: "rose" },
   { id: "gdpr", title: "Data Export & Deletion", description: "GDPR/DPDPA access & erasure tooling", phase: "A", color: "rose" },
   { id: "rollback", title: "Rollback / Backup", description: "Revert a direct-edit from audit snapshots", phase: "A", color: "rose" },
-  { id: "credits-log", title: "Credit Expiry & Refund Log", description: "Expiry rules and refund/dispute history", phase: "A", color: "rose", soon: true },
-  { id: "contracts", title: "Practitioner Contracts", description: "Licence start/end and renewal state", phase: "A", color: "rose" },
 ] as const;

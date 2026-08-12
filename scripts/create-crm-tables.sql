@@ -46,3 +46,40 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 
 CREATE INDEX IF NOT EXISTS support_tickets_status_idx ON support_tickets(status);
 CREATE INDEX IF NOT EXISTS support_tickets_user_idx ON support_tickets(user_id);
+
+-- Staff logins for /admin (viewer / editor / support / owner)
+CREATE TABLE IF NOT EXISTS crm_staff (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+  role TEXT NOT NULL DEFAULT 'viewer',
+  display_name TEXT,
+  can_view_users BOOLEAN DEFAULT TRUE,
+  can_edit_users BOOLEAN DEFAULT FALSE,
+  can_edit_credits BOOLEAN DEFAULT FALSE,
+  can_view_revenue BOOLEAN DEFAULT TRUE,
+  can_manage_healers BOOLEAN DEFAULT FALSE,
+  can_manage_tickets BOOLEAN DEFAULT FALSE,
+  can_manage_staff BOOLEAN DEFAULT FALSE,
+  can_export_data BOOLEAN DEFAULT FALSE,
+  can_erase_users BOOLEAN DEFAULT FALSE,
+  can_view_audit BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS crm_staff_user_id_idx ON crm_staff(user_id);
+
+-- Lead pipeline (prospective healers / partners)
+CREATE TABLE IF NOT EXISTS crm_leads (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT,
+  mobile_number TEXT,
+  source TEXT DEFAULT 'manual',
+  stage TEXT NOT NULL DEFAULT 'new',
+  notes TEXT,
+  owner_user_id INTEGER REFERENCES users(id),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
