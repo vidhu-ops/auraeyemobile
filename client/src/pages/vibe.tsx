@@ -1,0 +1,1120 @@
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Camera, Sparkles, Zap, Eye, CheckCircle, AlertTriangle, Play, BookOpen, Upload, RotateCcw, X } from "lucide-react";
+import ImageUpload from "@/components/forms/image-upload";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import Navbar from "@/components/layout/navbar";
+import MobileNavigation from "@/components/layout/mobile-navigation";
+import { PremiumContentVideoModal } from "@/components/PremiumContentVideoModal";
+import { useBadgeContext } from "@/hooks/use-badge-context";
+import logoImage from "@assets/new-logo.jpeg";
+
+// Large media is lazy-loaded when the matching modal opens
+const loadMeditationVideo = () =>
+  import("@assets/WhatsApp Video 2025-08-11 at 3.45.29 AM_1755201271313.mp4").then(
+    (mod) => mod.default as string
+  );
+const loadDemoPdfReport = () =>
+  import("@assets/aura-chakra-analysis-vidhu-gupta-2025-11-29.pdf_(8)_1768045427610.pdf").then(
+    (mod) => mod.default as string
+  );
+
+/** Display size is ~400px; keep canvas near that so devices stay responsive */
+const VIBE_AURA_MAX_DIMENSION = 480;
+/** Particles per animation frame — same effect, UI can scroll between batches */
+const VIBE_AURA_PARTICLE_BATCH = 40;
+/** Make particles visibly larger on the downsized canvas */
+const VIBE_PARTICLE_SIZE_BOOST = 2.4;
+
+interface VibeResult {
+  dominantColor: string;
+  colorMeaning: {
+    positive: string[];
+    negative: string[];
+    remedy: string;
+  };
+  energyLevel: number;
+  message: string;
+  readingId: number | null;
+  visualizedImage?: string | null;
+}
+
+// Color to Hex mapping
+const colorToHex: { [key: string]: string } = {
+  'Red': '#FF6B6B',
+  'Orange': '#FFA500',
+  'Yellow': '#FFD700',
+  'Green': '#6BB66B',
+  'Blue': '#4A90E2',
+  'Indigo': '#4B0082',
+  'Violet': '#EE82EE',
+  'White': '#FFFFFF',
+  'Brown': '#8B4513',
+  'Gold': '#FFD700',
+  'Silver': '#C0C0C0',
+  'Black': '#000000',
+  'Pink': '#FF69B4',
+};
+
+const getColorHex = (colorName: string): string => {
+  return colorToHex[colorName] || '#4A90E2';
+};
+
+// Helper function to get color RGB values
+const getColorRGB = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    'Red': '255, 0, 0',
+    'Orange': '255, 165, 0',
+    'Yellow': '255, 255, 0',
+    'Green': '0, 255, 0',
+    'Blue': '0, 0, 255',
+    'Violet': '138, 43, 226',
+    'Indigo': '75, 0, 130',
+    'White': '255, 255, 255',
+    'Brown': '165, 42, 42',
+    'Gold': '255, 215, 0',
+    'Silver': '192, 192, 192',
+    'Black': '0, 0, 0',
+    'Pink': '255, 105, 180',
+  };
+  return colorMap[color] || '138, 43, 226';
+};
+
+// Add watermark to image
+const addWatermark = (
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
+  sizeScale: number
+) => {
+  const centerX = canvasWidth / 2;
+  const centerY = canvasHeight / 2;
+
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = 'white';
+  ctx.font = `${Math.max(20, Math.round(100 * sizeScale))}px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+  ctx.shadowBlur = Math.max(1, 4 * sizeScale);
+  ctx.shadowOffsetX = Math.max(1, 2 * sizeScale);
+  ctx.shadowOffsetY = Math.max(1, 2 * sizeScale);
+
+  ctx.fillText('AuraEye™', centerX, centerY);
+
+  ctx.restore();
+};
+
+const yieldToMain = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+
+type ParticleSpec = {
+  x: number;
+  y: number;
+  radius: number;
+  opacity: number;
+};
+
+// Same particle layers/counts as before; drawn in rAF batches so the page stays scrollable.
+const processImageWithVibeAuraEffect = (
+  imageBase64: string,
+  dominantColor: string,
+  setProcessedImage: (img: string) => void,
+  onComplete?: () => void
+) => {
+  const img = new Image();
+  img.src = imageBase64;
+
+  img.onerror = () => {
+    onComplete?.();
+  };
+
+  img.onload = () => {
+    void (async () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        if (!ctx) {
+          onComplete?.();
+          return;
+        }
+
+        const longestSide = Math.max(img.width, img.height) || 1;
+        const sizeScale =
+          longestSide > VIBE_AURA_MAX_DIMENSION
+            ? VIBE_AURA_MAX_DIMENSION / longestSide
+            : 1;
+        const drawWidth = Math.max(1, Math.round(img.width * sizeScale));
+        const drawHeight = Math.max(1, Math.round(img.height * sizeScale));
+
+        canvas.width = drawWidth;
+        canvas.height = drawHeight;
+
+        ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+        await yieldToMain();
+
+        const colorRGB = getColorRGB(dominantColor);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const personRadius = Math.min(canvas.width, canvas.height) * 0.25;
+        const [r, g, b] = colorRGB.split(',').map((num) => parseInt(num.trim()));
+
+        // Soft light gradient around the person (same vibe color, 50% opacity peak)
+        {
+          const innerR = personRadius * 0.55;
+          const midR = personRadius * 1.35;
+          const outerR = Math.min(canvas.width, canvas.height) * 0.62;
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          const personGlow = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            innerR,
+            centerX,
+            centerY,
+            outerR
+          );
+          personGlow.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+          personGlow.addColorStop(0.28, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          personGlow.addColorStop(0.55, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          personGlow.addColorStop(0.82, `rgba(${r}, ${g}, ${b}, 0.22)`);
+          personGlow.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+          ctx.fillStyle = personGlow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Second pass for a richer halo like the reference scan
+          ctx.globalCompositeOperation = 'soft-light';
+          const softHalo = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            personRadius * 0.4,
+            centerX,
+            centerY,
+            midR * 1.4
+          );
+          softHalo.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+          softHalo.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.5)`);
+          softHalo.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+          ctx.fillStyle = softHalo;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.restore();
+          await yieldToMain();
+        }
+
+        let seed = dominantColor.charCodeAt(0) + canvas.width + canvas.height;
+        const seededRandom = () => {
+          seed = (seed * 9301 + 49297) % 233280;
+          return seed / 233280;
+        };
+        const particleRadius = (minPx: number, rangePx: number) =>
+          (minPx + seededRandom() * rangePx) * sizeScale * VIBE_PARTICLE_SIZE_BOOST;
+
+        const drawParticles = async (
+          particles: ParticleSpec[],
+          composite: GlobalCompositeOperation,
+          radiusFactor: number,
+          blurFactor: number,
+          stops: Array<{ offset: number; alphaMul: number }>
+        ) => {
+          ctx.save();
+          ctx.globalCompositeOperation = composite;
+
+          for (let i = 0; i < particles.length; i++) {
+            const { x, y, radius, opacity } = particles[i];
+            ctx.save();
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, radius * radiusFactor);
+            for (const stop of stops) {
+              grad.addColorStop(
+                stop.offset,
+                stop.alphaMul === 0
+                  ? `rgba(${r}, ${g}, ${b}, 0)`
+                  : `rgba(${r}, ${g}, ${b}, ${opacity * stop.alphaMul})`
+              );
+            }
+            ctx.shadowBlur = radius * blurFactor;
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * radiusFactor, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            if ((i + 1) % VIBE_AURA_PARTICLE_BATCH === 0) {
+              await yieldToMain();
+            }
+          }
+
+          ctx.restore();
+          await yieldToMain();
+        };
+
+        // LAYER 1: Ultra-dense background smoke (600)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 600; i++) {
+            const x = seededRandom() * canvas.width;
+            const y = seededRandom() * canvas.height;
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            if (distanceFromCenter < personRadius * 1.5) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(30, 150),
+              opacity: 0.45 + seededRandom() * 0.5,
+            });
+          }
+          await drawParticles(particles, 'multiply', 0.8, 1.2, [
+            { offset: 0, alphaMul: 0.3 },
+            { offset: 0.5, alphaMul: 0.15 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        // LAYER 2: Dense medium smoke particles (800)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 800; i++) {
+            const x = seededRandom() * canvas.width;
+            const y = seededRandom() * canvas.height;
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            if (distanceFromCenter < personRadius * 1.4) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(20, 80),
+              opacity: 0.35 + seededRandom() * 0.45,
+            });
+          }
+          await drawParticles(particles, 'soft-light', 0.7, 1.0, [
+            { offset: 0, alphaMul: 0.25 },
+            { offset: 0.6, alphaMul: 0.1 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        // LAYER 3: Super dense small particles (1000)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 1000; i++) {
+            const x = seededRandom() * canvas.width;
+            const y = seededRandom() * canvas.height;
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            if (distanceFromCenter < personRadius * 1.3) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(8, 40),
+              opacity: 0.3 + seededRandom() * 0.4,
+            });
+          }
+          await drawParticles(particles, 'overlay', 0.6, 0.8, [
+            { offset: 0, alphaMul: 0.2 },
+            { offset: 0.7, alphaMul: 0.05 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        // LAYER 4: Fine smoke wisps (1200)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 1200; i++) {
+            const x = seededRandom() * canvas.width;
+            const y = seededRandom() * canvas.height;
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            if (distanceFromCenter < personRadius * 1.3) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(4, 20),
+              opacity: 0.25 + seededRandom() * 0.35,
+            });
+          }
+          await drawParticles(particles, 'color-dodge', 0.5, 0.6, [
+            { offset: 0, alphaMul: 0.15 },
+            { offset: 0.8, alphaMul: 0.05 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        // LAYER 5: Perimeter concentrated smoke (800)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 800; i++) {
+            const angle = seededRandom() * Math.PI * 2;
+            const distance =
+              personRadius * 1.6 +
+              seededRandom() * (Math.min(canvas.width, canvas.height) * 0.3);
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(15, 60),
+              opacity: 0.3 + seededRandom() * 0.45,
+            });
+          }
+          await drawParticles(particles, 'multiply', 0.7, 0.8, [
+            { offset: 0, alphaMul: 0.2 },
+            { offset: 0.7, alphaMul: 0.05 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        // LAYER 6: Ultra-fine atmospheric mist (600)
+        {
+          const particles: ParticleSpec[] = [];
+          for (let i = 0; i < 600; i++) {
+            const x = seededRandom() * canvas.width;
+            const y = seededRandom() * canvas.height;
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            if (distanceFromCenter < personRadius * 1.2) continue;
+            particles.push({
+              x,
+              y,
+              radius: particleRadius(60, 120),
+              opacity: 0.15 + seededRandom() * 0.2,
+            });
+          }
+          await drawParticles(particles, 'screen', 0.6, 0.5, [
+            { offset: 0, alphaMul: 0.1 },
+            { offset: 0.9, alphaMul: 0.02 },
+            { offset: 1, alphaMul: 0 },
+          ]);
+        }
+
+        ctx.globalCompositeOperation = 'source-over';
+        addWatermark(ctx, canvas.width, canvas.height, sizeScale);
+
+        const processedImageBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        setProcessedImage(processedImageBase64);
+      } catch (error) {
+        console.error('Aura visualization failed:', error);
+      } finally {
+        onComplete?.();
+      }
+    })();
+  };
+};
+
+export default function VibePage() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const { checkBadges, showBadges } = useBadgeContext();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isRenderingAura, setIsRenderingAura] = useState(false);
+  const [vibeResult, setVibeResult] = useState<VibeResult | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [userFeedback, setUserFeedback] = useState<'positive' | 'negative' | null>(null);
+  const [showPremiumVideo, setShowPremiumVideo] = useState(false);
+  const [showMeditationVideo, setShowMeditationVideo] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [showPostMeditationOptions, setShowPostMeditationOptions] = useState(false);
+  const [showPremiumPdf, setShowPremiumPdf] = useState(false);
+  const [meditationVideoUrl, setMeditationVideoUrl] = useState<string | null>(null);
+  const [demoPdfUrl, setDemoPdfUrl] = useState<string | null>(null);
+  const [isMeditationVideoLoading, setIsMeditationVideoLoading] = useState(false);
+  const [isDemoPdfLoading, setIsDemoPdfLoading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!showMeditationVideo || meditationVideoUrl) return;
+    let cancelled = false;
+    setIsMeditationVideoLoading(true);
+    loadMeditationVideo()
+      .then((url) => {
+        if (!cancelled) setMeditationVideoUrl(url);
+      })
+      .catch((error) => console.error("Failed to lazy-load meditation video:", error))
+      .finally(() => {
+        if (!cancelled) setIsMeditationVideoLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showMeditationVideo, meditationVideoUrl]);
+
+  useEffect(() => {
+    if (!showPremiumPdf || demoPdfUrl) return;
+    let cancelled = false;
+    setIsDemoPdfLoading(true);
+    loadDemoPdfReport()
+      .then((url) => {
+        if (!cancelled) setDemoPdfUrl(url);
+      })
+      .catch((error) => console.error("Failed to lazy-load demo PDF:", error))
+      .finally(() => {
+        if (!cancelled) setIsDemoPdfLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showPremiumPdf, demoPdfUrl]);
+
+  // Process image with smokey aura clouds around person (face visible in center)
+  const processImageWithVibeAura = (imageBase64: string, dominantColor: string) => {
+    setIsRenderingAura(true);
+    processImageWithVibeAuraEffect(
+      imageBase64,
+      dominantColor,
+      setProcessedImage,
+      () => setIsRenderingAura(false)
+    );
+  };
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error || new Error("Failed to read image"));
+      reader.readAsDataURL(file);
+    });
+
+  const handleImageSelect = async (file: File) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to use this feature",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setProcessedImage(null);
+    
+    try {
+      const previewDataUrl = await readFileAsDataUrl(file);
+      setImagePreview(previewDataUrl);
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('analysisType', 'quick-vibe');
+
+      const response = await apiRequest('POST', '/api/quick-vibe', formData);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to analyze your vibe');
+      }
+      
+      const data = await response.json();
+      
+      // Save the reading immediately for healers/semi-healers
+      if (user?.userType === 'healer' || user?.userType === 'semi_healer') {
+        try {
+          await apiRequest('POST', '/api/healer-vibe-reading', {
+            userId: user.id,
+            personalityColor: data.dominantColor,
+            colorMeaning: JSON.stringify(data.colorMeaning),
+            uploadedImage: previewDataUrl,
+            visualizedImage: null,
+            clientName: "Quick Scan Client",
+            fullAnalysis: JSON.stringify(data)
+          });
+          console.log("✅ Vibe reading saved to healer history");
+          queryClient.invalidateQueries({ queryKey: ['/api/healer-vibe-readings'] });
+        } catch (saveError) {
+          console.error("❌ Failed to save vibe reading to history:", saveError);
+        }
+      }
+      
+      setVibeResult({
+        dominantColor: data.dominantColor,
+        colorMeaning: data.colorMeaning,
+        energyLevel: data.energyLevel,
+        message: data.message,
+        readingId: data.readingId,
+        visualizedImage: data.visualizedImage || null
+      });
+      
+      // Chunked client-side aura — preview stays visible and page stays scrollable
+      processImageWithVibeAura(previewDataUrl, data.dominantColor);
+      
+      // Save last scan color for mascot
+      localStorage.setItem("lastAuraColor", data.dominantColor);
+      
+      toast({
+        title: "Vibe analysis complete!",
+        description: `Your dominant vibe is ${data.dominantColor}`,
+      });
+      
+      // Invalidate queries to refresh vibe readings and achievements
+      queryClient.invalidateQueries({ queryKey: ['/api/vibe-readings'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/credits", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/badge-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/healer-badges', user?.id] });
+      
+      // Check for new badges after vibe scan
+      await checkBadges();
+    } catch (error: any) {
+      // Reset image preview on error so user can try again
+      setImagePreview(null);
+      
+      toast({
+        title: "Analysis failed",
+        description: error.message || "Failed to analyze your vibe",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const resetAnalysis = () => {
+    setVibeResult(null);
+    setImagePreview(null);
+    setProcessedImage(null);
+    setUserFeedback(null);
+    setIsRenderingAura(false);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="p-6 text-center">
+            <Sparkles className="h-12 w-12 mx-auto mb-4 text-purple-600" />
+            <h2 className="text-2xl font-bold mb-2">What's My Vibe?</h2>
+            <p className="text-gray-200 mb-4">Please log in to discover your dominant energy</p>
+            <Link href="/auth">
+              <Button className="w-full">Log In</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!vibeResult) {
+    return (
+      <div className="min-h-screen flex flex-col pb-20">
+        <Navbar />
+        
+        {/* Hero Section */}
+        <div className="flex-grow bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 relative overflow-hidden">
+          {/* Decorative circles */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-40 right-20 w-64 h-64 bg-teal-500/30 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl"></div>
+          
+          <div className="container mx-auto px-4 py-16 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                Your Energy, Made Visible
+              </h1>
+              <h2 className="text-3xl md:text-5xl font-bold mb-8">
+                <span className="text-yellow-400">Scan</span>
+                <span className="text-white"> . </span>
+                <span className="text-cyan-400">Heal</span>
+                <span className="text-white"> . </span>
+                <span className="text-green-400">Transform</span>
+              </h2>
+              <p className="text-lg md:text-xl text-cyan-100 mb-12 max-w-2xl mx-auto">
+                Unlock the power of your personal energy field with aura readings, personalized spiritual guidance, and healing practices.
+              </p>
+
+              {/* Service Buttons */}
+              <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-12">
+                <Link href="/aura-analysis">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 rounded-full text-lg shadow-lg">
+                    <Camera className="mr-2 h-5 w-5" />
+                    Human Aura & Chakra Analysis
+                  </Button>
+                </Link>
+                
+                <Link href="/object-analysis">
+                  <Button className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-6 rounded-full text-lg shadow-lg">
+                    <Eye className="mr-2 h-5 w-5" />
+                    Object & Space Aura Analysis
+                  </Button>
+                </Link>
+                
+                <Button 
+                  onClick={() => document.getElementById('vibe-upload')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-6 rounded-full text-lg shadow-lg"
+                >
+                  <Zap className="mr-2 h-5 w-5" />
+                  What's My Vibe!
+                </Button>
+              </div>
+
+              {/* Upload Section */}
+              <div id="vibe-upload" className="mt-16">
+                <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+                  <CardContent className="p-8">
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                      <Sparkles className="h-8 w-8 text-yellow-400" />
+                      <h3 className="text-2xl font-bold text-white">Quick Vibe Check</h3>
+                    </div>
+                    
+                    <p className="text-cyan-100 mb-6">
+                      Upload your photo to discover your dominant energy color
+                    </p>
+
+                    <div className="max-w-md mx-auto">
+                      <ImageUpload
+                        onImageSelect={handleImageSelect}
+                        isLoading={isAnalyzing}
+                      />
+                    </div>
+
+                    {isAnalyzing && (
+                      <div className="text-center py-8 mt-4">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                        <p className="mt-4 text-white">Analyzing your vibe...</p>
+                      </div>
+                    )}
+
+                    <div className="mt-6 bg-yellow-400/20 border border-yellow-400/30 rounded-lg p-4">
+                      <p className="text-sm text-yellow-100">
+                        <strong>Quick Check:</strong> 1 credit • For comprehensive analysis with detailed chakra insights, try Human Aura Analysis
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <MobileNavigation />
+      </div>
+    );
+  }
+
+  // Result view
+  return (
+    <div className="min-h-screen flex flex-col pb-24 overflow-x-hidden">
+      <Navbar />
+      
+      <div className="flex-grow bg-gradient-to-br from-slate-50 to-purple-50 py-8 md:py-12 overflow-y-auto">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-black">
+              Your Vibe: <span style={{ color: vibeResult.dominantColor.toLowerCase() }}>{vibeResult.dominantColor}</span>
+            </h1>
+            <p className="text-lg text-purple-600 font-medium">{vibeResult.message}</p>
+            <div className="mt-4 text-sm text-slate-600">
+              <p>Today's Scan</p>
+              
+              <p className="text-purple-600">Upgrade for daily scans</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Image — explicit width so it is never zero-sized on mobile */}
+            <div className="flex justify-center items-start w-full px-2">
+              {vibeResult && (
+                <div
+                  className="relative w-full max-w-[400px] rounded-3xl overflow-hidden bg-slate-900"
+                  style={{
+                    boxShadow: `0 0 40px ${getColorHex(vibeResult.dominantColor)}80, 0 0 80px ${getColorHex(vibeResult.dominantColor)}55`,
+                  }}
+                >
+                  <img
+                    src={processedImage || imagePreview || undefined}
+                    alt="Your vibe with aura"
+                    className="block w-full h-auto max-h-[70vh] object-contain bg-black"
+                  />
+
+                  {isRenderingAura && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/35 pointer-events-none">
+                      <div className="rounded-full bg-black/70 text-white text-sm px-4 py-2">
+                        Applying aura…
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full font-semibold text-sm tracking-wider shadow-lg z-10">
+                    AuraEye™
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Analysis */}
+            <div className="space-y-4">
+              {/* Positive Section */}
+              <Card className="border-green-200 bg-green-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <h3 className="font-semibold text-green-900">Positive Traits</h3>
+                  </div>
+                  <h4 className="font-semibold text-green-800 mb-3">What's bright right now</h4>
+                  <ul className="space-y-2">
+                    {vibeResult.colorMeaning.positive.map((trait, idx) => (
+                      <li key={idx} className="text-green-700 text-sm flex items-start gap-2">
+                        <span className="text-green-600 font-bold mt-0.5">•</span>
+                        <span>{trait}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Negative/Balance Section */}
+              <Card className="border-orange-200 bg-orange-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    <h3 className="font-semibold text-orange-900">Areas to Balance</h3>
+                  </div>
+                  <h4 className="font-semibold text-orange-800 mb-3">What needs grounding</h4>
+                  <ul className="space-y-2">
+                    {vibeResult.colorMeaning.negative.map((trait, idx) => (
+                      <li key={idx} className="text-orange-700 text-sm flex items-start gap-2">
+                        <span className="text-orange-600 font-bold mt-0.5">•</span>
+                        <span>{trait}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Remedy Section */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="h-5 w-5 text-blue-600" />
+                    <h3 className="font-semibold text-blue-900">Remedy & Guidance</h3>
+                  </div>
+                  <p className="text-blue-700 text-sm leading-relaxed">{vibeResult.colorMeaning.remedy}</p>
+                </CardContent>
+              </Card>
+
+              {/* Premium Content */}
+              <Card className="border-slate-300 bg-slate-100">
+                <CardContent className="p-6 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Zap className="h-5 w-5 text-purple-600" />
+                    <h3 className="text-xl font-semibold text-slate-900">Premium Content</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Upgrade to unlock detailed insights
+                  </p>
+                  <p className="text-m text-slate-500 mb-4">
+                   Get a glimpse of the report.
+                  </p>
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    
+                    <Button 
+                      onClick={() => setShowPremiumPdf(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      See Demo Premium Report
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Feedback Section */}
+          <Card className="mb-8 border-blue-200 bg-blue-50">
+            <CardContent className="p-6 text-center">
+              <h3 className="font-semibold text-blue-900 mb-2">Which do you relate to more?</h3>
+              <p className="text-sm text-blue-700 mb-4">Your feedback helps us improve our spiritual analysis accuracy.</p>
+              <div className="flex gap-4 justify-center">
+                <Button 
+                  onClick={() => {
+                    setUserFeedback('positive');
+                    setShowThankYou(true);
+                  }}
+                  variant={userFeedback === 'positive' ? 'default' : 'outline'}
+                  className={userFeedback === 'positive' ? 'bg-green-600 hover:bg-green-700' : 'border-green-600 text-green-600'}
+                >
+                  Positive
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setUserFeedback('negative');
+                    setShowMeditationVideo(true);
+                  }}
+                  variant={userFeedback === 'negative' ? 'default' : 'outline'}
+                  className={userFeedback === 'negative' ? 'bg-red-600 hover:bg-red-700' : 'border-red-600 text-red-600'}
+                >
+                  Negative
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <Link href="/aura-analysis" className="block">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6">
+                Get Full Analysis
+              </Button>
+            </Link>
+            
+            <Link href="/journal" className="block">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Journal with us
+              </Button>
+            </Link>
+            
+            <Button onClick={resetAnalysis} variant="outline" className="w-full py-6 bg-green-700">
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Try Another Photo
+            </Button>
+          </div>
+
+          {/* Upgrade Cards */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* Connect to Healer */}
+            <Card className="border-cyan-300 bg-gradient-to-br from-cyan-50 to-teal-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-cyan-900 mb-2">Connect to a Healer</h3>
+                <p className="text-sm text-cyan-700 mb-4">
+                  Unlock live full report via a certified healer • Costs 1 credit
+                </p>
+                <Link href="/healers">
+                  <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white">
+                    Book Now
+                  </Button>
+                </Link>
+                <p className="text-xs text-cyan-600 mt-3 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Watermark on all reports (anti-abuse)
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Professional Healer Dashboard */}
+            <Card className="border-purple-300 bg-gradient-to-br from-purple-50 to-indigo-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-purple-900 mb-2">Upgrade to Professional Healer Dashboard</h3>
+                <p className="text-sm text-purple-700 mb-4">
+                  Full Aura + Chakra Numerology + Weekly Plan + Daily Scans + talent management
+                </p>
+                <Link href="/pricing">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white mb-3">
+                    Upgrade Now
+                  </Button>
+                </Link>
+                <p className="text-xs text-purple-600 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  One-tap connection or upgrade
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Elite Healer Dashboard */}
+            <Card className="border-pink-300 bg-gradient-to-br from-pink-50 to-rose-50">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-pink-900 mb-2">Upgrade to Elite Healer Dashboard</h3>
+                <p className="text-sm text-pink-700 mb-4">
+                  Everything in Pro + Object 1st Scans + Professional listing + Recommended against in our list of healers
+                </p>
+                <Link href="/pricing">
+                  <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white mb-3">
+                    Upgrade Elite
+                  </Button>
+                </Link>
+                <p className="text-xs text-pink-600 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Bonus: 3 object scans on first upgrade
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Footer Info */}
+          <div className="grid md:grid-cols-4 gap-4 text-center text-sm text-slate-600">
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-yellow-500" />
+              <p>Watermark on all reports</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-purple-500" />
+              <p>One-tap connection or upgrade</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-orange-500" />
+              <p>Bonus: 3 object scans on first upgrade</p>
+            </div>
+            <div>
+              <Zap className="h-5 w-5 mx-auto mb-1 text-slate-500" />
+              <p>Priority support for paid plans</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <MobileNavigation />
+      
+      {/* Premium Video Modal */}
+      <PremiumContentVideoModal 
+        isOpen={showPremiumVideo} 
+        onClose={() => setShowPremiumVideo(false)} 
+      />
+      
+      {/* Meditation Video Modal */}
+      {showMeditationVideo && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-2xl font-bold text-black">Meditation Guide</h2>
+              <button
+                onClick={() => {
+                  setShowMeditationVideo(false);
+                  setShowPostMeditationOptions(true);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-6">
+              {meditationVideoUrl ? (
+                <video
+                  ref={videoRef}
+                  controls
+                  autoPlay
+                  className="w-full rounded-lg"
+                  onEnded={() => {
+                    setShowMeditationVideo(false);
+                    setShowPostMeditationOptions(true);
+                  }}
+                >
+                  <source src={meditationVideoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-slate-600">
+                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mb-4"></div>
+                  <p>{isMeditationVideoLoading ? "Loading meditation video..." : "Preparing video..."}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Thank You Modal */}
+      {showThankYou && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+            <div className="mb-4 text-4xl">🙏</div>
+            <h2 className="text-2xl font-bold text-black mb-2">Thank You!</h2>
+            <p className="text-gray-600 mb-6">Your feedback helps us improve your spiritual journey. We appreciate you!</p>
+            <Button 
+              onClick={() => {
+                setShowThankYou(false);
+                resetAnalysis();
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              Try Another Scan
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* Post-Meditation Options Modal */}
+      {showPostMeditationOptions && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+            <h2 className="text-2xl font-bold text-black mb-4">How are you feeling?</h2>
+            <p className="text-gray-600 mb-6">Would you like to continue with another vibe scan or journal about your experience?</p>
+            <div className="flex flex-col gap-3">
+              <Button 
+                onClick={() => {
+                  setShowPostMeditationOptions(false);
+                  resetAnalysis();
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                Take Another Vibe Scan
+              </Button>
+              <Link href="/journal" className="w-full">
+                <Button 
+                  onClick={() => setShowPostMeditationOptions(false)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Journal About It
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium PDF Report Modal */}
+      {showPremiumPdf && (
+        <div 
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-2 sm:p-4"
+          onClick={() => setShowPremiumPdf(false)}
+        >
+          <div 
+            className="bg-white rounded-xl max-w-5xl w-full h-[95vh] flex flex-col shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button for mobile */}
+            <Button 
+              variant="mystical" 
+              size="sm" 
+              onClick={() => setShowPremiumPdf(false)}
+              className="absolute -top-12 right-0 sm:top-4 sm:right-4 rounded-full h-10 w-10 p-0 flex items-center justify-center bg-white/20 hover:bg-white/40 z-[110]"
+            >
+              <X className="h-6 w-6 text-white" />
+            </Button>
+
+            <div className="flex-grow w-full h-full overflow-hidden rounded-xl">
+              {demoPdfUrl ? (
+                <iframe
+                  src={`${demoPdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full h-full border-0 bg-white"
+                  title="Premium Aura & Chakra Analysis Report"
+                  style={{
+                    minHeight: '100%',
+                    width: '100%',
+                    display: 'block'
+                  }}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full min-h-[320px] text-slate-600 bg-slate-50">
+                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+                  <p>{isDemoPdfLoading ? "Loading demo report..." : "Preparing report..."}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="p-4 bg-white border-t flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <img src={logoImage} alt="AuraEye" className="h-6 w-6 rounded shadow-sm" />
+                <span className="text-xs font-semibold text-slate-500">Premium Demo Report Preview</span>
+              </div>
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold shadow-lg">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Unlock Full Version
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
