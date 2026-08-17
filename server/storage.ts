@@ -247,12 +247,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
 
-    // If user is a healer, sync password to healers table
-    if (user && (user.userType === 'healer' || user.userType === 'semi-healer')) {
-      await db
-        .update(healers)
-        .set({ password: hashedPassword })
-        .where(eq(healers.username, user.username));
+    // Always sync healers table by username (case-insensitive) so healer login stays in sync
+    if (user?.username) {
+      try {
+        await db
+          .update(healers)
+          .set({ password: hashedPassword })
+          .where(sql`LOWER(${healers.username}) = LOWER(${user.username})`);
+      } catch (err) {
+        console.error("Failed to sync healer password:", err);
+      }
     }
     return user || undefined;
   }

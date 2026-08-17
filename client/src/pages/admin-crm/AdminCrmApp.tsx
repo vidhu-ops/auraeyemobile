@@ -295,6 +295,23 @@ export default function AdminCrmApp() {
     onError: (err: any) => toast({ title: "Update failed", description: err.message, variant: "destructive" }),
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/crm/users/${selectedUserId}/reset-password`, {
+        password: "healer123",
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Password reset",
+        description: data.message || `Password is now healer123 for ${data.username || "this user"}.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/audit-logs"] });
+    },
+    onError: (err: any) => toast({ title: "Password reset failed", description: err.message, variant: "destructive" }),
+  });
+
   const creditMutation = useMutation({
     mutationFn: async (operation: "add" | "subtract" | "set") => {
       const payload: Record<string, unknown> = {
@@ -352,7 +369,7 @@ export default function AdminCrmApp() {
         creditValidityDays: "30",
         specialty: "",
       });
-      setShowCreateAccount(false);
+      setQuickActionOpen(false);
       if (data.user?.id) setSelectedUserId(data.user.id);
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/healers"] });
@@ -1036,6 +1053,20 @@ export default function AdminCrmApp() {
                             </select>
                             <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} /> Active</label>
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={() => updateUserMutation.mutate()}>Save changes</Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full border-amber-500/30 text-amber-200 hover:bg-amber-500/10"
+                              disabled={resetPasswordMutation.isPending}
+                              onClick={() => {
+                                const name = profileQuery.data?.user?.name || profileQuery.data?.user?.username || "this user";
+                                if (!confirm(`Reset password for ${name} to healer123? They will need to use that password to log in.`)) return;
+                                resetPasswordMutation.mutate();
+                              }}
+                            >
+                              <Lock className="h-4 w-4 mr-1" />
+                              {resetPasswordMutation.isPending ? "Resetting…" : "Reset password to healer123"}
+                            </Button>
                           </div>
                         ) : <p className="text-xs text-slate-400">View only</p>}
                         {crmAccess?.canEditCredits && (
