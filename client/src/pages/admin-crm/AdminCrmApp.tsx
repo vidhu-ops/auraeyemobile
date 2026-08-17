@@ -62,13 +62,13 @@ const PIE_COLORS = ["#6366f1", "#06b6d4", "#a855f7", "#f59e0b", "#94a3b8"];
 
 function phaseBadge(phase: string) {
   const map: Record<string, string> = {
-    new: "bg-sky-500/20 text-sky-300 border-sky-500/40",
-    active: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-    "at-risk": "bg-amber-500/20 text-amber-300 border-amber-500/40",
-    dormant: "bg-slate-500/20 text-slate-300 border-slate-500/40",
-    churned: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+    new: "bg-sky-50 text-sky-700 border-sky-200",
+    active: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    "at-risk": "bg-amber-50 text-amber-700 border-amber-200",
+    dormant: "bg-slate-100 text-slate-600 border-slate-200",
+    churned: "bg-slate-100 text-slate-600 border-slate-200",
   };
-  return map[phase] || "bg-slate-500/20 text-slate-300 border-slate-500/40";
+  return map[phase] || "bg-slate-100 text-slate-600 border-slate-200";
 }
 
 function phaseLabel(phase: string, override?: string) {
@@ -79,10 +79,10 @@ function phaseLabel(phase: string, override?: string) {
 
 function moduleTone(color: string) {
   const map: Record<string, string> = {
-    blue: "border-blue-500/30 bg-blue-500/10",
-    purple: "border-purple-500/30 bg-purple-500/10",
-    teal: "border-teal-500/30 bg-teal-500/10",
-    rose: "border-rose-500/30 bg-rose-500/10",
+    blue: "border-blue-200 bg-blue-50",
+    purple: "border-purple-200 bg-purple-50",
+    teal: "border-teal-200 bg-teal-50",
+    rose: "border-rose-200 bg-rose-50",
   };
   return map[color] || map.blue;
 }
@@ -512,7 +512,7 @@ export default function AdminCrmApp() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0b1220] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-700">
         Please log in first.
       </div>
     );
@@ -520,9 +520,9 @@ export default function AdminCrmApp() {
 
   if (!canUseCrm) {
     return (
-      <div className="min-h-screen bg-[#0b1220] flex flex-col items-center justify-center gap-4 p-4">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4 p-4">
         <ShieldAlert className="h-12 w-12 text-red-400" />
-        <h1 className="text-white text-xl font-bold">Access Denied</h1>
+        <h1 className="text-slate-900 text-xl font-bold">Access Denied</h1>
         <p className="text-slate-400 text-center max-w-md">
           Only the owner admin or CRM staff accounts can open this panel. Ask an owner to create a staff login for you.
         </p>
@@ -537,9 +537,9 @@ export default function AdminCrmApp() {
   const readOnlyBanner = !crmAccess?.canEditUsers && !crmAccess?.canEditCredits;
 
   return (
-    <div className="min-h-screen bg-[#0b1220] text-slate-100 flex">
-      <aside className="hidden lg:flex w-72 flex-col border-r border-white/10 bg-[#0d1526] shrink-0">
-        <div className="px-5 py-5 border-b border-white/10 flex items-center gap-3">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
+      <aside className="hidden lg:flex w-72 flex-col border-r border-slate-200 bg-white shadow-sm shrink-0">
+        <div className="px-5 py-5 border-b border-slate-200 flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center">
             <Eye className="h-5 w-5 text-white" />
           </div>
@@ -559,7 +559,7 @@ export default function AdminCrmApp() {
                 key={item.id}
                 onClick={() => setSection(item.id)}
                 className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
-                  active ? "bg-indigo-500/20 text-white border border-indigo-400/30" : "text-slate-300 hover:bg-white/5"
+                  active ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "text-slate-600 hover:bg-white shadow-sm"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -569,16 +569,16 @@ export default function AdminCrmApp() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/10">
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-3 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-indigo-500/30 flex items-center justify-center text-sm font-semibold">
+        <div className="p-4 border-t border-slate-200">
+          <div className="rounded-2xl bg-white shadow-sm border border-slate-200 p-3 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-semibold text-indigo-700">
               {(user.name || user.username || "A").slice(0, 1).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">{user.name || user.username}</div>
               <div className="text-xs text-slate-400">{roleLabel(crmAccess?.role || "viewer")}</div>
             </div>
-            <button onClick={() => logoutMutation.mutate()} className="text-slate-400 hover:text-white" title="Log out">
+            <button onClick={() => logoutMutation.mutate()} className="text-slate-400 hover:text-slate-900" title="Log out">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
@@ -586,7 +586,7 @@ export default function AdminCrmApp() {
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="border-b border-white/10 bg-[#0d1526]/80 backdrop-blur sticky top-0 z-20">
+        <header className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-20">
           <div className="px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 justify-between">
             <div>
               <h1 className="text-xl md:text-2xl font-semibold">
@@ -600,11 +600,11 @@ export default function AdminCrmApp() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {readOnlyBanner && (
-                <div className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-200 inline-flex items-center gap-1">
+                <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 inline-flex items-center gap-1">
                   <Lock className="h-3 w-3" /> View only
                 </div>
               )}
-              <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
+              <div className="rounded-full border border-slate-200 bg-white shadow-sm px-3 py-1.5 text-xs text-slate-600">
                 AuraEye Solutions Ltd (GBP)
               </div>
               {crmAccess?.canEditUsers && (
@@ -626,7 +626,7 @@ export default function AdminCrmApp() {
                 key={item.id}
                 onClick={() => setSection(item.id)}
                 className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs border ${
-                  section === item.id ? "bg-indigo-500/20 border-indigo-400/40 text-white" : "border-white/10 text-slate-300"
+                  section === item.id ? "bg-indigo-50 border-indigo-200 text-indigo-700" : "border-slate-200 text-slate-600"
                 }`}
               >
                 {item.label}
@@ -640,20 +640,20 @@ export default function AdminCrmApp() {
             <>
               <div className="grid grid-cols-2 xl:grid-cols-5 gap-3">
                 {[
-                  { label: "Total Users", value: kpis?.totalUsers, icon: Users, tone: "text-sky-300" },
-                  { label: "Active Users", value: kpis?.activeUsers, icon: Activity, tone: "text-emerald-300" },
-                  { label: "Needs attention", value: kpis?.atRiskUsers, icon: AlertTriangle, tone: "text-amber-300" },
+                  { label: "Total Users", value: kpis?.totalUsers, icon: Users, tone: "text-sky-600" },
+                  { label: "Active Users", value: kpis?.activeUsers, icon: Activity, tone: "text-emerald-700" },
+                  { label: "Needs attention", value: kpis?.atRiskUsers, icon: AlertTriangle, tone: "text-amber-600" },
                   {
                     label: "Inactive (long quiet)",
                     value: kpis?.dormantUsers ?? kpis?.churnedUsers,
                     icon: FileWarning,
-                    tone: "text-slate-300",
+                    tone: "text-slate-600",
                   },
-                  { label: "Healers / Practitioners", value: kpis?.healers, icon: HeartPulse, tone: "text-fuchsia-300" },
+                  { label: "Healers / Practitioners", value: kpis?.healers, icon: HeartPulse, tone: "text-fuchsia-600" },
                 ].map((card) => {
                   const Icon = card.icon;
                   return (
-                    <Card key={card.label} className="bg-white/5 border-white/10">
+                    <Card key={card.label} className="bg-white shadow-sm border-slate-200">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-xs text-slate-400">{card.label}</span>
@@ -669,10 +669,10 @@ export default function AdminCrmApp() {
               </div>
 
               <div className="grid xl:grid-cols-3 gap-4">
-                <Card className="bg-white/5 border-white/10 xl:col-span-1">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-1">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4 text-indigo-300" /> Revenue Overview
+                      <BarChart3 className="h-4 w-4 text-indigo-600" /> Revenue Overview
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -689,10 +689,10 @@ export default function AdminCrmApp() {
                             { name: "Refunded", value: overviewQuery.data?.credits.refunded || 0 },
                           ]}
                         >
-                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff14" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                           <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
                           <YAxis stroke="#94a3b8" fontSize={11} />
-                          <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #334155" }} />
+                          <Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", color: "#0f172a" }} />
                           <Bar dataKey="value" fill="#818cf8" radius={[6, 6, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
@@ -700,7 +700,7 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Revenue by Source</CardTitle>
                   </CardHeader>
@@ -720,11 +720,11 @@ export default function AdminCrmApp() {
                               <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                             ))}
                           </Pie>
-                          <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #334155" }} />
+                          <Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", color: "#0f172a" }} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="space-y-1 text-xs text-slate-300">
+                    <div className="space-y-1 text-xs text-slate-600">
                       {(overviewQuery.data?.revenueBySource || []).map((s) => (
                         <div key={s.name} className="flex justify-between">
                           <span>{s.name}</span>
@@ -735,7 +735,7 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Feature usage</CardTitle>
                   </CardHeader>
@@ -746,9 +746,9 @@ export default function AdminCrmApp() {
                       { label: "Numerology", value: overviewQuery.data?.featureUsage?.numerology },
                       { label: "Object scans", value: overviewQuery.data?.featureUsage?.objectScans },
                     ].map((row) => (
-                      <div key={row.label} className="flex items-center justify-between rounded-xl bg-black/20 px-3 py-2">
-                        <span className="text-sm text-slate-300">{row.label}</span>
-                        <span className="font-mono text-sm text-indigo-200">{(row.value ?? 0).toLocaleString()}</span>
+                      <div key={row.label} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+                        <span className="text-sm text-slate-600">{row.label}</span>
+                        <span className="font-mono text-sm text-indigo-700">{(row.value ?? 0).toLocaleString()}</span>
                       </div>
                     ))}
                   </CardContent>
@@ -756,16 +756,16 @@ export default function AdminCrmApp() {
               </div>
 
               <div className="grid xl:grid-cols-3 gap-4">
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Monthly Notifications</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {(overviewQuery.data?.monthlyNotifications || []).map((n) => (
-                      <div key={n.id} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                      <div key={n.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="font-medium text-sm">{n.title}</div>
-                          <span className="text-[10px] uppercase tracking-wide rounded-full bg-indigo-500/20 text-indigo-200 px-2 py-0.5">
+                          <span className="text-[10px] uppercase tracking-wide rounded-full bg-indigo-500/20 text-indigo-700 px-2 py-0.5">
                             {n.badge}
                           </span>
                         </div>
@@ -778,17 +778,17 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">System Health</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {(overviewQuery.data?.systemHealth || []).map((s) => (
-                      <div key={s.name} className="flex items-center justify-between rounded-xl bg-black/20 px-3 py-2 text-sm">
+                      <div key={s.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 text-sm">
                         <span>{s.name}</span>
                         <span
                           className={`inline-flex items-center gap-1 text-xs ${
-                            s.status === "healthy" ? "text-emerald-300" : "text-amber-300"
+                            s.status === "healthy" ? "text-emerald-700" : "text-amber-600"
                           }`}
                         >
                           {s.status === "healthy" ? (
@@ -803,7 +803,7 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Recent Activity</CardTitle>
                   </CardHeader>
@@ -812,7 +812,7 @@ export default function AdminCrmApp() {
                       <p className="text-sm text-slate-400">No CRM edits yet. Changes will appear here.</p>
                     )}
                     {(overviewQuery.data?.recentActivity || []).map((log: any) => (
-                      <div key={log.id} className="text-sm border-b border-white/5 pb-2">
+                      <div key={log.id} className="text-sm border-b border-slate-100 pb-2">
                         <div className="font-medium">
                           {log.actorUsername} · {log.action}
                         </div>
@@ -823,7 +823,7 @@ export default function AdminCrmApp() {
                       </div>
                     ))}
                     {crmAccess?.canViewAudit && (
-                      <button className="text-xs text-indigo-300 hover:underline" onClick={() => setSection("audit")}>
+                      <button className="text-xs text-indigo-600 hover:underline" onClick={() => setSection("audit")}>
                         View all activity logs →
                       </button>
                     )}
@@ -836,21 +836,21 @@ export default function AdminCrmApp() {
 
           {section === "users" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-sky-300" /> Clients & members</h2>
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-sky-600" /> Clients & members</h2>
                 <p className="text-sm text-slate-400 mt-1">Journey phase, activity timeline, credits, and support tickets for each client. Editing lives in Direct Data Control.</p>
               </div>
               <div className="grid xl:grid-cols-5 gap-4">
-                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-3">
                   <CardHeader className="pb-3">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                       <CardTitle className="text-base">Client directory</CardTitle>
                       <div className="flex flex-wrap gap-2">
                         <div className="relative">
                           <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-slate-500" />
-                          <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search clients…" className="pl-8 bg-black/20 border-white/10 w-48" />
+                          <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search clients…" className="pl-8 bg-slate-50 border-slate-200 w-48" />
                         </div>
-                        <select value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)} className="rounded-md bg-black/20 border border-white/10 text-sm px-2">
+                        <select value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)} className="rounded-md bg-slate-50 border border-slate-200 text-sm px-2">
                           <option value="all">All phases</option>
                           <option value="new">{PHASE_LABELS.new}</option>
                           <option value="active">{PHASE_LABELS.active}</option>
@@ -858,19 +858,19 @@ export default function AdminCrmApp() {
                           <option value="dormant">{PHASE_LABELS.dormant}</option>
                         </select>
                         {crmAccess?.canExportData && (
-                          <a href="/api/crm/users.csv"><Button size="sm" variant="outline" className="border-white/15"><Download className="h-4 w-4 mr-1" /> CSV</Button></a>
+                          <a href="/api/crm/users.csv"><Button size="sm" variant="outline" className="border-slate-300"><Download className="h-4 w-4 mr-1" /> CSV</Button></a>
                         )}
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
                     {usersQuery.isLoading ? (
-                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>
+                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-left text-slate-400 border-b border-white/10">
+                            <tr className="text-left text-slate-400 border-b border-slate-200">
                               <th className="pb-2 pr-3">Client</th>
                               <th className="pb-2 pr-3">Journey</th>
                               <th className="pb-2 pr-3">Credits</th>
@@ -879,13 +879,13 @@ export default function AdminCrmApp() {
                           </thead>
                           <tbody>
                             {(usersQuery.data?.users || []).map((u) => (
-                              <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedUserId === u.id ? "bg-indigo-500/10" : ""}`}>
+                              <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-slate-100 hover:bg-white shadow-sm cursor-pointer ${selectedUserId === u.id ? "bg-indigo-50" : ""}`}>
                                 <td className="py-2.5 pr-3">
                                   <div className="font-medium">{u.name || u.username}</div>
                                   <div className="text-xs text-slate-400">{u.email || u.username}</div>
                                 </td>
                                 <td className="py-2.5 pr-3"><span className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(u.phase)}`}>{phaseLabel(u.phase, u.phaseLabel)}</span></td>
-                                <td className="py-2.5 pr-3 font-mono text-emerald-300">{u.credits}</td>
+                                <td className="py-2.5 pr-3 font-mono text-emerald-700">{u.credits}</td>
                                 <td className="py-2.5 text-xs text-slate-400">{u.lastActivityAt ? new Date(u.lastActivityAt).toLocaleDateString() : "—"}</td>
                               </tr>
                             ))}
@@ -896,11 +896,11 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                   <CardHeader className="pb-2"><CardTitle className="text-base">Client profile & support</CardTitle></CardHeader>
                   <CardContent>
                     {!selectedUserId && <p className="text-sm text-slate-400">Select a client to see activity, credit grants, and their tickets.</p>}
-                    {selectedUserId && profileQuery.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>}
+                    {selectedUserId && profileQuery.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div>}
                     {selectedUserId && profileQuery.data && (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between gap-2">
@@ -911,16 +911,16 @@ export default function AdminCrmApp() {
                           <span className={`text-[11px] px-2 py-0.5 rounded-full border ${phaseBadge(profileQuery.data.user.phase)}`}>{phaseLabel(profileQuery.data.user.phase, profileQuery.data.user.phaseLabel)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div className="rounded-lg bg-black/20 p-2">Aura: {profileQuery.data.activity.auraReadings.length}</div>
-                          <div className="rounded-lg bg-black/20 p-2">Vibe: {profileQuery.data.activity.vibeReadings.length}</div>
-                          <div className="rounded-lg bg-black/20 p-2">Numerology: {profileQuery.data.activity.numerologyReadings.length}</div>
-                          <div className="rounded-lg bg-black/20 p-2">Payments: {profileQuery.data.payments.length}</div>
+                          <div className="rounded-lg bg-slate-50 p-2">Aura: {profileQuery.data.activity.auraReadings.length}</div>
+                          <div className="rounded-lg bg-slate-50 p-2">Vibe: {profileQuery.data.activity.vibeReadings.length}</div>
+                          <div className="rounded-lg bg-slate-50 p-2">Numerology: {profileQuery.data.activity.numerologyReadings.length}</div>
+                          <div className="rounded-lg bg-slate-50 p-2">Payments: {profileQuery.data.payments.length}</div>
                         </div>
                         <div>
-                          <div className="text-sm font-medium mb-2 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-300" /> Activity</div>
+                          <div className="text-sm font-medium mb-2 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-600" /> Activity</div>
                           <div className="max-h-48 overflow-y-auto space-y-2">
                             {(profileQuery.data.timeline || []).slice(0, 25).map((ev: any, idx: number) => (
-                              <div key={`${ev.type}-${idx}`} className={`rounded-lg bg-black/20 border-l-2 pl-3 py-2 ${timelineTone(ev.type)}`}>
+                              <div key={`${ev.type}-${idx}`} className={`rounded-lg bg-slate-50 border-l-2 pl-3 py-2 ${timelineTone(ev.type)}`}>
                                 <div className="text-xs font-medium">{ev.title}</div>
                                 <div className="text-[10px] text-slate-500">{ev.at ? new Date(ev.at).toLocaleString() : ""}</div>
                               </div>
@@ -928,10 +928,10 @@ export default function AdminCrmApp() {
                           </div>
                         </div>
                         {(profileQuery.data.creditGrants || []).length > 0 && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium">Credit expiry</div>
                             {(profileQuery.data.creditGrants || []).map((g: any) => (
-                              <div key={g.id} className="text-xs flex justify-between gap-2 bg-black/20 rounded px-2 py-1.5">
+                              <div key={g.id} className="text-xs flex justify-between gap-2 bg-slate-50 rounded px-2 py-1.5">
                                 <span>{g.remaining}/{g.amount} left</span>
                                 <span className="text-slate-400">{g.expiresAt ? `expires ${new Date(g.expiresAt).toLocaleDateString()}` : "no expiry"}</span>
                               </div>
@@ -939,20 +939,20 @@ export default function AdminCrmApp() {
                           </div>
                         )}
                         {crmAccess?.canManageTickets && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium flex items-center gap-2"><Ticket className="h-4 w-4" /> Support tickets</div>
                             {(userTicketsQuery.data?.tickets || []).length === 0 && <p className="text-xs text-slate-400">No tickets for this client.</p>}
                             {(userTicketsQuery.data?.tickets || []).slice(0, 8).map((t: any) => (
-                              <div key={t.id} className="text-xs rounded bg-black/20 p-2">
+                              <div key={t.id} className="text-xs rounded bg-slate-50 p-2">
                                 <div className="font-medium">{t.subject}</div>
                                 <div className="text-slate-400">{t.status} · {t.channel} · {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ""}</div>
                               </div>
                             ))}
-                            <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => { setQuickActionOpen(true); }}>New ticket</Button>
+                            <Button size="sm" variant="outline" className="w-full border-slate-300" onClick={() => { setQuickActionOpen(true); }}>New ticket</Button>
                           </div>
                         )}
                         {crmAccess?.canEditUsers && (
-                          <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("direct-data")}>Open in Direct Data Control</Button>
+                          <Button size="sm" variant="outline" className="w-full border-slate-300" onClick={() => setSection("direct-data")}>Open in Direct Data Control</Button>
                         )}
                       </div>
                     )}
@@ -964,30 +964,30 @@ export default function AdminCrmApp() {
 
           {section === "direct-data" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2"><Database className="h-5 w-5 text-indigo-300" /> Direct Data Control</h2>
+              <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Database className="h-5 w-5 text-indigo-600" /> Direct Data Control</h2>
                 <p className="text-sm text-slate-400 mt-1">Create accounts, import CSV/XLS, edit fields, adjust credits with expiry, and run GDPR tools — without SQL.</p>
               </div>
               <div className="grid xl:grid-cols-2 gap-4">
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between gap-2">
-                      <CardTitle className="text-base flex items-center gap-2"><UserPlus className="h-4 w-4 text-emerald-300" /> Create account</CardTitle>
+                      <CardTitle className="text-base flex items-center gap-2"><UserPlus className="h-4 w-4 text-emerald-700" /> Create account</CardTitle>
                       <Button size="sm" onClick={() => setQuickActionOpen(true)}>Quick Action</Button>
                     </div>
                   </CardHeader>
                   <CardContent className="grid sm:grid-cols-2 gap-2">
-                    <Input value={createForm.username} onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })} placeholder="Username *" className="bg-black/20 border-white/10" />
-                    <Input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} placeholder="Password *" className="bg-black/20 border-white/10" />
-                    <Input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} placeholder="Name" className="bg-black/20 border-white/10" />
-                    <Input value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} placeholder="Email" className="bg-black/20 border-white/10" />
-                    <select value={createForm.userType} onChange={(e) => setCreateForm({ ...createForm, userType: e.target.value })} className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                    <Input value={createForm.username} onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })} placeholder="Username *" className="bg-slate-50 border-slate-200" />
+                    <Input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} placeholder="Password *" className="bg-slate-50 border-slate-200" />
+                    <Input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} placeholder="Name" className="bg-slate-50 border-slate-200" />
+                    <Input value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} placeholder="Email" className="bg-slate-50 border-slate-200" />
+                    <select value={createForm.userType} onChange={(e) => setCreateForm({ ...createForm, userType: e.target.value })} className="rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                       <option value="client">User (client)</option>
                       <option value="healer">Healer</option>
                       <option value="semi-healer">Semi-healer</option>
                     </select>
-                    <Input type="number" value={createForm.credits} onChange={(e) => setCreateForm({ ...createForm, credits: e.target.value })} placeholder="Credits" className="bg-black/20 border-white/10" />
-                    <select value={createForm.creditValidityDays} onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })} className="rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                    <Input type="number" value={createForm.credits} onChange={(e) => setCreateForm({ ...createForm, credits: e.target.value })} placeholder="Credits" className="bg-slate-50 border-slate-200" />
+                    <select value={createForm.creditValidityDays} onChange={(e) => setCreateForm({ ...createForm, creditValidityDays: e.target.value })} className="rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                       <option value="3">3 days</option>
                       <option value="30">1 month</option>
                       <option value="60">2 months</option>
@@ -1003,13 +1003,13 @@ export default function AdminCrmApp() {
               </div>
 
               <div className="grid xl:grid-cols-5 gap-4">
-                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-3">
                   <CardHeader className="pb-3">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <CardTitle className="text-base">Find any record to edit</CardTitle>
                       <div className="flex flex-wrap gap-2">
-                        <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search…" className="bg-black/20 border-white/10 w-40" />
-                        <select value={userTypeFilter} onChange={(e) => setUserTypeFilter(e.target.value as any)} className="rounded-md bg-black/20 border border-white/10 text-sm px-2">
+                        <Input value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search…" className="bg-slate-50 border-slate-200 w-40" />
+                        <select value={userTypeFilter} onChange={(e) => setUserTypeFilter(e.target.value as any)} className="rounded-md bg-slate-50 border border-slate-200 text-sm px-2">
                           <option value="all">All types</option>
                           <option value="client">Clients</option>
                         </select>
@@ -1019,13 +1019,13 @@ export default function AdminCrmApp() {
                   <CardContent>
                     <div className="overflow-x-auto max-h-80">
                       <table className="w-full text-sm">
-                        <thead><tr className="text-left text-slate-400 border-b border-white/10"><th className="pb-2">User</th><th className="pb-2">Type</th><th className="pb-2">Credits</th></tr></thead>
+                        <thead><tr className="text-left text-slate-400 border-b border-slate-200"><th className="pb-2">User</th><th className="pb-2">Type</th><th className="pb-2">Credits</th></tr></thead>
                         <tbody>
                           {(usersQuery.data?.users || []).map((u) => (
-                            <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedUserId === u.id ? "bg-indigo-500/10" : ""}`}>
+                            <tr key={u.id} onClick={() => setSelectedUserId(u.id)} className={`border-b border-slate-100 hover:bg-white shadow-sm cursor-pointer ${selectedUserId === u.id ? "bg-indigo-50" : ""}`}>
                               <td className="py-2"><div className="font-medium">{u.name || u.username}</div><div className="text-xs text-slate-400">{u.email || ""}</div></td>
                               <td className="py-2">{u.userType}</td>
-                              <td className="py-2 font-mono text-emerald-300">{u.credits}</td>
+                              <td className="py-2 font-mono text-emerald-700">{u.credits}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1034,7 +1034,7 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                   <CardHeader className="pb-2"><CardTitle className="text-base">Edit record</CardTitle></CardHeader>
                   <CardContent>
                     {!selectedUserId && <p className="text-sm text-slate-400">Select a record to edit fields, credits, contracts, or erase.</p>}
@@ -1043,20 +1043,20 @@ export default function AdminCrmApp() {
                         <div className="text-sm font-semibold">{profileQuery.data.user.name || profileQuery.data.user.username} <span className="text-slate-400">#{selectedUserId}</span></div>
                         {crmAccess?.canEditUsers ? (
                           <div className="space-y-2">
-                            <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} placeholder="Name" className="bg-black/20 border-white/10" />
-                            <Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} placeholder="Email" className="bg-black/20 border-white/10" />
-                            <Input value={editForm.mobileNumber} onChange={(e) => setEditForm({ ...editForm, mobileNumber: e.target.value })} placeholder="Mobile" className="bg-black/20 border-white/10" />
-                            <select value={editForm.userType} onChange={(e) => setEditForm({ ...editForm, userType: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} placeholder="Name" className="bg-slate-50 border-slate-200" />
+                            <Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} placeholder="Email" className="bg-slate-50 border-slate-200" />
+                            <Input value={editForm.mobileNumber} onChange={(e) => setEditForm({ ...editForm, mobileNumber: e.target.value })} placeholder="Mobile" className="bg-slate-50 border-slate-200" />
+                            <select value={editForm.userType} onChange={(e) => setEditForm({ ...editForm, userType: e.target.value })} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="client">client</option>
                               <option value="healer">healer</option>
                               <option value="semi-healer">semi-healer</option>
                             </select>
-                            <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} /> Active</label>
+                            <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} /> Active</label>
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={() => updateUserMutation.mutate()}>Save changes</Button>
                             <Button
                               type="button"
                               variant="outline"
-                              className="w-full border-amber-500/30 text-amber-200 hover:bg-amber-500/10"
+                              className="w-full border-amber-300 text-amber-800 hover:bg-amber-50"
                               disabled={resetPasswordMutation.isPending}
                               onClick={() => {
                                 const name = profileQuery.data?.user?.name || profileQuery.data?.user?.username || "this user";
@@ -1070,10 +1070,10 @@ export default function AdminCrmApp() {
                           </div>
                         ) : <p className="text-xs text-slate-400">View only</p>}
                         {crmAccess?.canEditCredits && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium">Credits + expiry</div>
-                            <Input value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="bg-black/20 border-white/10" />
-                            <select value={creditValidityDays} onChange={(e) => setCreditValidityDays(e.target.value)} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <Input value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="bg-slate-50 border-slate-200" />
+                            <select value={creditValidityDays} onChange={(e) => setCreditValidityDays(e.target.value)} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="3">3 days</option>
                               <option value="30">1 month</option>
                               <option value="60">2 months</option>
@@ -1088,15 +1088,15 @@ export default function AdminCrmApp() {
                           </div>
                         )}
                         {(profileQuery.data.user.userType === "healer" || profileQuery.data.user.userType === "semi-healer") && crmAccess?.canManageHealers && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium">Licence & contract</div>
-                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="unknown">Licence: unknown</option>
                               <option value="valid">Licence: valid</option>
                               <option value="expired">Licence: expired</option>
                               <option value="pending">Licence: pending</option>
                             </select>
-                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="unsigned">Contract: unsigned</option>
                               <option value="signed">Contract: signed</option>
                               <option value="expired">Contract: expired</option>
@@ -1105,7 +1105,7 @@ export default function AdminCrmApp() {
                           </div>
                         )}
                         <div className="grid grid-cols-2 gap-2">
-                          {crmAccess?.canExportData && <a href={`/api/crm/users/${selectedUserId}/export`} target="_blank" rel="noreferrer"><Button variant="outline" className="w-full border-white/15"><Download className="h-4 w-4 mr-1" /> Export</Button></a>}
+                          {crmAccess?.canExportData && <a href={`/api/crm/users/${selectedUserId}/export`} target="_blank" rel="noreferrer"><Button variant="outline" className="w-full border-slate-300"><Download className="h-4 w-4 mr-1" /> Export</Button></a>}
                           {crmAccess?.canEraseUsers && <Button variant="destructive" className="w-full" onClick={() => { if (confirm("Erase PII and deactivate?")) eraseMutation.mutate(); }}><Trash2 className="h-4 w-4 mr-1" /> Erase</Button>}
                         </div>
                       </div>
@@ -1119,9 +1119,9 @@ export default function AdminCrmApp() {
 
           {section === "healers" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/5 p-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold flex items-center gap-2"><UserCog className="h-5 w-5 text-fuchsia-300" /> Healers / Practitioners</h2>
+                  <h2 className="text-lg font-semibold flex items-center gap-2"><UserCog className="h-5 w-5 text-fuchsia-600" /> Healers / Practitioners</h2>
                   <p className="text-sm text-slate-400 mt-1">Sessions, credits, licence/contract status, and booking-related support tickets.</p>
                 </div>
                 {crmAccess?.canEditUsers && (
@@ -1129,16 +1129,16 @@ export default function AdminCrmApp() {
                 )}
               </div>
               <div className="grid xl:grid-cols-5 gap-4">
-                <Card className="bg-white/5 border-white/10 xl:col-span-3">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-3">
                   <CardHeader><CardTitle className="text-base">Practitioner directory</CardTitle></CardHeader>
                   <CardContent>
                     {healersQuery.isLoading ? (
-                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-300" /></div>
+                      <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-left text-slate-400 border-b border-white/10">
+                            <tr className="text-left text-slate-400 border-b border-slate-200">
                               <th className="pb-2 pr-3">Healer</th>
                               <th className="pb-2 pr-3">Type</th>
                               <th className="pb-2 pr-3">Credits</th>
@@ -1149,14 +1149,14 @@ export default function AdminCrmApp() {
                           </thead>
                           <tbody>
                             {(healersQuery.data?.healers || []).map((h: any) => (
-                              <tr key={h.id} className={`border-b border-white/5 hover:bg-white/5 cursor-pointer ${selectedHealerId === h.id ? "bg-fuchsia-500/10" : ""}`}
+                              <tr key={h.id} className={`border-b border-slate-100 hover:bg-white shadow-sm cursor-pointer ${selectedHealerId === h.id ? "bg-fuchsia-50" : ""}`}
                                 onClick={() => { setSelectedHealerId(h.id); setSelectedUserId(h.id); }}>
                                 <td className="py-2.5 pr-3">
                                   <div className="font-medium">{h.name || h.username}</div>
                                   <div className="text-xs text-slate-400">{h.email || "—"}</div>
                                 </td>
                                 <td className="py-2.5 pr-3">{h.userType}</td>
-                                <td className="py-2.5 pr-3 font-mono text-emerald-300">{h.credits}</td>
+                                <td className="py-2.5 pr-3 font-mono text-emerald-700">{h.credits}</td>
                                 <td className="py-2.5 pr-3">{h.healerSessionCount}</td>
                                 <td className="py-2.5 pr-3">{h.contract?.licenceStatus || "unknown"}</td>
                                 <td className="py-2.5">{h.contract?.contractStatus || "unsigned"}</td>
@@ -1168,7 +1168,7 @@ export default function AdminCrmApp() {
                     )}
                   </CardContent>
                 </Card>
-                <Card className="bg-white/5 border-white/10 xl:col-span-2">
+                <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                   <CardHeader><CardTitle className="text-base">Practitioner detail</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {!selectedHealerId && <p className="text-sm text-slate-400">Select a practitioner to manage contract and see booking tickets.</p>}
@@ -1177,38 +1177,38 @@ export default function AdminCrmApp() {
                         <div className="text-lg font-semibold">{profileQuery.data.user.name || profileQuery.data.user.username}</div>
                         <div className="text-xs text-slate-400">Credits {profileQuery.data.user.credits} · Sessions {profileQuery.data.user.healerSessionCount || 0}</div>
                         {crmAccess?.canManageHealers && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium">Licence & contract</div>
-                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <select value={contractForm.licenceStatus} onChange={(e) => setContractForm({ ...contractForm, licenceStatus: e.target.value })} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="unknown">Licence: unknown</option>
                               <option value="valid">Licence: valid</option>
                               <option value="expired">Licence: expired</option>
                               <option value="pending">Licence: pending</option>
                             </select>
-                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2">
+                            <select value={contractForm.contractStatus} onChange={(e) => setContractForm({ ...contractForm, contractStatus: e.target.value })} className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2">
                               <option value="unsigned">Contract: unsigned</option>
                               <option value="signed">Contract: signed</option>
                               <option value="expired">Contract: expired</option>
                             </select>
-                            <Input value={contractForm.notes} onChange={(e) => setContractForm({ ...contractForm, notes: e.target.value })} placeholder="Notes" className="bg-black/20 border-white/10" />
+                            <Input value={contractForm.notes} onChange={(e) => setContractForm({ ...contractForm, notes: e.target.value })} placeholder="Notes" className="bg-slate-50 border-slate-200" />
                             <Button size="sm" className="w-full" onClick={() => contractMutation.mutate()}>Save contract</Button>
                           </div>
                         )}
                         {crmAccess?.canManageTickets && (
-                          <div className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="rounded-xl border border-slate-200 p-3 space-y-2">
                             <div className="text-sm font-medium flex items-center gap-2"><Ticket className="h-4 w-4" /> Booking / support tickets</div>
                             {(healerTicketsQuery.data?.tickets || []).filter((t: any) => String(t.metadata || "").includes(String(selectedHealerId)) || t.userId === selectedHealerId).slice(0, 8).map((t: any) => (
-                              <div key={t.id} className="text-xs rounded bg-black/20 p-2">
+                              <div key={t.id} className="text-xs rounded bg-slate-50 p-2">
                                 <div className="font-medium">{t.subject}</div>
                                 <div className="text-slate-400">{t.status} · {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ""}</div>
                               </div>
                             ))}
                             {(healerTicketsQuery.data?.tickets || []).length === 0 && <p className="text-xs text-slate-400">No booking tickets yet.</p>}
-                            <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("tickets")}>Open full inbox</Button>
+                            <Button size="sm" variant="outline" className="w-full border-slate-300" onClick={() => setSection("tickets")}>Open full inbox</Button>
                           </div>
                         )}
                         {crmAccess?.canEditUsers && (
-                          <Button size="sm" variant="outline" className="w-full border-white/15" onClick={() => setSection("direct-data")}>Edit in Direct Data</Button>
+                          <Button size="sm" variant="outline" className="w-full border-slate-300" onClick={() => setSection("direct-data")}>Edit in Direct Data</Button>
                         )}
                       </>
                     )}
@@ -1221,68 +1221,68 @@ export default function AdminCrmApp() {
 
           {section === "revenue" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2"><Wallet className="h-5 w-5 text-emerald-300" /> Revenue, credits & refunds</h2>
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Wallet className="h-5 w-5 text-emerald-700" /> Revenue, credits & refunds</h2>
                 <p className="text-sm text-slate-400 mt-1">Payments, credit expiry log, and refund history in one place.</p>
               </div>
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-slate-400">Entity:</span>
                 {["all", "gbp", "inr"].map((e) => (
-                  <button key={e} onClick={() => setEntityFilter(e)} className={`rounded-full px-3 py-1 text-xs border ${entityFilter === e ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"}`}>
+                  <button key={e} onClick={() => setEntityFilter(e)} className={`rounded-full px-3 py-1 text-xs border ${entityFilter === e ? "bg-indigo-50 border-indigo-200" : "border-slate-200"}`}>
                     {e === "all" ? "All" : e.toUpperCase()}
                   </button>
                 ))}
               </div>
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {[
-                  { label: "Completed revenue", value: `£${(revenueQuery.data?.summary?.totalRevenue || 0).toLocaleString()}`, tone: "text-emerald-300" },
-                  { label: "Refunds", value: `£${(revenueQuery.data?.summary?.totalRefunds || 0).toLocaleString()}`, tone: "text-rose-300" },
-                  { label: "Credits expired", value: (revenueQuery.data?.summary?.expiredCredits || 0).toLocaleString(), tone: "text-amber-300" },
-                  { label: "Grants expiring ≤14d", value: (revenueQuery.data?.summary?.expiringSoonCount || 0).toLocaleString(), tone: "text-sky-300" },
+                  { label: "Completed revenue", value: `£${(revenueQuery.data?.summary?.totalRevenue || 0).toLocaleString()}`, tone: "text-emerald-700" },
+                  { label: "Refunds", value: `£${(revenueQuery.data?.summary?.totalRefunds || 0).toLocaleString()}`, tone: "text-rose-600" },
+                  { label: "Credits expired", value: (revenueQuery.data?.summary?.expiredCredits || 0).toLocaleString(), tone: "text-amber-600" },
+                  { label: "Grants expiring ≤14d", value: (revenueQuery.data?.summary?.expiringSoonCount || 0).toLocaleString(), tone: "text-sky-600" },
                 ].map((c) => (
-                  <Card key={c.label} className="bg-white/5 border-white/10"><CardContent className="p-4"><div className="text-xs text-slate-400 mb-1">{c.label}</div><div className={`text-xl font-semibold ${c.tone}`}>{c.value}</div></CardContent></Card>
+                  <Card key={c.label} className="bg-white shadow-sm border-slate-200"><CardContent className="p-4"><div className="text-xs text-slate-400 mb-1">{c.label}</div><div className={`text-xl font-semibold ${c.tone}`}>{c.value}</div></CardContent></Card>
                 ))}
               </div>
               <div className="grid xl:grid-cols-2 gap-4">
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader><CardTitle className="text-base">Refund log</CardTitle></CardHeader>
                   <CardContent className="space-y-2 max-h-72 overflow-y-auto">
                     {(revenueQuery.data?.refundLog || []).length === 0 && <p className="text-sm text-slate-400">No refunds recorded yet.</p>}
                     {(revenueQuery.data?.refundLog || []).slice(0, 40).map((r: any, i: number) => (
-                      <div key={`${r.kind}-${r.id}-${i}`} className="text-xs rounded-lg bg-black/20 p-2 flex justify-between gap-2">
+                      <div key={`${r.kind}-${r.id}-${i}`} className="text-xs rounded-lg bg-slate-50 p-2 flex justify-between gap-2">
                         <div>
                           <div className="font-medium">{r.kind === "payment_refund" ? "Payment refund" : "Credit refund"}</div>
                           <div className="text-slate-400">User #{r.userId}{r.username ? ` · @${r.username}` : ""} · {r.description || ""}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-mono text-rose-300">{typeof r.amount === "number" ? r.amount : r.amount}</div>
+                          <div className="font-mono text-rose-600">{typeof r.amount === "number" ? r.amount : r.amount}</div>
                           <div className="text-slate-500">{r.at ? new Date(r.at).toLocaleDateString() : ""}</div>
                         </div>
                       </div>
                     ))}
                   </CardContent>
                 </Card>
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white shadow-sm border-slate-200">
                   <CardHeader><CardTitle className="text-base">Credit expiry log</CardTitle></CardHeader>
                   <CardContent className="space-y-2 max-h-72 overflow-y-auto">
                     {(revenueQuery.data?.expiryLog || []).length === 0 && <p className="text-sm text-slate-400">No expiries yet. Expiring grants appear below.</p>}
                     {(revenueQuery.data?.expiryLog || []).slice(0, 40).map((r: any, i: number) => (
-                      <div key={`exp-${r.id}-${i}`} className="text-xs rounded-lg bg-black/20 p-2 flex justify-between gap-2">
+                      <div key={`exp-${r.id}-${i}`} className="text-xs rounded-lg bg-slate-50 p-2 flex justify-between gap-2">
                         <div>
                           <div className="font-medium">Expired credits</div>
                           <div className="text-slate-400">@{r.username || r.userId} · {r.description || ""}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-mono text-amber-300">-{r.amount}</div>
+                          <div className="font-mono text-amber-600">-{r.amount}</div>
                           <div className="text-slate-500">{r.at ? new Date(r.at).toLocaleDateString() : ""}</div>
                         </div>
                       </div>
                     ))}
                     {(revenueQuery.data?.expiringSoon || []).length > 0 && (
-                      <div className="pt-2 border-t border-white/10 space-y-2">
-                        <div className="text-sm font-medium text-sky-200">Expiring soon</div>
+                      <div className="pt-2 border-t border-slate-200 space-y-2">
+                        <div className="text-sm font-medium text-sky-700">Expiring soon</div>
                         {(revenueQuery.data?.expiringSoon || []).map((g: any) => (
-                          <div key={g.id} className="text-xs rounded-lg bg-sky-500/10 p-2 flex justify-between">
+                          <div key={g.id} className="text-xs rounded-lg bg-sky-50 p-2 flex justify-between">
                             <span>User #{g.userId} · {g.remaining} left</span>
                             <span>{g.expiresAt ? new Date(g.expiresAt).toLocaleDateString() : ""}</span>
                           </div>
@@ -1292,14 +1292,14 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
               </div>
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white shadow-sm border-slate-200">
                 <CardHeader><CardTitle className="text-base">Recent payments</CardTitle></CardHeader>
                 <CardContent className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead><tr className="text-left text-slate-400 border-b border-white/10"><th className="pb-2">User</th><th className="pb-2">Amount</th><th className="pb-2">Status</th><th className="pb-2">When</th></tr></thead>
+                    <thead><tr className="text-left text-slate-400 border-b border-slate-200"><th className="pb-2">User</th><th className="pb-2">Amount</th><th className="pb-2">Status</th><th className="pb-2">When</th></tr></thead>
                     <tbody>
                       {(revenueQuery.data?.payments || []).slice(0, 30).map((p: any) => (
-                        <tr key={p.id} className="border-b border-white/5">
+                        <tr key={p.id} className="border-b border-slate-100">
                           <td className="py-2">{p.userId}</td>
                           <td className="py-2 font-mono">£{((p.amount || 0) / 100).toFixed(2)}</td>
                           <td className="py-2">{p.status}</td>
@@ -1314,21 +1314,21 @@ export default function AdminCrmApp() {
           )}
 
           {section === "notifications" && (
-            <Card className="bg-white/5 border-white/10">
+            <Card className="bg-white shadow-sm border-slate-200">
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Bell className="h-4 w-4 text-amber-300" /> Monthly Notifications
+                  <Bell className="h-4 w-4 text-amber-600" /> Monthly Notifications
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid md:grid-cols-3 gap-3">
                 {(overviewQuery.data?.monthlyNotifications || []).map((n) => (
-                  <div key={n.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div key={n.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <div className="text-sm font-semibold mb-1">{n.title}</div>
                     <p className="text-xs text-slate-400 mb-3">{n.detail}</p>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white/15"
+                      className="border-slate-300"
                       onClick={() => {
                         const map: Record<string, string> = {
                           inactive: "at-risk",
@@ -1358,7 +1358,7 @@ export default function AdminCrmApp() {
                     key={s}
                     onClick={() => setTicketStatusFilter(s)}
                     className={`rounded-full px-3 py-1 text-xs border ${
-                      ticketStatusFilter === s ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"
+                      ticketStatusFilter === s ? "bg-indigo-50 border-indigo-200" : "border-slate-200"
                     }`}
                   >
                     {s === "in_progress" ? "In progress" : s}
@@ -1370,7 +1370,7 @@ export default function AdminCrmApp() {
                     key={c}
                     onClick={() => setTicketChannelFilter(c)}
                     className={`rounded-full px-3 py-1 text-xs border ${
-                      ticketChannelFilter === c ? "bg-indigo-500/20 border-indigo-400/40" : "border-white/10"
+                      ticketChannelFilter === c ? "bg-indigo-50 border-indigo-200" : "border-slate-200"
                     }`}
                   >
                     {c}
@@ -1381,7 +1381,7 @@ export default function AdminCrmApp() {
                 Inbox includes contact-form messages, Help tickets, product feedback, healer booking messages, and manually created tickets.
               </p>
             <div className="grid xl:grid-cols-3 gap-4">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white shadow-sm border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-base">New ticket</CardTitle>
                 </CardHeader>
@@ -1390,18 +1390,18 @@ export default function AdminCrmApp() {
                     value={ticketForm.subject}
                     onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
                     placeholder="Subject"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                   />
                   <textarea
                     value={ticketForm.body}
                     onChange={(e) => setTicketForm({ ...ticketForm, body: e.target.value })}
                     placeholder="What happened?"
-                    className="w-full min-h-[100px] rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                    className="w-full min-h-[100px] rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2"
                   />
                   <select
                     value={ticketForm.priority}
                     onChange={(e) => setTicketForm({ ...ticketForm, priority: e.target.value })}
-                    className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                    className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -1416,7 +1416,7 @@ export default function AdminCrmApp() {
                   </Button>
                 </CardContent>
               </Card>
-              <Card className="bg-white/5 border-white/10 xl:col-span-2">
+              <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                 <CardHeader>
                   <CardTitle className="text-base">
                     Support inbox ({(ticketsQuery.data?.tickets || []).length})
@@ -1425,7 +1425,7 @@ export default function AdminCrmApp() {
                 <CardContent className="space-y-2">
                   {ticketsQuery.isLoading && (
                     <div className="py-8 flex justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
+                      <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                     </div>
                   )}
                   {(ticketsQuery.data?.tickets || []).length === 0 && !ticketsQuery.isLoading && (
@@ -1434,11 +1434,11 @@ export default function AdminCrmApp() {
                     </p>
                   )}
                   {(ticketsQuery.data?.tickets || []).map((t: any) => (
-                    <div key={t.id} className="rounded-xl border border-white/10 p-3 text-sm flex flex-wrap gap-3 justify-between">
+                    <div key={t.id} className="rounded-xl border border-slate-200 p-3 text-sm flex flex-wrap gap-3 justify-between">
                       <div className="min-w-0 flex-1">
                         <div className="font-medium">{t.subject}</div>
                         <div className="text-xs text-slate-400 mt-1 flex flex-wrap gap-2 items-center">
-                          <span className="rounded-full bg-white/10 px-2 py-0.5">{t.channel || "crm"}</span>
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.channel || "crm"}</span>
                           <span>{t.status}</span>
                           <span>{t.priority}</span>
                           {t.category && <span>{t.category}</span>}
@@ -1451,7 +1451,7 @@ export default function AdminCrmApp() {
                           {t.username ? <span>@{t.username}</span> : t.userId ? <span>user #{t.userId}</span> : null}
                           <span>{t.createdAt ? new Date(t.createdAt).toLocaleString() : ""}</span>
                         </div>
-                        <p className="text-xs text-slate-300 mt-2 whitespace-pre-wrap">{t.body}</p>
+                        <p className="text-xs text-slate-600 mt-2 whitespace-pre-wrap">{t.body}</p>
                       </div>
                       <div className="flex gap-2 items-start shrink-0">
                         {t.status === "open" && (
@@ -1487,46 +1487,46 @@ export default function AdminCrmApp() {
 
           {section === "leads" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4">
+              <div className="rounded-2xl border border-purple-200 bg-purple-50 p-4">
                 <h2 className="text-lg font-semibold">Lead Pipeline</h2>
                 <p className="text-sm text-slate-400 mt-1">Add leads manually or upload CSV/XLS. Track from first contact to onboarded.</p>
               </div>
               <FileImportPanel target="leads" disabled={!crmAccess?.canEditUsers} />
             <div className="grid xl:grid-cols-3 gap-4">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white shadow-sm border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-base">Add lead</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {!crmAccess?.canEditUsers && (
-                    <p className="text-xs text-amber-200">Your role can view leads but not create them.</p>
+                    <p className="text-xs text-amber-800">Your role can view leads but not create them.</p>
                   )}
                   <Input
                     value={leadForm.name}
                     onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
                     placeholder="Name"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                     disabled={!crmAccess?.canEditUsers}
                   />
                   <Input
                     value={leadForm.email}
                     onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                     placeholder="Email"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                     disabled={!crmAccess?.canEditUsers}
                   />
                   <Input
                     value={leadForm.mobileNumber}
                     onChange={(e) => setLeadForm({ ...leadForm, mobileNumber: e.target.value })}
                     placeholder="Mobile"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                     disabled={!crmAccess?.canEditUsers}
                   />
                   <textarea
                     value={leadForm.notes}
                     onChange={(e) => setLeadForm({ ...leadForm, notes: e.target.value })}
                     placeholder="Notes"
-                    className="w-full min-h-[80px] rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                    className="w-full min-h-[80px] rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2"
                     disabled={!crmAccess?.canEditUsers}
                   />
                   {crmAccess?.canEditUsers && (
@@ -1536,25 +1536,25 @@ export default function AdminCrmApp() {
                   )}
                 </CardContent>
               </Card>
-              <Card className="bg-white/5 border-white/10 xl:col-span-2">
+              <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                 <CardHeader>
                   <CardTitle className="text-base">Pipeline</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {(leadsQuery.data?.leads || []).map((l: any) => (
-                    <div key={l.id} className="rounded-xl border border-white/10 p-3 flex flex-wrap gap-3 justify-between text-sm">
+                    <div key={l.id} className="rounded-xl border border-slate-200 p-3 flex flex-wrap gap-3 justify-between text-sm">
                       <div>
                         <div className="font-medium">{l.name}</div>
                         <div className="text-xs text-slate-400">
                           {l.email || "no email"} · {l.mobileNumber || "no mobile"}
                         </div>
-                        {l.notes && <p className="text-xs text-slate-300 mt-1">{l.notes}</p>}
+                        {l.notes && <p className="text-xs text-slate-600 mt-1">{l.notes}</p>}
                       </div>
                       <select
                         value={l.stage}
                         disabled={!crmAccess?.canEditUsers}
                         onChange={(e) => updateLeadMutation.mutate({ id: l.id, stage: e.target.value })}
-                        className="rounded-md bg-black/20 border border-white/10 text-xs px-2 h-8"
+                        className="rounded-md bg-slate-50 border border-slate-200 text-xs px-2 h-8"
                       >
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>
@@ -1585,20 +1585,20 @@ export default function AdminCrmApp() {
                 { label: "Open tickets", value: kpis?.openTickets },
                 { label: "Active healers", value: kpis?.activeHealers },
               ].map((card) => (
-                <Card key={card.label} className="bg-white/5 border-white/10">
+                <Card key={card.label} className="bg-white shadow-sm border-slate-200">
                   <CardContent className="p-4">
                     <div className="text-xs text-slate-400 mb-2">{card.label}</div>
                     <div className="text-2xl font-semibold">{(card.value ?? 0).toLocaleString()}</div>
                   </CardContent>
                 </Card>
               ))}
-              <Card className="bg-white/5 border-white/10 md:col-span-2 xl:col-span-4">
+              <Card className="bg-white shadow-sm border-slate-200 md:col-span-2 xl:col-span-4">
                 <CardHeader>
                   <CardTitle className="text-base">Journey mix</CardTitle>
                 </CardHeader>
                 <CardContent className="grid sm:grid-cols-4 gap-3">
                   {Object.entries(overviewQuery.data?.phases || {}).map(([key, value]) => (
-                    <div key={key} className="rounded-xl bg-black/20 p-3">
+                    <div key={key} className="rounded-xl bg-slate-50 p-3">
                       <div className="text-xs text-slate-400 mb-1">{phaseLabel(key)}</div>
                       <div className="text-xl font-semibold">{(value as number).toLocaleString()}</div>
                     </div>
@@ -1610,7 +1610,7 @@ export default function AdminCrmApp() {
 
           {section === "staff" && (
             <div className="grid xl:grid-cols-3 gap-4">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white shadow-sm border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
                     <UserPlus className="h-4 w-4 text-teal-300" /> Add staff login
@@ -1625,25 +1625,25 @@ export default function AdminCrmApp() {
                     value={staffForm.username}
                     onChange={(e) => setStaffForm({ ...staffForm, username: e.target.value })}
                     placeholder="Username"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                   />
                   <Input
                     type="password"
                     value={staffForm.password}
                     onChange={(e) => setStaffForm({ ...staffForm, password: e.target.value })}
                     placeholder="Password (min 6)"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                   />
                   <Input
                     value={staffForm.displayName}
                     onChange={(e) => setStaffForm({ ...staffForm, displayName: e.target.value })}
                     placeholder="Display name (optional)"
-                    className="bg-black/20 border-white/10"
+                    className="bg-slate-50 border-slate-200"
                   />
                   <select
                     value={staffForm.role}
                     onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value })}
-                    className="w-full rounded-md bg-black/20 border border-white/10 text-sm px-3 py-2"
+                    className="w-full rounded-md bg-slate-50 border border-slate-200 text-sm px-3 py-2"
                   >
                     <option value="viewer">Viewer — can only view</option>
                     <option value="editor">Editor — view + edit users/credits</option>
@@ -1660,7 +1660,7 @@ export default function AdminCrmApp() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10 xl:col-span-2">
+              <Card className="bg-white shadow-sm border-slate-200 xl:col-span-2">
                 <CardHeader>
                   <CardTitle className="text-base">Staff accounts</CardTitle>
                 </CardHeader>
@@ -1669,7 +1669,7 @@ export default function AdminCrmApp() {
                     <p className="text-sm text-slate-400">No staff yet. Create a viewer login on the left.</p>
                   )}
                   {(staffQuery.data?.staff || []).map((s: any) => (
-                    <div key={s.id} className="rounded-xl border border-white/10 p-3 flex flex-wrap gap-3 justify-between items-center">
+                    <div key={s.id} className="rounded-xl border border-slate-200 p-3 flex flex-wrap gap-3 justify-between items-center">
                       <div>
                         <div className="font-medium text-sm">
                           {s.displayName || s.name || s.username}{" "}
@@ -1679,10 +1679,10 @@ export default function AdminCrmApp() {
                           {roleLabel(s.role)} · {s.isActive === false ? "disabled" : "active"}
                         </div>
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {s.canEditUsers && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10">edit users</span>}
-                          {s.canEditCredits && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10">credits</span>}
-                          {s.canManageTickets && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10">tickets</span>}
-                          {s.canViewRevenue && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10">revenue</span>}
+                          {s.canEditUsers && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100">edit users</span>}
+                          {s.canEditCredits && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100">credits</span>}
+                          {s.canManageTickets && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100">tickets</span>}
+                          {s.canViewRevenue && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100">revenue</span>}
                           {!s.canEditUsers && !s.canEditCredits && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-100">view only</span>
                           )}
@@ -1692,7 +1692,7 @@ export default function AdminCrmApp() {
                         <select
                           value={s.role}
                           onChange={(e) => updateStaffMutation.mutate({ id: s.id, patch: { role: e.target.value } })}
-                          className="rounded-md bg-black/20 border border-white/10 text-xs px-2 h-8"
+                          className="rounded-md bg-slate-50 border border-slate-200 text-xs px-2 h-8"
                         >
                           <option value="viewer">viewer</option>
                           <option value="editor">editor</option>
@@ -1720,16 +1720,16 @@ export default function AdminCrmApp() {
           )}
 
           {section === "audit" && (
-            <Card className="bg-white/5 border-white/10">
+            <Card className="bg-white shadow-sm border-slate-200">
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-rose-300" /> Audit Log
+                  <Shield className="h-4 w-4 text-rose-600" /> Audit Log
                 </CardTitle>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-slate-400 border-b border-white/10">
+                    <tr className="text-left text-slate-400 border-b border-slate-200">
                       <th className="pb-2">When</th>
                       <th className="pb-2">Actor</th>
                       <th className="pb-2">Action</th>
@@ -1740,7 +1740,7 @@ export default function AdminCrmApp() {
                   </thead>
                   <tbody>
                     {(auditQuery.data?.logs || []).map((log: any) => (
-                      <tr key={log.id} className="border-b border-white/5">
+                      <tr key={log.id} className="border-b border-slate-100">
                         <td className="py-2 text-slate-400">
                           {log.createdAt ? new Date(log.createdAt).toLocaleString() : ""}
                         </td>
@@ -1758,7 +1758,7 @@ export default function AdminCrmApp() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-white/15"
+                                className="border-slate-300"
                                 onClick={() => rollbackMutation.mutate(log.id)}
                               >
                                 Rollback
@@ -1826,7 +1826,7 @@ export default function AdminCrmApp() {
                         {mod.phase === "A" ? "Addition" : `Phase ${mod.phase}`}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300/90">{mod.description}</p>
+                    <p className="text-xs text-slate-600">{mod.description}</p>
                   </button>
                 ))}
               </div>
@@ -1834,7 +1834,7 @@ export default function AdminCrmApp() {
           )}
         </main>
 
-        <footer className="border-t border-white/10 px-4 md:px-6 py-3 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
+        <footer className="border-t border-slate-200 px-4 md:px-6 py-3 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-4">
             <span>Active Healers: {kpis?.activeHealers ?? "—"}</span>
             <span>Open Tickets: {kpis?.openTickets ?? 0}</span>

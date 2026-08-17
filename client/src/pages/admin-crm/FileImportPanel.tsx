@@ -93,16 +93,16 @@ export function FileImportPanel({
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-black/20 p-3 space-y-2">
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
-        <Upload className="h-4 w-4 text-sky-300" />
+        <Upload className="h-4 w-4 text-sky-600" />
         Upload CSV / XLS ({target})
       </div>
       <p className="text-[11px] text-slate-400">
         Columns: {TEMPLATES[target].headers.join(", ")}
       </p>
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant="outline" className="border-white/15" onClick={downloadTemplate} disabled={disabled}>
+        <Button size="sm" variant="outline" className="border-slate-300" onClick={downloadTemplate} disabled={disabled}>
           Download template
         </Button>
         <label className={`inline-flex items-center ${disabled || busy ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}>
@@ -113,7 +113,7 @@ export function FileImportPanel({
             disabled={disabled || busy}
             onChange={(e) => onFile(e.target.files?.[0] || null)}
           />
-          <span className="inline-flex h-8 items-center rounded-md border border-white/15 px-3 text-xs hover:bg-white/5">
+          <span className="inline-flex h-8 items-center rounded-md border border-slate-300 bg-white px-3 text-xs hover:bg-slate-100">
             {busy ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Importing…
@@ -124,7 +124,7 @@ export function FileImportPanel({
           </span>
         </label>
       </div>
-      {lastResult && <p className="text-xs text-emerald-300">{lastResult}</p>}
+      {lastResult && <p className="text-xs text-emerald-700">{lastResult}</p>}
     </div>
   );
 }
