@@ -72,7 +72,7 @@ const CSV_USERS: Array<{
   { username: "Bhavya.Singhal.Tiwari", userType: "healer", email: "bhavyasinghaltiwari@aurfy.com", mobileNumber: "+91 4632955120", credits: 139 },
   { username: "Bhawnaa.Sharma", userType: "healer", email: "bhawnaasharma@aurfy.com", mobileNumber: "+91 1254356734", credits: 138 },
   { username: "DrVaishaliRathi", userType: "healer", email: "vaishalirathi@aurfy.com", mobileNumber: "+91 9619667074", credits: 145 },
-  { username: "Rutima Gopala", userType: "healer", email: "rutimagopalaaurareader123456@gmail.com", mobileNumber: "+91 3957641387", credits: 118 },
+  { username: "Rutima.Gopala", userType: "healer", email: "rutimagopalaaurareader123456@gmail.com", mobileNumber: "+91 3957641387", credits: 118 },
   { username: "Janvi.Adesara", userType: "healer", email: "janvi.mukhiya@gmail.com", mobileNumber: "+91 8385306588", credits: 150 },
   { username: "Indu.Nandakumar", userType: "healer", email: "indunandakumar@aurfy.com", mobileNumber: "+91 2622010930", credits: 106 },
   { username: "Shwweta.Sharmma", userType: "healer", email: "shwetansh666@gmail.com", mobileNumber: "+91 7132975794", credits: 135 },
