@@ -715,6 +715,94 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
+  /** Reset a user's login password (users + healers tables). Default: healer123 */
+  app.post("/api/crm/users/:id/reset-password", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const existing = await storage.getUser(id);
+      if (!existing) return res.status(404).json({ message: "User not found" });
+
+      const newPassword = String(req.body?.password || "healer123");
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+
+      const hashed = await hashPassword(newPassword);
+      const updated = await storage.updateUserPassword(id, hashed);
+
+      // Ensure account is active so they can log in
+      if (existing.isActive === false) {
+        await db.update(users).set({ isActive: true } as any).where(eq(users.id, id));
+      }
+
+      // Extra sync for healers table (covers username mismatches / type edge cases)
+      try {
+        await storage.updateHealerPassword(existing.username, hashed);
+      } catch (_) {}
+
+      await writeAudit({
+        actor: req.user,
+        action: "reset_password",
+        entityType: "user",
+        entityId: id,
+        previousValue: { username: existing.username },
+        newValue: { passwordResetTo: newPassword, username: existing.username },
+        note: `CRM password reset for ${existing.username}`,
+      });
+
+      res.json({
+        success: true,
+        username: existing.username,
+        message: `Password for ${existing.username} is now ${newPassword}. They can log in with that password.`,
+        user: updated ? { id: updated.id, username: updated.username, isActive: true } : null,
+      });
+    } catch (error) {
+      console.error("CRM reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  /** Find + reset by username (e.g. Rutima Gopala) */
+  app.post("/api/crm/users/reset-password-by-username", requireCrm("canEditUsers"), async (req: AuthedRequest, res) => {
+    try {
+      const username = String(req.body?.username || "").trim();
+      const newPassword = String(req.body?.password || "healer123");
+      if (!username) return res.status(400).json({ message: "username required" });
+      if (newPassword.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
+
+      const existing = await storage.getUserByUsername(username);
+      if (!existing) return res.status(404).json({ message: `No user found for username "${username}"` });
+
+      const hashed = await hashPassword(newPassword);
+      await storage.updateUserPassword(existing.id, hashed);
+      if (existing.isActive === false) {
+        await db.update(users).set({ isActive: true } as any).where(eq(users.id, existing.id));
+      }
+      try {
+        await storage.updateHealerPassword(existing.username, hashed);
+      } catch (_) {}
+
+      await writeAudit({
+        actor: req.user,
+        action: "reset_password",
+        entityType: "user",
+        entityId: existing.id,
+        newValue: { passwordResetTo: newPassword, username: existing.username },
+        note: `CRM password reset by username for ${existing.username}`,
+      });
+
+      res.json({
+        success: true,
+        id: existing.id,
+        username: existing.username,
+        message: `Password for ${existing.username} is now ${newPassword}`,
+      });
+    } catch (error) {
+      console.error("CRM reset password by username error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   app.post("/api/crm/users/:id/credits", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
     try {
       const id = parseInt(req.params.id, 10);

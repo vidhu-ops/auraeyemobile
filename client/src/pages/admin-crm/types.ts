@@ -1,16 +1,4 @@
-export type CrmSection =
-  | "dashboard"
-  | "users"
-  | "healers"
-  | "revenue"
-  | "notifications"
-  | "direct-data"
-  | "audit"
-  | "tickets"
-  | "staff"
-  | "leads"
-  | "analytics"
-  | "modules";
+export type CrmSection = "home" | "people" | "money" | "inbox" | "team" | "audit";
 
 export type CrmAccess = {
   role: string;
@@ -71,17 +59,26 @@ export const PHASE_LABELS: Record<string, string> = {
   dormant: "Inactive — long quiet",
 };
 
-export const CRM_MODULES = [
-  { id: "direct-data", title: "Direct Data Control", description: "Create, import CSV/XLS, edit fields, credits & GDPR tools", phase: "1", color: "blue" },
-  { id: "users", title: "Users (clients)", description: "Client journey, activity timeline, credit expiry & their tickets", phase: "1", color: "blue" },
-  { id: "healers", title: "Healers / Practitioners", description: "Sessions, licence/contract, booking tickets", phase: "1", color: "blue" },
-  { id: "revenue", title: "Revenue & Payments", description: "Payments, credit expiry log, refund history", phase: "1", color: "blue" },
-  { id: "notifications", title: "Monthly Notifications", description: "Needs-attention & inactive user queues", phase: "1", color: "blue" },
-  { id: "tickets", title: "Support / Ticketing", description: "Track issues outside WhatsApp/email threads", phase: "2", color: "purple" },
-  { id: "leads", title: "Lead Pipeline", description: "Prospect healers from first contact to onboarded", phase: "2", color: "purple" },
-  { id: "staff", title: "Roles & Permissions", description: "Create viewer/editor staff logins for /admin", phase: "3", color: "teal" },
-  { id: "analytics", title: "Analytics & Reporting", description: "Feature usage across scans & numerology", phase: "3", color: "teal" },
-  { id: "audit", title: "Audit Log", description: "Who changed what, when, and previous values", phase: "A", color: "rose" },
-  { id: "gdpr", title: "Data Export & Deletion", description: "GDPR/DPDPA access & erasure tooling", phase: "A", color: "rose" },
-  { id: "rollback", title: "Rollback / Backup", description: "Revert a direct-edit from audit snapshots", phase: "A", color: "rose" },
-] as const;
+/** Line-by-line checklist from ADMIN_CRM.md spec */
+export const CRM_CHECKLIST: { id: string; label: string; done: boolean }[] = [
+  { id: "kpi", label: "Dashboard KPIs (users, active, attention, inactive, healers, revenue, credits)", done: true },
+  { id: "direct", label: "Direct edit user fields + credits with expiry (add/subtract/set)", done: true },
+  { id: "create", label: "Create user/healer accounts with credits + validity period", done: true },
+  { id: "expiry", label: "Credit grants expire automatically", done: true },
+  { id: "timeline", label: "Full activity timeline (aura, vibe, numerology, objects, journals, meditations, logins, payments, credits)", done: true },
+  { id: "healers", label: "Healer list + licence/contract editor", done: true },
+  { id: "revenue", label: "Revenue & payments (GBP/INR filter + refund log + expiry log)", done: true },
+  { id: "notify", label: "Monthly notifications queue from journey phases", done: true },
+  { id: "search", label: "Search / filter + CSV export", done: true },
+  { id: "audit", label: "Audit log + rollback for user edits", done: true },
+  { id: "gdpr", label: "GDPR export + erasure (PII scrub + deactivate)", done: true },
+  { id: "health", label: "Integration health indicators", done: true },
+  { id: "tickets", label: "Support ticketing (create / start / resolve)", done: true },
+  { id: "ingest", label: "Auto-ingest contact forms, help, feedback, bookings", done: true },
+  { id: "leads", label: "Lead pipeline (new → contacted → qualified → onboarded / lost)", done: true },
+  { id: "staff", label: "Staff logins with viewer / editor / support / owner roles", done: true },
+  { id: "analytics", label: "Analytics & feature usage reporting", done: true },
+  { id: "import", label: "CSV/XLS bulk import for users and leads", done: true },
+  { id: "resetpw", label: "Reset password to healer123 from edit panel", done: true },
+  { id: "dormant", label: "Journey phase renamed: churned → dormant (Inactive — long quiet)", done: true },
+];
