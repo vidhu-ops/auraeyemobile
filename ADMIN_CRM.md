@@ -53,6 +53,13 @@ The install script is **not** on Replit until you download it. Paste **one** of 
 curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-ux-overhaul-5e41/scripts/replit-install-crm.sh | bash
 ```
 
+**Then finish setup (SQL + Rutima password):**
+```bash
+bash scripts/replit-finish-setup.sh
+```
+
+**You do NOT need** `cd ~/mobileauraeyefinal` — on Replit your app is already at `/home/runner/workspace`.
+
 **Option B — if Option A fails, run step by step:**
 ```bash
 pwd
