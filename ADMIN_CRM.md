@@ -44,10 +44,37 @@ Replaces the minimal `/admin` healer tools panel with an operational CRM matchin
 
 ## Setup
 
-1. Apply SQL: `scripts/create-crm-tables.sql` (includes `crm_staff` + `crm_leads`)
-2. Deploy this branch / copy these files into the live app (`mobileauraeyefinal` / Replit)
-3. Log in as `admin` and open `/admin`
-4. Open **Staff & permissions** to create a viewer login if someone only needs to look
+### Replit — copy & paste this (fixes "no such file or directory")
+
+The install script is **not** on Replit until you download it. Paste **one** of these into the **Shell** (from your app root — the folder with `client/` and `server/`):
+
+**Option A — one command (recommended):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-ux-overhaul-5e41/scripts/replit-install-crm.sh | bash
+```
+
+**Option B — if Option A fails, run step by step:**
+```bash
+pwd
+ls client server
+mkdir -p scripts client/src/pages/admin-crm
+curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-ux-overhaul-5e41/scripts/replit-install-crm.sh -o scripts/replit-install-crm.sh
+bash scripts/replit-install-crm.sh
+```
+
+If you see `no such file or directory` for `scripts/apply-crm-upgrade.sh`, you ran the old command before downloading — use **Option A** above instead.
+
+Then:
+1. Run SQL: `scripts/create-crm-tables.sql` in your database
+2. **Stop → Run** to restart Replit
+3. Log in as `admin` → open `/admin`
+
+**Reset Rutima Gopala password:**
+```bash
+npx tsx scripts/reset-rutima-password.ts
+```
+
+### Manual setup (if you have the repo)
 
 ## Key APIs
 
