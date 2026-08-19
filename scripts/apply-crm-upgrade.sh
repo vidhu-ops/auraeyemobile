@@ -3,7 +3,7 @@
 # Run from the app root (where client/ and server/ exist).
 
 set -euo pipefail
-BRANCH="${1:-cursor/admin-crm-phase1-5e41}"
+BRANCH="${1:-cursor/admin-crm-ux-overhaul-5e41}"
 BASE="https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/${BRANCH}"
 
 mkdir -p client/src/pages/admin-crm scripts
@@ -11,6 +11,10 @@ mkdir -p client/src/pages/admin-crm scripts
 curl -fsSL -o client/src/pages/admin.tsx "$BASE/client/src/pages/admin.tsx"
 curl -fsSL -o client/src/pages/admin-crm/AdminCrmApp.tsx "$BASE/client/src/pages/admin-crm/AdminCrmApp.tsx"
 curl -fsSL -o client/src/pages/admin-crm/types.ts "$BASE/client/src/pages/admin-crm/types.ts"
+curl -fsSL -o client/src/pages/admin-crm/theme.ts "$BASE/client/src/pages/admin-crm/theme.ts"
+curl -fsSL -o client/src/pages/admin-crm/HelpTip.tsx "$BASE/client/src/pages/admin-crm/HelpTip.tsx"
+curl -fsSL -o client/src/pages/admin-crm/PeopleWorkspace.tsx "$BASE/client/src/pages/admin-crm/PeopleWorkspace.tsx"
+curl -fsSL -o client/src/pages/admin-crm/InboxWorkspace.tsx "$BASE/client/src/pages/admin-crm/InboxWorkspace.tsx"
 curl -fsSL -o client/src/pages/admin-crm/QuickActionDialog.tsx "$BASE/client/src/pages/admin-crm/QuickActionDialog.tsx"
 curl -fsSL -o client/src/pages/admin-crm/FileImportPanel.tsx "$BASE/client/src/pages/admin-crm/FileImportPanel.tsx"
 curl -fsSL -o server/support-tickets.ts "$BASE/server/support-tickets.ts"

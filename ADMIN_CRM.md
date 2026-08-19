@@ -69,6 +69,20 @@ Replaces the minimal `/admin` healer tools panel with an operational CRM matchin
 | POST | `/api/crm/audit-logs/:id/rollback` | Restore prior user snapshot |
 | GET | `/api/crm/users.csv` | CSV export |
 
-## Note on repos
+## UX (simple mode)
+
+Navigation is reduced to **6 sections** so admins rarely switch screens:
+
+| Menu | What you do here |
+|------|------------------|
+| **Home** | Today's numbers, open tickets (resolve inline), who to check on, analytics summary |
+| **People** | Search anyone → view activity, edit, credits, healer paperwork, messages — **one screen** |
+| **Money** | Payments, refunds, credit expiry log |
+| **Messages & leads** | Support inbox + lead pipeline |
+| **Team access** | Create viewer/editor staff logins |
+| **Activity log** | Audit trail + undo |
+
+The **feature checklist** on Home maps line-by-line to this spec document.
+
 
 Cloud Agent can push to `auraeyemobile` only. Merge/copy into `mobileauraeyefinal` / Replit to go live.
