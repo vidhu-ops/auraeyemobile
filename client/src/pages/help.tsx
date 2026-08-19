@@ -1,0 +1,476 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Wind, 
+  Palette, 
+  Book, 
+  Heart, 
+  HelpCircle, 
+  ChevronRight,
+  Play,
+  Users,
+  Mail,
+  Phone,
+  ChevronDown,
+  Loader2
+} from "lucide-react";
+import { Link } from "wouter";
+import MobileNavigation from "@/components/layout/mobile-navigation";
+import BreathingGuide from "@/components/breathing-guide";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+
+const faqs = [
+  {
+    question: "What is AuraEye?",
+    answer: "AuraEye is a spiritual wellness platform that offers aura readings, numerology analysis, chakra assessments, color meanings, and personalized healing resources. Our technology combines ancient spiritual wisdom with modern analysis to help you understand your energy field."
+  },
+  {
+    question: "How do aura readings work?",
+    answer: "Our aura analysis uses advanced technology to interpret the colors and energy patterns in your photograph. These colors correspond to different aspects of your physical, emotional, and spiritual well-being."
+  },
+  {
+    question: "What is numerology?",
+    answer: "Numerology is an ancient practice that interprets the spiritual significance of numbers. Based on your birth date and name, we calculate your Life Path Number, Destiny Number, and other spiritual numbers that reveal insights about your personality and life purpose."
+  },
+  {
+    question: "What are chakras?",
+    answer: "Chakras are energy centers in the body according to Eastern spiritual traditions. There are 7 main chakras, each associated with different physical, emotional, and spiritual aspects of your being. Our chakra assessments help identify imbalances and suggest healing practices."
+  },
+  {
+    question: "How often should I get readings?",
+    answer: "You can get readings as frequently as you'd like. Many users do daily vibe checks for quick insights, weekly aura readings to track changes, and monthly comprehensive analyses. The frequency depends on your spiritual journey and goals."
+  },
+  {
+    question: "Can healers use AuraEye?",
+    answer: "Yes! AuraEye is designed for both individual users and professional healers. Healers can analyze their clients' auras, create personalized reports, and track progress over time. It's a powerful tool for deepening your healing practice."
+  },
+  {
+    question: "What is the 'Turn On the Lights' page?",
+    answer: "When you log in, you'll see the 'Turn On the Lights' activation page. This is a spiritual initiation that activates your energy profile in our system, preparing you to begin your wellness journey on AuraEye."
+  },
+  {
+    question: "How do credits work?",
+    answer: "Credits are used to access premium features like detailed aura analysis and healer consultations. You receive free credits upon registration and can earn more by completing spiritual practices or purchase them for enhanced features."
+  }
+];
+
+const helpSections = [
+  {
+    id: "breathing",
+    title: "Breathing Techniques",
+    description: "Learn powerful breathing methods",
+    icon: Wind,
+    color: "from-blue-400 to-cyan-400",
+    items: [
+      { name: "4-7-8 Breathing", duration: "5 min", description: "Calm your nervous system" },
+      { name: "Box Breathing", duration: "8 min", description: "Navy SEAL technique for focus" },
+      { name: "Alternate Nostril", duration: "10 min", description: "Balance your energy" },
+      { name: "Belly Breathing", duration: "6 min", description: "Deep abdominal breathing" }
+    ]
+  },
+  {
+    id: "colors",
+    title: "Color Meanings",
+    description: "Explore spiritual color significance",
+    icon: Palette,
+    color: "from-pink-400 to-rose-400",
+    items: [
+      { name: "Red Energy", meaning: "Passion, strength, courage", chakra: "Root" },
+      { name: "Orange Vitality", meaning: "Creativity, joy, enthusiasm", chakra: "Sacral" },
+      { name: "Yellow Wisdom", meaning: "Intelligence, clarity, optimism", chakra: "Solar Plexus" },
+      { name: "Green Healing", meaning: "Love, growth, harmony", chakra: "Heart" },
+      { name: "Blue Truth", meaning: "Communication, peace, trust", chakra: "Throat" },
+      { name: "Indigo Intuition", meaning: "Wisdom, spiritual insight", chakra: "Third Eye" },
+      { name: "Violet Spirituality", meaning: "Divine connection, transformation", chakra: "Crown" }
+    ]
+  },
+  {
+    id: "guides",
+    title: "Meditation Guides",
+    description: "Step-by-step meditation instructions",
+    icon: Book,
+    color: "from-purple-400 to-violet-400",
+    items: [
+      { name: "Beginner's Guide", level: "Starter", description: "Your first meditation journey" },
+      { name: "Chakra Meditation", level: "Intermediate", description: "Balance your energy centers" },
+      { name: "Aura Cleansing", level: "Advanced", description: "Purify your energy field" },
+      { name: "Mindfulness Practice", level: "All levels", description: "Present moment awareness" }
+    ]
+  },
+  {
+    id: "support",
+    title: "Support & Contact",
+    description: "Get help and connect with us",
+    icon: Heart,
+    color: "from-emerald-400 to-green-400",
+    items: [
+      { name: "FAQ", type: "Help", description: "Common questions answered" },
+      { name: "Submit A Ticket", type: "Email", description: "Send a support request" },
+      { name: "Community", type: "Connect", description: "Join our healing community" }
+    ]
+  }
+];
+
+export default function HelpPage() {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [breathingOpen, setBreathingOpen] = useState(false);
+  const [selectedBreathingExercise, setSelectedBreathingExercise] = useState<{ name: string; duration: string } | null>(null);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const [ticketSubmitting, setTicketSubmitting] = useState(false);
+  const [ticketForm, setTicketForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-950 to-slate-950 pb-20">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-cyan-950/50 to-teal-900/50 pt-12 pb-8 px-6">
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
+            <HelpCircle className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Help & Resources</h1>
+          <p className="text-gray-200">Guides, techniques, and support</p>
+        </div>
+      </div>
+
+      {/* Help Sections */}
+      <div className="px-6 py-6">
+        <div className="space-y-4">
+          {helpSections.map((section) => {
+            const Icon = section.icon;
+            const isActive = activeSection === section.id;
+            
+            return (
+              <Card 
+                key={section.id} 
+                className="bg-slate-800/80 backdrop-blur-sm border-slate-700/50 shadow-md hover:shadow-lg transition-all duration-200"
+                data-testid={`help-section-${section.id}`}
+              >
+                <CardHeader 
+                  className="cursor-pointer"
+                  onClick={() => setActiveSection(isActive ? null : section.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.color} flex items-center justify-center mr-4 shadow-sm`}>
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg text-white" data-testid={`section-title-${section.id}`}>
+                          {section.title}
+                        </CardTitle>
+                        <CardDescription className="text-gray-200">
+                          {section.description}
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <ChevronRight 
+                      className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
+                        isActive ? 'rotate-90' : ''
+                      }`} 
+                    />
+                  </div>
+                </CardHeader>
+
+                {isActive && (
+                  <CardContent className="pt-0">
+                    <div className="space-y-3">
+                      {section.items.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="p-4 bg-gradient-to-r from-slate-700/50 to-slate-800/50 rounded-xl border border-slate-600/30"
+                          data-testid={`help-item-${section.id}-${index}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-white mb-1">{item.name}</h4>
+                              <p className="text-sm text-gray-200 mb-2">
+                                {'description' in item 
+                                  ? item.description 
+                                  : 'meaning' in item 
+                                    ? item.meaning 
+                                    : ''
+                                }
+                              </p>
+                              
+                              {/* Dynamic badges based on section type */}
+                              <div className="flex gap-2">
+                                {section.id === "breathing" && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {(item as any).duration}
+                                  </Badge>
+                                )}
+                                {section.id === "colors" && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {(item as any).chakra} Chakra
+                                  </Badge>
+                                )}
+                                {section.id === "guides" && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {(item as any).level}
+                                  </Badge>
+                                )}
+                                {section.id === "support" && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {(item as any).type}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {section.id === "breathing" && (
+                              <Button 
+                                size="sm" 
+                                className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
+                                data-testid={`start-${section.id}-${index}`}
+                                onClick={() => {
+                                  setSelectedBreathingExercise({ name: item.name, duration: (item as any).duration });
+                                  setBreathingOpen(true);
+                                }}
+                              >
+                                <Play className="h-4 w-4 mr-1" />
+                                Start
+                              </Button>
+                            )}
+                            
+                            {section.id === "guides" && (
+                              <Button 
+                                size="sm" 
+                                className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
+                                data-testid={`start-${section.id}-${index}`}
+                              >
+                                <Play className="h-4 w-4 mr-1" />
+                                Start
+                              </Button>
+                            )}
+                            
+                            {section.id === "colors" && (
+                              <Link href="/color-meanings">
+                                <Button 
+                                  size="sm" 
+                                  className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
+                                  data-testid={`explore-color-${index}`}
+                                >
+                                  Explore
+                                </Button>
+                              </Link>
+                            )}
+                            
+                            {section.id === "support" && (
+                              <Button 
+                                size="sm" 
+                                className={`bg-gradient-to-r ${section.color} text-white border-0 rounded-lg ml-4`}
+                                data-testid={`contact-${index}`}
+                                onClick={() => {
+                                  if ((item as any).name === "FAQ") {
+                                    setFaqOpen(true);
+                                  } else if ((item as any).name === "Submit A Ticket") {
+                                    setTicketForm({
+                                      name: user?.name || user?.username || "",
+                                      email: (user as any)?.email || "",
+                                      subject: "",
+                                      message: "",
+                                    });
+                                    setTicketOpen(true);
+                                  } else if ((item as any).name === "Community") {
+                                    window.location.href = "/contact";
+                                  }
+                                }}
+                              >
+                                {(item as any).name === "FAQ" && <HelpCircle className="h-4 w-4 mr-1" />}
+                                {(item as any).type === "Email" ? <Mail className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                                {(item as any).name === "FAQ" && "View"}
+                                {(item as any).name === "Submit A Ticket" && "Open"}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Quick Access Links */}
+        <div className="mt-8 grid grid-cols-2 gap-4">
+          <Link href="/meditations">
+            <Card className="bg-gradient-to-br from-blue-400 to-cyan-400 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200" data-testid="quick-meditations">
+              <CardContent className="p-6 text-center">
+                <Heart className="h-8 w-8 mx-auto mb-2" />
+                <h3 className="font-semibold">Meditations</h3>
+                <p className="text-sm opacity-90">Guided sessions</p>
+              </CardContent>
+            </Card>
+          </Link>
+          
+          <Link href="/healers">
+            <Card className="bg-gradient-to-br from-purple-400 to-violet-400 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200" data-testid="quick-healers">
+              <CardContent className="p-6 text-center">
+                <Users className="h-8 w-8 mx-auto mb-2" />
+                <h3 className="font-semibold">Find Healers</h3>
+                <p className="text-sm opacity-90">Expert guidance</p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </div>
+
+      {/* Breathing Guide Modal */}
+      {selectedBreathingExercise && (
+        <BreathingGuide 
+          isOpen={breathingOpen}
+          onClose={() => setBreathingOpen(false)}
+          exerciseName={selectedBreathingExercise.name}
+          duration={selectedBreathingExercise.duration}
+        />
+      )}
+
+      {/* FAQ Modal */}
+      <Dialog open={faqOpen} onOpenChange={setFaqOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] bg-slate-900 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-white flex items-center gap-2">
+              <HelpCircle className="h-6 w-6 text-emerald-400" />
+              Frequently Asked Questions
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Find answers to common questions about AuraEye
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="h-[60vh] w-full pr-4">
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div 
+                  key={index}
+                  className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden"
+                >
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-700/30 transition-colors text-left"
+                    data-testid={`faq-question-${index}`}
+                  >
+                    <span className="font-medium text-white pr-4">{faq.question}</span>
+                    <ChevronDown 
+                      className={`h-5 w-5 text-gray-400 flex-shrink-0 transition-transform ${
+                        expandedFaq === index ? 'rotate-180' : ''
+                      }`} 
+                    />
+                  </button>
+                  
+                  {expandedFaq === index && (
+                    <div className="px-4 py-3 bg-slate-800/20 border-t border-slate-700/30">
+                      <p className="text-gray-300 text-sm leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Support ticket modal → CRM Support inbox */}
+      <Dialog open={ticketOpen} onOpenChange={setTicketOpen}>
+        <DialogContent className="max-w-lg bg-slate-900 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-white flex items-center gap-2">
+              <Mail className="h-5 w-5 text-emerald-400" />
+              Submit a support ticket
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Your message goes straight to the AuraEye support inbox.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="Your name"
+              value={ticketForm.name}
+              onChange={(e) => setTicketForm({ ...ticketForm, name: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Input
+              type="email"
+              placeholder="Email"
+              value={ticketForm.email}
+              onChange={(e) => setTicketForm({ ...ticketForm, email: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Input
+              placeholder="Subject"
+              value={ticketForm.subject}
+              onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Textarea
+              placeholder="How can we help?"
+              rows={4}
+              value={ticketForm.message}
+              onChange={(e) => setTicketForm({ ...ticketForm, message: e.target.value })}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-500"
+              disabled={ticketSubmitting}
+              onClick={async () => {
+                if (!ticketForm.message.trim() || ticketForm.message.trim().length < 5) {
+                  toast({ title: "Please enter a message", variant: "destructive" });
+                  return;
+                }
+                if (!ticketForm.email.trim() && !user) {
+                  toast({ title: "Email is required", variant: "destructive" });
+                  return;
+                }
+                setTicketSubmitting(true);
+                try {
+                  const res = await apiRequest("POST", "/api/support/tickets", {
+                    name: ticketForm.name,
+                    email: ticketForm.email,
+                    subject: ticketForm.subject || "Help request",
+                    message: ticketForm.message,
+                    category: "help",
+                    channel: "help",
+                    sourcePath: "/help",
+                  });
+                  const json = await res.json();
+                  if (!res.ok) throw new Error(json.message || "Failed");
+                  toast({ title: "Ticket submitted", description: "Our team will get back to you soon." });
+                  setTicketOpen(false);
+                  setTicketForm({ name: "", email: "", subject: "", message: "" });
+                } catch (err: any) {
+                  toast({ title: "Could not submit", description: err.message, variant: "destructive" });
+                } finally {
+                  setTicketSubmitting(false);
+                }
+              }}
+            >
+              {ticketSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sending…
+                </>
+              ) : (
+                "Submit ticket"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <MobileNavigation />
+    </div>
+  );
+}
