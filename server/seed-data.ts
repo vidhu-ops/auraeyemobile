@@ -99,6 +99,10 @@ const CSV_USERS: Array<{
   { username: "Manolinie.Parbat", userType: "healer", email: "manolinie.parbat@aurfy.com", credits: 75 },
   { username: "cps.tom", userType: "healer", credits: 50 },
   { username: "cps.gill", userType: "healer", credits: 50 },
+  { username: "P.Lalitha", userType: "healer", credits: 40 },
+  { username: "Manisha.Sajnani", userType: "healer", credits: 40 },
+  { username: "Falguni.Mehta", userType: "healer", credits: 40 },
+  { username: "Bhavna.Ambre", userType: "healer", credits: 40 },
   // test account
   { username: "test.client", userType: "client", email: "test.client@spiritualwellness.com", credits: 5 },
 ];
