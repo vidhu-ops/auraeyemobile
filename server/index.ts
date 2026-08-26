@@ -270,6 +270,14 @@ app.use((req, res, next) => {
     } catch (error: any) {
       console.error('Failed to start notification scheduler:', error?.message || error);
     }
+
+    // Sweep account-level credit expirations so idle users are zeroed automatically.
+    try {
+      const { startCreditExpiryScheduler } = await import('./credit-grants');
+      startCreditExpiryScheduler();
+    } catch (error: any) {
+      console.error('Failed to start credit expiry scheduler:', error?.message || error);
+    }
   });
 
   // Add timeout handling for server startup

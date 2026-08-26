@@ -308,6 +308,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserCredits(userId: number, newCredits: number): Promise<User | undefined> {
+    const { expireUserCreditsIfDue, isCreditExpiryDue } = await import("./credit-grants");
+    await expireUserCreditsIfDue(userId);
+    const [currentUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId));
+    if (!currentUser) return undefined;
+    if (isCreditExpiryDue(currentUser.creditExpiresAt)) return currentUser;
+
     const [user] = await db
       .update(users)
       .set({ credits: newCredits })
@@ -804,7 +813,8 @@ export class DatabaseStorage implements IStorage {
   // Credit management
   async getUserCredits(userId: number): Promise<number> {
     try {
-      const { expireCreditsForUser } = await import("./credit-grants");
+      const { expireUserCreditsIfDue, expireCreditsForUser } = await import("./credit-grants");
+      await expireUserCreditsIfDue(userId);
       await expireCreditsForUser(userId);
     } catch (e) {
       console.error("Credit expiry check failed:", e);
@@ -815,7 +825,8 @@ export class DatabaseStorage implements IStorage {
 
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
     try {
-      const { expireCreditsForUser, consumeCreditGrants } = await import("./credit-grants");
+      const { expireUserCreditsIfDue, expireCreditsForUser, consumeCreditGrants } = await import("./credit-grants");
+      await expireUserCreditsIfDue(userId);
       await expireCreditsForUser(userId);
       const ok = await db.transaction(async (tx) => {
         const [user] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
@@ -859,7 +870,14 @@ export class DatabaseStorage implements IStorage {
     expiresAt?: Date | null
   ): Promise<boolean> {
     try {
-      const { addCreditGrant } = await import("./credit-grants");
+      const { addCreditGrant, expireUserCreditsIfDue, isCreditExpiryDue } = await import("./credit-grants");
+      await expireUserCreditsIfDue(userId);
+      const [currentUser] = await db
+        .select({ creditExpiresAt: users.creditExpiresAt })
+        .from(users)
+        .where(eq(users.id, userId));
+      if (isCreditExpiryDue(currentUser?.creditExpiresAt)) return false;
+
       const result = await addCreditGrant({
         userId,
         amount,

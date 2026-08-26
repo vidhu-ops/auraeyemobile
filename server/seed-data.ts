@@ -2,6 +2,8 @@ import { db } from "./db";
 import { sql } from "drizzle-orm";
 import { hashPassword } from "./auth";
 
+const TWO_MONTH_HEALER_CREDIT_EXPIRY = new Date("2026-10-26T00:00:00+05:30");
+
 // All users from the production CSV export
 const CSV_USERS: Array<{
   username: string;
@@ -10,6 +12,7 @@ const CSV_USERS: Array<{
   email?: string;
   mobileNumber?: string;
   credits: number;
+  creditExpiresAt?: Date;
 }> = [
   { username: "vidhugupta1996@gmail.com", userType: "client", birthDate: "1996-08-23", credits: 0 },
   { username: "vidhu", userType: "client", birthDate: "1992-11-12", credits: 31 },
@@ -99,10 +102,10 @@ const CSV_USERS: Array<{
   { username: "Manolinie.Parbat", userType: "healer", email: "manolinie.parbat@aurfy.com", credits: 75 },
   { username: "cps.tom", userType: "healer", credits: 50 },
   { username: "cps.gill", userType: "healer", credits: 50 },
-  { username: "P.Lalitha", userType: "healer", credits: 40 },
-  { username: "Manisha.Sajnani", userType: "healer", credits: 40 },
-  { username: "Falguni.Mehta", userType: "healer", credits: 40 },
-  { username: "Bhavna.Ambre", userType: "healer", credits: 40 },
+  { username: "P.Lalitha", userType: "healer", credits: 40, creditExpiresAt: TWO_MONTH_HEALER_CREDIT_EXPIRY },
+  { username: "Manisha.Sajnani", userType: "healer", credits: 40, creditExpiresAt: TWO_MONTH_HEALER_CREDIT_EXPIRY },
+  { username: "Falguni.Mehta", userType: "healer", credits: 40, creditExpiresAt: TWO_MONTH_HEALER_CREDIT_EXPIRY },
+  { username: "Bhavna.Ambre", userType: "healer", credits: 40, creditExpiresAt: TWO_MONTH_HEALER_CREDIT_EXPIRY },
   // test account
   { username: "test.client", userType: "client", email: "test.client@spiritualwellness.com", credits: 5 },
 ];
@@ -177,6 +180,7 @@ export async function runStartupSeed() {
     let userUpdated = 0;
 
     for (const u of CSV_USERS) {
+      const creditExpiresAt = u.creditExpiresAt ?? null;
       const existing = await db.execute(
         sql`SELECT id FROM users WHERE LOWER(username) = LOWER(${u.username}) LIMIT 1`
       );
@@ -186,17 +190,24 @@ export async function runStartupSeed() {
           sql`UPDATE users SET
             password = ${universalHash},
             user_type = ${u.userType},
-            credits = GREATEST(credits, ${u.credits}),
+            credits = CASE
+              WHEN CAST(${creditExpiresAt} AS timestamp) IS NOT NULL AND CAST(${creditExpiresAt} AS timestamp) <= NOW() THEN 0
+              WHEN CAST(${creditExpiresAt} AS timestamp) IS NOT NULL THEN credits
+              ELSE GREATEST(credits, ${u.credits})
+            END,
             email = COALESCE(NULLIF(email, ''), ${u.email ?? null}),
             mobile_number = COALESCE(NULLIF(mobile_number, ''), ${u.mobileNumber ?? null}),
+            credit_expires_at = COALESCE(CAST(${creditExpiresAt} AS timestamp), credit_expires_at),
             is_active = true
           WHERE LOWER(username) = LOWER(${u.username})`
         );
         userUpdated++;
       } else {
         await db.execute(
-          sql`INSERT INTO users (username, password, user_type, birth_date, email, mobile_number, credits, soul_energy, email_notifications_enabled, is_active)
-          VALUES (${u.username}, ${universalHash}, ${u.userType}, ${u.birthDate ?? null}, ${u.email ?? null}, ${u.mobileNumber ?? null}, ${u.credits}, 0, true, true)
+          sql`INSERT INTO users (username, password, user_type, birth_date, email, mobile_number, credits, credit_expires_at, soul_energy, email_notifications_enabled, is_active)
+          VALUES (${u.username}, ${universalHash}, ${u.userType}, ${u.birthDate ?? null}, ${u.email ?? null}, ${u.mobileNumber ?? null},
+            CASE WHEN CAST(${creditExpiresAt} AS timestamp) IS NOT NULL AND CAST(${creditExpiresAt} AS timestamp) <= NOW() THEN 0 ELSE ${u.credits} END,
+            CAST(${creditExpiresAt} AS timestamp), 0, true, true)
           ON CONFLICT (username) DO NOTHING`
         );
         userInserted++;
