@@ -111,3 +111,18 @@ CREATE TABLE IF NOT EXISTS credit_grants (
 
 CREATE INDEX IF NOT EXISTS credit_grants_user_id_idx ON credit_grants(user_id);
 CREATE INDEX IF NOT EXISTS credit_grants_expires_at_idx ON credit_grants(expires_at);
+
+-- Website page views (admin analytics)
+CREATE TABLE IF NOT EXISTS page_views (
+  id SERIAL PRIMARY KEY,
+  path TEXT NOT NULL,
+  referrer TEXT,
+  user_id INTEGER REFERENCES users(id),
+  session_id TEXT,
+  user_agent TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS page_views_path_idx ON page_views(path);
+CREATE INDEX IF NOT EXISTS page_views_created_at_idx ON page_views(created_at);
+CREATE INDEX IF NOT EXISTS page_views_session_id_idx ON page_views(session_id);

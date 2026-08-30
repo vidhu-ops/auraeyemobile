@@ -857,7 +857,7 @@ export function registerCrmRoutes(app: Express) {
           description || `CRM credit deduct by ${req.user?.username}`
         );
         if (!ok) return res.status(400).json({ message: "Insufficient credits or update failed" });
-        after = before - parsed;
+        after = await storage.getUserCredits(id);
       } else {
         after = await replaceCreditBalance({
           userId: id,
@@ -1647,6 +1647,58 @@ export function registerCrmRoutes(app: Express) {
     } catch (error) {
       console.error("CRM leads import error:", error);
       res.status(500).json({ message: "Failed to import leads" });
+    }
+  });
+
+  /** Daily app activity digest + website analytics */
+  app.get("/api/crm/insights/daily", requireCrm("canViewUsers"), async (req, res) => {
+    try {
+      const days = Math.min(30, Math.max(1, parseInt(String(req.query.days || "14"), 10) || 14));
+      const { getDailyActivityReport } = await import("./crm-insights");
+      const report = await getDailyActivityReport(days);
+      res.json(report);
+    } catch (error) {
+      console.error("CRM daily insights error:", error);
+      res.status(500).json({ message: "Failed to load daily activity" });
+    }
+  });
+
+  app.get("/api/crm/insights/website", requireCrm("canViewUsers"), async (req, res) => {
+    try {
+      const days = Math.min(30, Math.max(1, parseInt(String(req.query.days || "7"), 10) || 7));
+      const { getWebsiteAnalytics } = await import("./crm-insights");
+      const analytics = await getWebsiteAnalytics(days);
+      res.json(analytics);
+    } catch (error) {
+      console.error("CRM website analytics error:", error);
+      res.status(500).json({ message: "Failed to load website analytics" });
+    }
+  });
+
+  /** Re-sync user credit balance from active grants (fixes drift) */
+  app.post("/api/crm/users/:id/sync-credits", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const grants = await listCreditGrants(id);
+      const now = new Date();
+      const fromGrants = grants
+        .filter((g) => g.remaining > 0 && (!g.expiresAt || new Date(g.expiresAt) > now))
+        .reduce((sum, g) => sum + g.remaining, 0);
+      const before = await storage.getUserCredits(id);
+      await storage.updateUserCredits(id, fromGrants);
+      await writeAudit({
+        actor: req.user,
+        action: "credit_sync",
+        entityType: "credit",
+        entityId: id,
+        previousValue: { credits: before },
+        newValue: { credits: fromGrants },
+        note: "Synced balance from active credit grants",
+      });
+      res.json({ success: true, creditsBefore: before, creditsAfter: fromGrants });
+    } catch (error) {
+      console.error("CRM credit sync error:", error);
+      res.status(500).json({ message: "Failed to sync credits" });
     }
   });
 }

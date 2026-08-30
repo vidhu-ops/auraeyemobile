@@ -8,6 +8,7 @@ import { logEmailProviderStatus } from "./email-service";
 import Stripe from "stripe";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+import { storage } from "./storage";
 
 const app = express();
 
@@ -111,32 +112,28 @@ app.post('/api/webhooks/stripe',
           const user = (users as any[])[0];
           
           if (user) {
-            // Determine credits based on amount paid
             const creditsToAdd = determineCredits(amountTotal);
             const currentCredits = user.credits || 0;
-            const newCredits = currentCredits + creditsToAdd;
             const currentUserType = user.user_type || 'client';
-            
-            // Atomic update: Add credits AND upgrade to healer if currently a client
+
             if (currentUserType === 'client') {
-              // Upgrade client to healer and add credits in one atomic operation
-              await db.execute(
-                sql`UPDATE users SET credits = credits + ${creditsToAdd}, user_type = 'healer' WHERE id = ${user.id}`
-              );
+              await db.execute(sql`UPDATE users SET user_type = 'healer' WHERE id = ${user.id}`);
               console.log(`🎉 Upgraded user ${user.username} from client to healer`);
-            } else {
-              // Just add credits for existing healers/semi-healers
-              await db.execute(
-                sql`UPDATE users SET credits = credits + ${creditsToAdd} WHERE id = ${user.id}`
-              );
             }
-            
-            // Record the transaction with Stripe session ID for idempotency
+
+            await storage.addCredits(
+              user.id,
+              creditsToAdd,
+              'stripe_payment',
+              `Stripe checkout ${sessionId}`
+            );
+            const newCredits = await storage.getUserCredits(user.id);
+
             await db.execute(sql`
               INSERT INTO payment_transactions (user_id, amount, status, billing_email, credits_before, credits_after, stripe_session_id, created_at)
               VALUES (${user.id}, ${amountTotal}, 'completed', ${customerEmail}, ${currentCredits}, ${newCredits}, ${sessionId}, NOW())
             `);
-            
+
             console.log(`✅ Added ${creditsToAdd} credits to user ${user.username}. New balance: ${newCredits}`);
           } else {
             console.log('User not found for email:', customerEmail);

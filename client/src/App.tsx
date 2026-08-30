@@ -45,6 +45,7 @@ import Mascot from "@/components/mascot/mascot";
 import NotificationPrompt from "@/components/notification-prompt";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
 import { CookieConsent } from "@/components/legal/cookie-consent";
+import PageViewTracker from "@/components/PageViewTracker";
 import { useEffect, useState, Component, ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
@@ -137,9 +138,19 @@ function AppContent() {
   const { currentBadge, closeBadge } = useBadgeContext();
   const [appNotification, setAppNotification] = useState<{ title: string; message: string } | null>(null);
 
-  // Force reset zoom on every route change
+  // Force reset zoom on every route change (skip on admin for mobile usability)
   useEffect(() => {
+    const isAdmin = location === '/admin' || location.startsWith('/admin/');
     const resetZoom = () => {
+      if (isAdmin) {
+        document.documentElement.style.zoom = '';
+        document.body.style.zoom = '';
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+        }
+        return;
+      }
       document.documentElement.style.zoom = "1";
       document.body.style.zoom = "1";
       const viewport = document.querySelector('meta[name="viewport"]');
@@ -148,7 +159,6 @@ function AppContent() {
       }
     };
     resetZoom();
-    // Re-run after a short delay to catch layout shifts
     const timer = setTimeout(resetZoom, 100);
     return () => clearTimeout(timer);
   }, [location]);
@@ -156,7 +166,7 @@ function AppContent() {
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
-    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment'];
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/admin', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment'];
     const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
     if (!shouldSkip) {
@@ -191,7 +201,7 @@ function AppContent() {
   }
 
   // Public routes that don't require lights activation
-  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment'];
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment', '/admin'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
   // Show lights activation only on the home page for first-time session feel
@@ -203,6 +213,7 @@ function AppContent() {
 
   return (
     <>
+      <PageViewTracker />
       <ErrorBoundary>
         <Router />
       </ErrorBoundary>

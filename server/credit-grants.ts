@@ -118,33 +118,40 @@ export async function addCreditGrant(params: {
 }
 
 /** FIFO consume remaining from active (non-expired) grants. */
-export async function consumeCreditGrants(userId: number, amount: number): Promise<void> {
-  try {
-    await db.transaction(async (tx) => {
-      const now = new Date();
-      const grants = await tx
-        .select()
-        .from(creditGrants)
-        .where(
-          and(
-            eq(creditGrants.userId, userId),
-            gt(creditGrants.remaining, 0),
-            or(sql`${creditGrants.expiresAt} IS NULL`, gt(creditGrants.expiresAt, now))
-          )
+export async function consumeCreditGrants(userId: number, amount: number, tx?: typeof db): Promise<void> {
+  const runner = tx ?? db;
+  const run = async (client: typeof db) => {
+    const now = new Date();
+    const grants = await client
+      .select()
+      .from(creditGrants)
+      .where(
+        and(
+          eq(creditGrants.userId, userId),
+          gt(creditGrants.remaining, 0),
+          or(sql`${creditGrants.expiresAt} IS NULL`, gt(creditGrants.expiresAt, now))
         )
-        .orderBy(asc(sql`coalesce(${creditGrants.expiresAt}, '9999-12-31')`), asc(creditGrants.id));
+      )
+      .orderBy(asc(sql`coalesce(${creditGrants.expiresAt}, '9999-12-31')`), asc(creditGrants.id));
 
-      let left = amount;
-      for (const grant of grants) {
-        if (left <= 0) break;
-        const take = Math.min(grant.remaining, left);
-        await tx
-          .update(creditGrants)
-          .set({ remaining: grant.remaining - take })
-          .where(eq(creditGrants.id, grant.id));
-        left -= take;
-      }
-    });
+    let left = amount;
+    for (const grant of grants) {
+      if (left <= 0) break;
+      const take = Math.min(grant.remaining, left);
+      await client
+        .update(creditGrants)
+        .set({ remaining: grant.remaining - take })
+        .where(eq(creditGrants.id, grant.id));
+      left -= take;
+    }
+  };
+
+  try {
+    if (tx) {
+      await run(tx);
+    } else {
+      await db.transaction(async (client) => run(client));
+    }
   } catch (error) {
     console.error("consumeCreditGrants failed:", error);
   }

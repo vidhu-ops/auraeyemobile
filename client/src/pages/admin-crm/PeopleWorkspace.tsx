@@ -211,8 +211,26 @@ export default function PeopleWorkspace({
       toast({ title: "Credits updated", description: `New balance: ${data.creditsAfter}` });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users", selectedUserId] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
     },
     onError: (err: any) => toast({ title: "Credit update failed", description: err.message, variant: "destructive" }),
+  });
+
+  const syncCreditsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/crm/users/${selectedUserId}/sync-credits`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Credits synced",
+        description: `Balance updated: ${data.creditsBefore} → ${data.creditsAfter}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/users", selectedUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
+    },
+    onError: (err: any) => toast({ title: "Sync failed", description: err.message, variant: "destructive" }),
   });
 
   const contractMutation = useMutation({
@@ -721,6 +739,14 @@ export default function PeopleWorkspace({
                         Set exact
                       </Button>
                     </div>
+                    <Button
+                      variant="outline"
+                      className="w-full text-xs"
+                      disabled={syncCreditsMutation.isPending}
+                      onClick={() => syncCreditsMutation.mutate()}
+                    >
+                      Sync balance from grants (fix mismatch)
+                    </Button>
                   </div>
                 )}
 

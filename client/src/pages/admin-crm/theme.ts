@@ -1,9 +1,12 @@
 /** Shared light-theme class strings for Admin CRM */
 
 export const crm = {
-  page: "min-h-screen bg-slate-50 text-slate-900 flex",
+  page: "min-h-[100dvh] bg-slate-50 text-slate-900 flex flex-col lg:flex-row",
   aside: "hidden lg:flex w-72 flex-col border-r border-slate-200 bg-white shadow-sm shrink-0",
-  header: "border-b border-slate-200 bg-white shadow-sm sticky top-0 z-20",
+  header: "border-b border-slate-200 bg-white shadow-sm sticky top-0 z-20 pt-[env(safe-area-inset-top)]",
+  main: "flex-1 overflow-y-auto p-4 md:p-6 space-y-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-6",
+  bottomNav:
+    "lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)]",
   card: "bg-white border-slate-200 shadow-sm",
   cardMuted: "bg-slate-50 border-slate-200",
   input: "bg-white border-slate-200",

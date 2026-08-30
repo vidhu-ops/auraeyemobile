@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Paste this ENTIRE file into Replit Shell, OR run:
-#   curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-ux-overhaul-5e41/scripts/replit-install-crm.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-fixes-5e41/scripts/replit-install-crm.sh | bash
 #
 # Must run from your app root (folder that contains client/ and server/).
 
 set -euo pipefail
 
-BRANCH="${CRM_BRANCH:-cursor/admin-crm-ux-overhaul-5e41}"
+BRANCH="${CRM_BRANCH:-cursor/admin-crm-fixes-5e41}"
 BASE="https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/${BRANCH}"
 
 # Find app root if we're in the wrong folder
@@ -23,7 +23,7 @@ fi
 
 echo "Installing Admin CRM from branch: $BRANCH"
 echo "App root: $(pwd)"
-mkdir -p client/src/pages/admin-crm scripts
+mkdir -p client/src/pages/admin-crm client/src/components scripts
 
 download() {
   local dest="$1"
@@ -43,14 +43,21 @@ download client/src/pages/admin-crm/theme.ts "$BASE/client/src/pages/admin-crm/t
 download client/src/pages/admin-crm/HelpTip.tsx "$BASE/client/src/pages/admin-crm/HelpTip.tsx"
 download client/src/pages/admin-crm/PeopleWorkspace.tsx "$BASE/client/src/pages/admin-crm/PeopleWorkspace.tsx"
 download client/src/pages/admin-crm/InboxWorkspace.tsx "$BASE/client/src/pages/admin-crm/InboxWorkspace.tsx"
+download client/src/pages/admin-crm/InsightsWorkspace.tsx "$BASE/client/src/pages/admin-crm/InsightsWorkspace.tsx"
 download client/src/pages/admin-crm/QuickActionDialog.tsx "$BASE/client/src/pages/admin-crm/QuickActionDialog.tsx"
 download client/src/pages/admin-crm/FileImportPanel.tsx "$BASE/client/src/pages/admin-crm/FileImportPanel.tsx"
+download client/src/components/PageViewTracker.tsx "$BASE/client/src/components/PageViewTracker.tsx"
+download client/src/App.tsx "$BASE/client/src/App.tsx"
+download client/index.html "$BASE/client/index.html"
 download server/support-tickets.ts "$BASE/server/support-tickets.ts"
 download server/crm-routes.ts "$BASE/server/crm-routes.ts"
+download server/crm-insights.ts "$BASE/server/crm-insights.ts"
+download server/activity-tracker.ts "$BASE/server/activity-tracker.ts"
 download server/credit-grants.ts "$BASE/server/credit-grants.ts"
 download server/auth.ts "$BASE/server/auth.ts"
 download server/storage.ts "$BASE/server/storage.ts"
 download server/routes.ts "$BASE/server/routes.ts"
+download server/index.ts "$BASE/server/index.ts"
 download shared/schema.ts "$BASE/shared/schema.ts"
 download client/src/components/forms/contact-form.tsx "$BASE/client/src/components/forms/contact-form.tsx"
 download client/src/pages/help.tsx "$BASE/client/src/pages/help.tsx"
