@@ -37,7 +37,7 @@ export function getEmailProviderStatus(): {
   return {
     resend: !!getResendApiKey(),
     sendgrid: !!process.env.SENDGRID_API_KEY,
-    gmail: !!process.env.GMAIL_APP_PASSWORD,
+    gmail: !!process.env.GMAIL_USER?.trim() && !!process.env.GMAIL_APP_PASSWORD?.trim(),
     resendFrom: getResendFromAddress(),
   };
 }
@@ -45,15 +45,15 @@ export function getEmailProviderStatus(): {
 export function logEmailProviderStatus(): void {
   const status = getEmailProviderStatus();
   console.log('📧 Email providers:', {
-    gmail: status.gmail ? 'configured' : 'not set (add GMAIL_APP_PASSWORD for reliable delivery)',
-    sendgrid: status.sendgrid ? 'configured' : 'not set',
-    resend: status.resend ? 'configured' : 'missing RESEND_API_KEY',
+    gmail: status.gmail ? 'active' : 'not set (add GMAIL_USER and GMAIL_APP_PASSWORD)',
+    sendgrid: status.sendgrid ? 'configured (paused)' : 'not set',
+    resend: status.resend ? 'configured (paused)' : 'missing RESEND_API_KEY',
     resendFrom: status.resendFrom,
   });
 
-  if (!status.resend && !status.sendgrid && !status.gmail) {
+  if (!status.gmail) {
     console.warn(
-      '⚠️  No email provider configured. Add GMAIL_APP_PASSWORD, RESEND_API_KEY, or SENDGRID_API_KEY to Replit Deployment Secrets.'
+      '⚠️  Gmail is the active email provider but is not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to Replit Deployment Secrets.'
     );
   }
 }
@@ -128,9 +128,10 @@ async function sendViaResend(params: EmailParams): Promise<boolean> {
 }
 
 async function sendViaGmail(params: EmailParams): Promise<boolean> {
-  const user = (process.env.GMAIL_USER || process.env.RESEND_FROM_EMAIL || 'teamauraeye@gmail.com').trim();
+  const user = process.env.GMAIL_USER?.trim();
   const pass = process.env.GMAIL_APP_PASSWORD?.trim();
-  if (!pass) {
+  if (!user || !pass) {
+    console.error('Gmail SMTP skipped: GMAIL_USER and GMAIL_APP_PASSWORD are both required');
     return false;
   }
 
@@ -152,6 +153,12 @@ async function sendViaGmail(params: EmailParams): Promise<boolean> {
       subject: params.subject,
       html: params.html,
       text: params.text,
+      attachments: params.attachments?.map((attachment) => ({
+        filename: attachment.filename,
+        content: Buffer.from(attachment.content, 'base64'),
+        contentType: attachment.type,
+        contentDisposition: attachment.disposition,
+      })),
     });
 
     console.log("Email sent successfully via Gmail SMTP");
@@ -204,38 +211,20 @@ async function sendViaSendGrid(params: EmailParams): Promise<boolean> {
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
-  const providers: Array<{ name: string; send: (params: EmailParams) => Promise<boolean> }> = [];
-
-  // Gmail SMTP is most reliable for teamauraeye@gmail.com when app password is set
-  if (process.env.GMAIL_APP_PASSWORD) {
-    providers.push({ name: 'Gmail', send: sendViaGmail });
-  }
-  if (process.env.SENDGRID_API_KEY) {
-    providers.push({ name: 'SendGrid', send: sendViaSendGrid });
-  }
-  if (getResendApiKey()) {
-    providers.push({ name: 'Resend', send: sendViaResend });
-  }
-
-  if (providers.length === 0) {
-    console.error('No email provider configured. Set GMAIL_APP_PASSWORD, RESEND_API_KEY, or SENDGRID_API_KEY.');
+  // Gmail is intentionally the only active provider for now. Resend and SendGrid
+  // remain implemented above so they can be re-enabled without restoring code.
+  const gmailConfigured = !!process.env.GMAIL_USER?.trim() && !!process.env.GMAIL_APP_PASSWORD?.trim();
+  if (!gmailConfigured) {
+    console.error('Gmail is the active email provider but is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD.');
     return false;
   }
 
-  for (const provider of providers) {
-    try {
-      const sent = await provider.send(params);
-      if (sent) {
-        return true;
-      }
-      console.warn(`${provider.name} failed, trying next provider if available...`);
-    } catch (error) {
-      console.error(`${provider.name} email error:`, error);
-    }
+  try {
+    return await sendViaGmail(params);
+  } catch (error) {
+    console.error('Gmail email error:', error);
+    return false;
   }
-
-  console.error('All configured email providers failed.');
-  return false;
 }
 
 export async function sendHealerBookingNotification(
