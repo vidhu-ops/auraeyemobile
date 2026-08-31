@@ -4,6 +4,12 @@ import { hashPassword } from "./auth";
 
 const TWO_MONTH_HEALER_CREDIT_EXPIRY = new Date("2026-10-26T00:00:00+05:30");
 
+// Addresses explicitly confirmed for existing accounts that were created without
+// an email address. Only blank email fields are backfilled.
+const CONFIRMED_ACCOUNT_EMAIL_BACKFILLS = [
+  { username: "vidhusee", email: "vidhugupta1996@gmail.com" },
+];
+
 // All users from the production CSV export
 const CSV_USERS: Array<{
   username: string;
@@ -245,6 +251,19 @@ export async function runStartupSeed() {
     }
 
     console.log(`✅ Healers: ${healerInserted} inserted, ${healerUpdated} updated`);
+
+    for (const backfill of CONFIRMED_ACCOUNT_EMAIL_BACKFILLS) {
+      const result = await db.execute(
+        sql`UPDATE users
+            SET email = ${backfill.email}
+            WHERE LOWER(username) = LOWER(${backfill.username})
+              AND NULLIF(BTRIM(email), '') IS NULL
+            RETURNING id`
+      );
+      if (result.rows.length > 0) {
+        console.log(`✅ Backfilled confirmed email address for ${backfill.username}`);
+      }
+    }
 
     // ── 3. Ensure ALL healers in healers table also exist in users table ──────
     const orphanHealers = await db.execute(

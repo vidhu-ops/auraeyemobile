@@ -5874,7 +5874,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const user = await storage.getUserByUsername(normalizedUsername);
       console.log(`[DEBUG] User lookup result:`, user ? `Found user ID ${user.id}, email: "${user.email}"` : 'Not found');
       
-      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
+      if (!user || (user.email && user.email.toLowerCase() !== normalizedEmail)) {
         console.log(`[DEBUG] User validation failed - user exists: ${!!user}, has email: ${!!user?.email}, email matches: ${user?.email?.toLowerCase() === normalizedEmail}`);
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
