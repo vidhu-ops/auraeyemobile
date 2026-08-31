@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-black/70 text-sm mb-4 md:mb-0">© 2025 AuraEye ™. All rights reserved.</p>
           <div className="flex space-x-4 text-sm">
-            <Link href="/privacy" className="text-black/70 hover:text-gray transition-colors">Privacy Policy</Link>
+            <Link href="/privacypolicy" className="text-black/70 hover:text-gray transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="text-black/70 hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/cookies" className="text-black/70 hover:text-grey transition-colors">Cookie Policy</Link>
           </div>
