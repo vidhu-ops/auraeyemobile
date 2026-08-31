@@ -133,6 +133,7 @@ function AppContent() {
   const { user, isLoading } = useAuth();
   const { lightsOn } = useLights();
   const [location, setLocation] = useLocation();
+  const isPrivacyRoute = location === "/privacy" || location === "/privacy-policy";
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const { currentBadge, closeBadge } = useBadgeContext();
   const [appNotification, setAppNotification] = useState<{ title: string; message: string } | null>(null);
@@ -156,7 +157,7 @@ function AppContent() {
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
-    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment'];
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment', '/privacy', '/privacy-policy'];
     const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
     if (!shouldSkip) {
@@ -191,7 +192,7 @@ function AppContent() {
   }
 
   // Public routes that don't require lights activation
-  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment'];
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment', '/privacy', '/privacy-policy'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
   // Show lights activation only on the home page for first-time session feel
@@ -203,11 +204,12 @@ function AppContent() {
 
   return (
     <>
+      {!isPrivacyRoute && <InstallAppPrompt />}
       <ErrorBoundary>
         <Router />
       </ErrorBoundary>
       {user && !isPublicRoute && <Mascot />}
-      {currentBadge && (
+      {!isPrivacyRoute && currentBadge && (
         <BadgeNotification
           title={currentBadge.title}
           description={currentBadge.description}
@@ -236,6 +238,7 @@ function AppContent() {
         </div>
       )}
       {user && !isPublicRoute && <NotificationPrompt />}
+      {!isPrivacyRoute && <CookieConsent />}
     </>
   );
 }
@@ -252,9 +255,7 @@ function App() {
                   <TooltipProvider>
                     <Toaster />
                     <div className="min-h-screen flex flex-col w-full">
-                      <InstallAppPrompt />
                       <AppContent />
-                      <CookieConsent />
                     </div>
                   </TooltipProvider>
                 </BadgeProvider>
