@@ -5879,6 +5879,14 @@ function calculateDominantSoulChakra(birthDate: string): number {
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
       }
+
+      if (!user.email.trim()) {
+        console.warn(`[WARN] Password reset requested for ${user.username}, but no email address is registered`);
+        return res.status(400).json({
+          message: "This account does not have a registered email address. Please contact support or update your email while signed in.",
+          emailSent: false,
+        });
+      }
       
       console.log(`[DEBUG] User validated successfully - proceeding with password reset`);
 

@@ -156,7 +156,6 @@ export default function ForgotPassword() {
       const result = await response.json();
       
       if (response.ok) {
-        const result = await response.json();
         if (result.otp) {
           resetForm.setValue("token", result.otp);
         }
