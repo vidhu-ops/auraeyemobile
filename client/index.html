@@ -4,9 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <script>
-      // Ultimate 100% zoom enforcement
+      // Ultimate 100% zoom enforcement (skipped on /admin for mobile usability)
       (function() {
+        function isAdminPath() {
+          return window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
+        }
+
         function forceOneHundredZoom() {
+          if (isAdminPath()) {
+            let viewport = document.querySelector('meta[name="viewport"]');
+            const adminViewport = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+            if (viewport) viewport.content = adminViewport;
+            document.documentElement.style.zoom = '';
+            if (document.body) document.body.style.zoom = '';
+            return;
+          }
+
           // 1. Viewport Meta enforcement
           let viewport = document.querySelector('meta[name="viewport"]');
           const viewportContent = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
@@ -37,19 +50,22 @@
         window.addEventListener('load', forceOneHundredZoom);
         window.addEventListener('resize', forceOneHundredZoom);
         window.addEventListener('orientationchange', forceOneHundredZoom);
+        window.addEventListener('popstate', forceOneHundredZoom);
         
         // Use MutationObserver to catch SPA route changes and dynamic injections
         const observer = new MutationObserver(forceOneHundredZoom);
         observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
 
-        // Prevent pinch to zoom strictly
+        // Prevent pinch to zoom strictly (not on admin)
         document.addEventListener('touchstart', function (event) {
+          if (isAdminPath()) return;
           if (event.touches.length > 1) {
             event.preventDefault();
           }
         }, { passive: false });
         
         document.addEventListener('gesturestart', function (e) {
+          if (isAdminPath()) return;
           e.preventDefault();
         });
 

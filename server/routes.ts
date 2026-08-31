@@ -5874,18 +5874,10 @@ function calculateDominantSoulChakra(birthDate: string): number {
       const user = await storage.getUserByUsername(normalizedUsername);
       console.log(`[DEBUG] User lookup result:`, user ? `Found user ID ${user.id}, email: "${user.email}"` : 'Not found');
       
-      if (!user || (user.email && user.email.toLowerCase() !== normalizedEmail)) {
+      if (!user || !user.email || user.email.toLowerCase() !== normalizedEmail) {
         console.log(`[DEBUG] User validation failed - user exists: ${!!user}, has email: ${!!user?.email}, email matches: ${user?.email?.toLowerCase() === normalizedEmail}`);
         // Don't reveal if user exists for security
         return res.json({ message: "If matching account details exist, a password reset code has been sent." });
-      }
-
-      if (!user.email.trim()) {
-        console.warn(`[WARN] Password reset requested for ${user.username}, but no email address is registered`);
-        return res.status(400).json({
-          message: "This account does not have a registered email address. Please contact support or update your email while signed in.",
-          emailSent: false,
-        });
       }
       
       console.log(`[DEBUG] User validated successfully - proceeding with password reset`);
@@ -6790,15 +6782,15 @@ function calculateDominantSoulChakra(birthDate: string): number {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Create payment transaction using raw SQL
-      const newCredits = (user.credits || 0) + (plan.credits || 0);
+      const creditsBefore = user.credits || 0;
+      const planCredits = plan.credits || 0;
+      await storage.addCredits(userId, planCredits, "plan_purchase", `Purchased ${plan.name}`);
+      const newCredits = await storage.getUserCredits(userId);
+
       await db.execute(sql`
         INSERT INTO payment_transactions (user_id, plan_id, amount, status, billing_email, credits_before, credits_after, created_at)
-        VALUES (${userId}, ${planId}, ${plan.price || 0}, 'completed', ${user.email || ''}, ${user.credits || 0}, ${newCredits}, NOW())
+        VALUES (${userId}, ${planId}, ${plan.price || 0}, 'completed', ${user.email || ''}, ${creditsBefore}, ${newCredits}, NOW())
       `);
-
-      // Update user credits
-      await storage.updateUserCredits(userId, newCredits);
 
       // Send confirmation email
       if (user.email) {
@@ -6905,6 +6897,28 @@ function calculateDominantSoulChakra(birthDate: string): number {
     } catch (error) {
       console.error("Error updating email:", error);
       res.status(500).json({ error: "Failed to update email" });
+    }
+  });
+
+  // Anonymous page view tracking for admin website analytics
+  app.post("/api/track/pageview", async (req, res) => {
+    try {
+      const { path, referrer, sessionId } = req.body || {};
+      if (!path || typeof path !== "string") {
+        return res.status(400).json({ message: "path required" });
+      }
+      const { recordPageView } = await import("./activity-tracker");
+      await recordPageView({
+        path,
+        referrer: referrer || null,
+        sessionId: sessionId || null,
+        userId: req.isAuthenticated?.() ? req.user?.id : null,
+        userAgent: req.headers["user-agent"] || null,
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Page view tracking error:", error);
+      res.status(500).json({ message: "Failed to record page view" });
     }
   });
 

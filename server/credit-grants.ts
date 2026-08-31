@@ -1,4 +1,4 @@
-import { and, asc, eq, gt, isNotNull, lte, lt, or, sql } from "drizzle-orm";
+import { and, asc, eq, gt, isNotNull, lt, or, sql } from "drizzle-orm";
 import { db } from "./db";
 import { creditGrants, creditTransactions, users } from "../shared/schema";
 
@@ -6,89 +6,6 @@ export function daysFromNow(days: number): Date {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d;
-}
-
-export function isCreditExpiryDue(creditExpiresAt: Date | null | undefined, now = new Date()): boolean {
-  return Boolean(creditExpiresAt && creditExpiresAt <= now);
-}
-
-/**
- * Hard-expire the entire credit balance for a user whose account-level expiry has passed.
- * This is intentionally separate from grant expiry because the account must reach zero
- * even when credits were added outside the grant ledger.
- */
-export async function expireUserCreditsIfDue(userId: number, now = new Date()): Promise<boolean> {
-  try {
-    return await db.transaction(async (tx) => {
-      const [user] = await tx
-        .select()
-        .from(users)
-        .where(eq(users.id, userId))
-        .for("update");
-
-      if (!user || !isCreditExpiryDue(user.creditExpiresAt, now)) return false;
-
-      const balanceBefore = Number(user.credits || 0);
-      const expiredGrants = await tx
-        .update(creditGrants)
-        .set({ remaining: 0, expiredAt: now })
-        .where(and(eq(creditGrants.userId, userId), gt(creditGrants.remaining, 0)))
-        .returning({ id: creditGrants.id });
-
-      const hadBalanceToExpire = balanceBefore !== 0 || expiredGrants.length > 0;
-      if (!hadBalanceToExpire) return false;
-
-      await tx.update(users).set({ credits: 0 }).where(eq(users.id, userId));
-      if (balanceBefore !== 0) {
-        await tx.insert(creditTransactions).values({
-          userId,
-          username: user.username,
-          amount: -balanceBefore,
-          transactionType: "account_expire",
-          description: "All account credits expired after the account credit-validity period",
-          balanceAfter: 0,
-        });
-      }
-
-      return true;
-    });
-  } catch (error) {
-    console.error("expireUserCreditsIfDue failed:", error);
-    return false;
-  }
-}
-
-/** Sweep all users with a due account-level expiry, including idle accounts. */
-export async function expireScheduledCredits(now = new Date()): Promise<number> {
-  const dueUsers = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(and(isNotNull(users.creditExpiresAt), lte(users.creditExpiresAt, now)));
-
-  let expiredCount = 0;
-  for (const user of dueUsers) {
-    if (await expireUserCreditsIfDue(user.id, now)) expiredCount++;
-  }
-  return expiredCount;
-}
-
-let creditExpiryTimer: ReturnType<typeof setInterval> | undefined;
-
-export function startCreditExpiryScheduler(): void {
-  if (creditExpiryTimer) return;
-
-  const sweep = () => {
-    expireScheduledCredits()
-      .then((expiredCount) => {
-        if (expiredCount > 0) {
-          console.log(`✅ Credit expiry sweep zeroed ${expiredCount} account balance(s)`);
-        }
-      })
-      .catch((error) => console.error("Credit expiry sweep failed:", error));
-  };
-
-  sweep();
-  creditExpiryTimer = setInterval(sweep, 15 * 60 * 1000);
 }
 
 /** Zero out expired grant remainings and deduct from the user's credit balance. */
@@ -159,10 +76,6 @@ export async function addCreditGrant(params: {
     return await db.transaction(async (tx) => {
       const [user] = await tx.select().from(users).where(eq(users.id, params.userId)).for("update");
       if (!user) return null;
-      if (isCreditExpiryDue(user.creditExpiresAt)) {
-        await tx.update(users).set({ credits: 0 }).where(eq(users.id, params.userId));
-        return null;
-      }
 
       const updateBalance = params.updateBalance !== false;
       const creditsAfter = updateBalance ? Number(user.credits || 0) + amount : Number(user.credits || 0);
@@ -205,33 +118,40 @@ export async function addCreditGrant(params: {
 }
 
 /** FIFO consume remaining from active (non-expired) grants. */
-export async function consumeCreditGrants(userId: number, amount: number): Promise<void> {
-  try {
-    await db.transaction(async (tx) => {
-      const now = new Date();
-      const grants = await tx
-        .select()
-        .from(creditGrants)
-        .where(
-          and(
-            eq(creditGrants.userId, userId),
-            gt(creditGrants.remaining, 0),
-            or(sql`${creditGrants.expiresAt} IS NULL`, gt(creditGrants.expiresAt, now))
-          )
+export async function consumeCreditGrants(userId: number, amount: number, tx?: typeof db): Promise<void> {
+  const runner = tx ?? db;
+  const run = async (client: typeof db) => {
+    const now = new Date();
+    const grants = await client
+      .select()
+      .from(creditGrants)
+      .where(
+        and(
+          eq(creditGrants.userId, userId),
+          gt(creditGrants.remaining, 0),
+          or(sql`${creditGrants.expiresAt} IS NULL`, gt(creditGrants.expiresAt, now))
         )
-        .orderBy(asc(sql`coalesce(${creditGrants.expiresAt}, '9999-12-31')`), asc(creditGrants.id));
+      )
+      .orderBy(asc(sql`coalesce(${creditGrants.expiresAt}, '9999-12-31')`), asc(creditGrants.id));
 
-      let left = amount;
-      for (const grant of grants) {
-        if (left <= 0) break;
-        const take = Math.min(grant.remaining, left);
-        await tx
-          .update(creditGrants)
-          .set({ remaining: grant.remaining - take })
-          .where(eq(creditGrants.id, grant.id));
-        left -= take;
-      }
-    });
+    let left = amount;
+    for (const grant of grants) {
+      if (left <= 0) break;
+      const take = Math.min(grant.remaining, left);
+      await client
+        .update(creditGrants)
+        .set({ remaining: grant.remaining - take })
+        .where(eq(creditGrants.id, grant.id));
+      left -= take;
+    }
+  };
+
+  try {
+    if (tx) {
+      await run(tx);
+    } else {
+      await db.transaction(async (client) => run(client));
+    }
   } catch (error) {
     console.error("consumeCreditGrants failed:", error);
   }
@@ -263,10 +183,6 @@ export async function replaceCreditBalance(params: {
   return await db.transaction(async (tx) => {
     const [user] = await tx.select().from(users).where(eq(users.id, params.userId)).for("update");
     if (!user) throw new Error("User not found");
-    if (isCreditExpiryDue(user.creditExpiresAt)) {
-      await tx.update(users).set({ credits: 0 }).where(eq(users.id, params.userId));
-      return 0;
-    }
 
     const before = Number(user.credits || 0);
     // Zero remaining on all existing grants (balance is being replaced)

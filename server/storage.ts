@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, healerBadges, type HealerBadge, type InsertHealerBadge, userAchievements, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation, achievements, type Achievement, type InsertAchievement, notifications, type Notification, type InsertNotification } from "../shared/schema";
+import { users, type User, type InsertUser, auraReadings, type AuraReading, type InsertAuraReading, journals, type Journal, type InsertJournal, numerologyReadings, type NumerologyReading, type InsertNumerologyReading, objectAnalyses, type ObjectAnalysis, type InsertObjectAnalysis, healers, type Healer, type InsertHealer, healerBookings, type HealerBooking, type InsertHealerBooking, healerRatings, type HealerRating, type InsertHealerRating, healerBadges, type HealerBadge, type InsertHealerBadge, userAchievements, vibeFeedback, type VibeFeedback, type InsertVibeFeedback, vibeReadings, type VibeReading, type InsertVibeReading, creditTransactions, type CreditTransaction, type InsertCreditTransaction, passwordResetTokens, type PasswordResetToken, type InsertPasswordResetToken, pdfStorage, type PdfStorage, type InsertPdfStorage, moodSnapshots, type MoodSnapshot, type InsertMoodSnapshot, pushSubscriptions, type PushSubscription, type InsertPushSubscription, meditationSessions, type MeditationSession, type InsertMeditationSession, favoriteMeditations, type FavoriteMeditation, type InsertFavoriteMeditation, achievements, type Achievement, type InsertAchievement, notifications, type Notification, type InsertNotification, loginSessions } from "../shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc, or, gte, lt, sql, count } from "drizzle-orm";
 import createMemoryStore from "memorystore";
@@ -308,15 +308,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserCredits(userId: number, newCredits: number): Promise<User | undefined> {
-    const { expireUserCreditsIfDue, isCreditExpiryDue } = await import("./credit-grants");
-    await expireUserCreditsIfDue(userId);
-    const [currentUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userId));
-    if (!currentUser) return undefined;
-    if (isCreditExpiryDue(currentUser.creditExpiresAt)) return currentUser;
-
     const [user] = await db
       .update(users)
       .set({ credits: newCredits })
@@ -813,8 +804,7 @@ export class DatabaseStorage implements IStorage {
   // Credit management
   async getUserCredits(userId: number): Promise<number> {
     try {
-      const { expireUserCreditsIfDue, expireCreditsForUser } = await import("./credit-grants");
-      await expireUserCreditsIfDue(userId);
+      const { expireCreditsForUser } = await import("./credit-grants");
       await expireCreditsForUser(userId);
     } catch (e) {
       console.error("Credit expiry check failed:", e);
@@ -825,8 +815,7 @@ export class DatabaseStorage implements IStorage {
 
   async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
     try {
-      const { expireUserCreditsIfDue, expireCreditsForUser, consumeCreditGrants } = await import("./credit-grants");
-      await expireUserCreditsIfDue(userId);
+      const { expireCreditsForUser, consumeCreditGrants } = await import("./credit-grants");
       await expireCreditsForUser(userId);
       const ok = await db.transaction(async (tx) => {
         const [user] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
@@ -851,10 +840,10 @@ export class DatabaseStorage implements IStorage {
           description,
           balanceAfter: newCredits,
         });
+        await consumeCreditGrants(userId, amount, tx);
         console.log(`DeductCredits SUCCESS: User ${userId}, deducted ${amount}, new balance ${newCredits}`);
         return true;
       });
-      if (ok) await consumeCreditGrants(userId, amount);
       return ok;
     } catch (error) {
       console.error("DeductCredits error:", error);
@@ -870,14 +859,7 @@ export class DatabaseStorage implements IStorage {
     expiresAt?: Date | null
   ): Promise<boolean> {
     try {
-      const { addCreditGrant, expireUserCreditsIfDue, isCreditExpiryDue } = await import("./credit-grants");
-      await expireUserCreditsIfDue(userId);
-      const [currentUser] = await db
-        .select({ creditExpiresAt: users.creditExpiresAt })
-        .from(users)
-        .where(eq(users.id, userId));
-      if (isCreditExpiryDue(currentUser?.creditExpiresAt)) return false;
-
+      const { addCreditGrant } = await import("./credit-grants");
       const result = await addCreditGrant({
         userId,
         amount,
@@ -1126,12 +1108,75 @@ export class DatabaseStorage implements IStorage {
 
   // Login streak tracking
   async recordLogin(userId: number): Promise<void> {
-    // Basic implementation for now
+    try {
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0, 0);
+      const existing = await db
+        .select()
+        .from(loginSessions)
+        .where(and(eq(loginSessions.userId, userId), eq(loginSessions.loginDate, today)))
+        .limit(1);
+      if (!existing.length) {
+        await db.insert(loginSessions).values({ userId, loginDate: today });
+      }
+    } catch (error) {
+      console.error("recordLogin failed:", error);
+    }
   }
 
   async getLoginStreak(userId: number): Promise<{ currentStreak: number; longestStreak: number; weeklyActiveDates: string[] }> {
     try {
-      return { currentStreak: 1, longestStreak: 1, weeklyActiveDates: [] };
+      const sessions = await db
+        .select()
+        .from(loginSessions)
+        .where(eq(loginSessions.userId, userId))
+        .orderBy(desc(loginSessions.loginDate))
+        .limit(400);
+
+      const dates = sessions.map((s) => {
+        const d = new Date(s.loginDate);
+        return d.toISOString().slice(0, 10);
+      });
+      const uniqueDates = [...new Set(dates)].sort().reverse();
+
+      let currentStreak = 0;
+      let longestStreak = 0;
+      let run = 0;
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0, 0);
+
+      for (let i = 0; i < uniqueDates.length; i++) {
+        const expected = new Date(today);
+        expected.setUTCDate(expected.getUTCDate() - i);
+        const expectedStr = expected.toISOString().slice(0, 10);
+        if (uniqueDates[i] === expectedStr) {
+          currentStreak++;
+        } else if (i === 0) {
+          break;
+        } else {
+          break;
+        }
+      }
+
+      let prev: Date | null = null;
+      for (const ds of [...uniqueDates].sort()) {
+        const d = new Date(ds + "T00:00:00Z");
+        if (prev) {
+          const diff = (d.getTime() - prev.getTime()) / (24 * 60 * 60 * 1000);
+          if (diff === 1) run++;
+          else run = 1;
+        } else {
+          run = 1;
+        }
+        longestStreak = Math.max(longestStreak, run);
+        prev = d;
+      }
+
+      const weekAgo = new Date(today);
+      weekAgo.setUTCDate(weekAgo.getUTCDate() - 6);
+      const weeklyActiveDates = uniqueDates.filter((d) => new Date(d + "T00:00:00Z") >= weekAgo);
+
+      return { currentStreak, longestStreak, weeklyActiveDates };
     } catch (error) {
       console.error("Error fetching login streak:", error);
       return { currentStreak: 0, longestStreak: 0, weeklyActiveDates: [] };

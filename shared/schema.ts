@@ -23,7 +23,6 @@ export const users = pgTable("users", {
   healerSessionCount: integer("healer_session_count").default(0), // Total sessions healed (for healers)
   currentStreak: integer("current_streak").default(0), // Tracking login streak
   longestStreak: integer("longest_streak").default(0), // Tracking longest login streak
-  creditExpiresAt: timestamp("credit_expires_at"), // Optional hard expiry for the user's entire credit balance
   isActive: boolean("is_active").default(true), // Whether the user account is active
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -848,7 +847,29 @@ export const insertCrmLeadSchema = createInsertSchema(crmLeads).omit({
   updatedAt: true,
 });
 
+/** Anonymous + logged-in page views for admin website analytics. */
+export const pageViews = pgTable("page_views", {
+  id: serial("id").primaryKey(),
+  path: text("path").notNull(),
+  referrer: text("referrer"),
+  userId: integer("user_id").references(() => users.id),
+  sessionId: text("session_id"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  pathIdx: index("page_views_path_idx").on(table.path),
+  createdAtIdx: index("page_views_created_at_idx").on(table.createdAt),
+  sessionIdx: index("page_views_session_id_idx").on(table.sessionId),
+}));
+
+export const insertPageViewSchema = createInsertSchema(pageViews).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type CrmStaff = typeof crmStaff.$inferSelect;
 export type InsertCrmStaff = z.infer<typeof insertCrmStaffSchema>;
 export type CrmLead = typeof crmLeads.$inferSelect;
 export type InsertCrmLead = z.infer<typeof insertCrmLeadSchema>;
+export type PageView = typeof pageViews.$inferSelect;
+export type InsertPageView = z.infer<typeof insertPageViewSchema>;

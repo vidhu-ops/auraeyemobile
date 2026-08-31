@@ -1,4 +1,4 @@
-export type CrmSection = "home" | "people" | "money" | "inbox" | "team" | "audit";
+export type CrmSection = "home" | "people" | "money" | "inbox" | "team" | "audit" | "insights";
 
 export type CrmAccess = {
   role: string;
@@ -81,4 +81,7 @@ export const CRM_CHECKLIST: { id: string; label: string; done: boolean }[] = [
   { id: "import", label: "CSV/XLS bulk import for users and leads", done: true },
   { id: "resetpw", label: "Reset password to healer123 from edit panel", done: true },
   { id: "dormant", label: "Journey phase renamed: churned → dormant (Inactive — long quiet)", done: true },
+  { id: "daily", label: "Daily activity digest + website analytics (visitors, pages, sign-ups)", done: true },
+  { id: "sync", label: "Credit balance sync from grants (fixes drift)", done: true },
+  { id: "mobile", label: "Mobile-friendly admin panel (phone, iPhone, Mac)", done: true },
 ];

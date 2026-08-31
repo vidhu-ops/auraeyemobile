@@ -45,6 +45,7 @@ import Mascot from "@/components/mascot/mascot";
 import NotificationPrompt from "@/components/notification-prompt";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
 import { CookieConsent } from "@/components/legal/cookie-consent";
+import PageViewTracker from "@/components/PageViewTracker";
 import { useEffect, useState, Component, ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
@@ -115,7 +116,6 @@ function Router() {
       <Route path="/pricing" component={PricingPage} />
       <Route path="/privacy-policy" component={PrivacyPolicyPage} />
       <Route path="/privacy" component={PrivacyPolicyPage} />
-      <Route path="/privacypolicy" component={PrivacyPolicyPage} />
       <Route path="/healers" component={HealersPage} />
       <Route path="/healer-crm" component={HealerCRM} />
       <ProtectedRoute path="/meditations" component={MeditationsPage} />
@@ -134,14 +134,23 @@ function AppContent() {
   const { user, isLoading } = useAuth();
   const { lightsOn } = useLights();
   const [location, setLocation] = useLocation();
-  const isPrivacyRoute = location === "/privacy" || location === "/privacy-policy" || location === "/privacypolicy";
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const { currentBadge, closeBadge } = useBadgeContext();
   const [appNotification, setAppNotification] = useState<{ title: string; message: string } | null>(null);
 
-  // Force reset zoom on every route change
+  // Force reset zoom on every route change (skip on admin for mobile usability)
   useEffect(() => {
+    const isAdmin = location === '/admin' || location.startsWith('/admin/');
     const resetZoom = () => {
+      if (isAdmin) {
+        document.documentElement.style.zoom = '';
+        document.body.style.zoom = '';
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+        }
+        return;
+      }
       document.documentElement.style.zoom = "1";
       document.body.style.zoom = "1";
       const viewport = document.querySelector('meta[name="viewport"]');
@@ -150,7 +159,6 @@ function AppContent() {
       }
     };
     resetZoom();
-    // Re-run after a short delay to catch layout shifts
     const timer = setTimeout(resetZoom, 100);
     return () => clearTimeout(timer);
   }, [location]);
@@ -158,7 +166,7 @@ function AppContent() {
   // Check if user has seen onboarding on first load - do this BEFORE any routing
   useEffect(() => {
     // Don't redirect to welcome if user is on login, onboarding, or other specific routes
-    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment', '/privacy', '/privacy-policy', '/privacypolicy'];
+    const skipOnboardingRedirect = ['/login', '/auth', '/onboarding', '/welcome', '/forgot-password', '/pricing', '/about', '/contact', '/services', '/healers', '/healer-crm', '/admin', '/aura-analysis', '/object-analysis', '/vibe', '/client-dashboard', '/healer-dashboard', '/dashboard', '/journal', '/meditations', '/numerology', '/daily-horoscope', '/personalized-horoscope', '/help', '/color-meanings', '/settings', '/payment'];
     const shouldSkip = skipOnboardingRedirect.some(route => location.startsWith(route));
     
     if (!shouldSkip) {
@@ -193,7 +201,7 @@ function AppContent() {
   }
 
   // Public routes that don't require lights activation
-  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment', '/privacy', '/privacy-policy', '/privacypolicy'];
+  const publicRoutes = ['/auth', '/login', '/forgot-password', '/about', '/contact', '/pricing', '/services', '/healers', '/healer-crm', '/onboarding', '/payment', '/admin'];
   const isPublicRoute = publicRoutes.some(route => location.startsWith(route));
 
   // Show lights activation only on the home page for first-time session feel
@@ -205,12 +213,12 @@ function AppContent() {
 
   return (
     <>
-      {!isPrivacyRoute && <InstallAppPrompt />}
+      <PageViewTracker />
       <ErrorBoundary>
         <Router />
       </ErrorBoundary>
       {user && !isPublicRoute && <Mascot />}
-      {!isPrivacyRoute && currentBadge && (
+      {currentBadge && (
         <BadgeNotification
           title={currentBadge.title}
           description={currentBadge.description}
@@ -239,7 +247,6 @@ function AppContent() {
         </div>
       )}
       {user && !isPublicRoute && <NotificationPrompt />}
-      {!isPrivacyRoute && <CookieConsent />}
     </>
   );
 }
@@ -256,7 +263,9 @@ function App() {
                   <TooltipProvider>
                     <Toaster />
                     <div className="min-h-screen flex flex-col w-full">
+                      <InstallAppPrompt />
                       <AppContent />
+                      <CookieConsent />
                     </div>
                   </TooltipProvider>
                 </BadgeProvider>

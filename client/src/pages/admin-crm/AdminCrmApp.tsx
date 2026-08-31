@@ -13,6 +13,7 @@ import {
   Home,
   LayoutDashboard,
   Lock,
+  LineChart,
   LogOut,
   MessageSquare,
   Shield,
@@ -30,6 +31,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { HelpTip } from "./HelpTip";
 import InboxWorkspace from "./InboxWorkspace";
+import InsightsWorkspace from "./InsightsWorkspace";
 import PeopleWorkspace from "./PeopleWorkspace";
 import QuickActionDialog from "./QuickActionDialog";
 import { crm } from "./theme";
@@ -168,6 +170,7 @@ export default function AdminCrmApp() {
         show: !!crmAccess?.canManageTickets || !!crmAccess?.canViewUsers,
       },
       { id: "team", label: "Team access", hint: "Staff logins", icon: UserPlus, show: !!crmAccess?.canManageStaff },
+      { id: "insights", label: "Insights", hint: "Daily logs & traffic", icon: LineChart, show: !!crmAccess?.canViewUsers },
       { id: "audit", label: "Activity log", hint: "Who changed what", icon: Shield, show: !!crmAccess?.canViewAudit },
     ];
     return items.filter((i) => i.show);
@@ -260,37 +263,54 @@ export default function AdminCrmApp() {
 
       <div className="flex-1 min-w-0 flex flex-col">
         <header className={crm.header}>
-          <div className="px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 justify-between">
-            <div>
-              <h1 className="text-xl md:text-2xl font-semibold text-slate-900">
+          <div className="px-4 md:px-6 py-3 md:py-4 flex items-start gap-3 justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="lg:hidden flex items-center gap-2 mb-2">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shrink-0">
+                  <Eye className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-semibold text-slate-900 text-sm">AuraEye Admin</span>
+              </div>
+              <h1 className="text-lg md:text-2xl font-semibold text-slate-900 truncate">
                 {section === "home" && `Hello, ${user.name || user.username}`}
                 {section === "people" && "People & accounts"}
                 {section === "money" && "Money & payments"}
                 {section === "inbox" && "Messages & leads"}
                 {section === "team" && "Team access"}
+                {section === "insights" && "Insights & daily logs"}
                 {section === "audit" && "Activity log"}
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-xs md:text-sm text-slate-500 line-clamp-2">
                 {readOnlyBanner
                   ? "View-only mode — you can look but not change things."
-                  : "Everything you need is on the left menu. No technical skills required."}
+                  : "Everything you need is in the menu below. No technical skills required."}
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {readOnlyBanner && (
-                <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 inline-flex items-center gap-1">
-                  <Lock className="h-3 w-3" /> View only
-                </div>
-              )}
-              {(crmAccess?.canEditUsers || crmAccess?.canManageTickets) && (
-                <Button size="sm" className={crm.btnPrimary} onClick={() => setQuickActionOpen(true)}>
-                  + Quick action
-                </Button>
-              )}
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => logoutMutation.mutate()}
+                className="lg:hidden rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
+                title="Log out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+              <div className="hidden md:flex flex-wrap items-center gap-2">
+                {readOnlyBanner && (
+                  <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 inline-flex items-center gap-1">
+                    <Lock className="h-3 w-3" /> View only
+                  </div>
+                )}
+                {(crmAccess?.canEditUsers || crmAccess?.canManageTickets) && (
+                  <Button size="sm" className={crm.btnPrimary} onClick={() => setQuickActionOpen(true)}>
+                    + Quick action
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="lg:hidden flex gap-2 overflow-x-auto px-4 pb-3">
+          <div className="hidden lg:flex gap-2 overflow-x-auto px-4 pb-3">
             {nav.map((item) => (
               <button
                 key={item.id}
@@ -306,7 +326,7 @@ export default function AdminCrmApp() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        <main className={crm.main}>
           {section === "home" && (
             <>
               <HelpTip>
@@ -477,10 +497,25 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
+                {crmAccess?.canViewUsers && (
+                  <Card className={crm.card}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <LineChart className="h-4 w-4 text-indigo-600" /> Daily insights
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-slate-500 mb-3">
+                        See what happened each day — sign-ups, visits, scans, and payments.
+                      </p>
+                      <Button size="sm" variant="outline" onClick={() => setSection("insights")}>
+                        Open insights →
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Card className={crm.card}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Feature usage</CardTitle>
-                  </CardHeader>
                   <CardContent className="space-y-2 text-sm">
                     {[
                       { label: "Aura scans", value: overviewQuery.data?.featureUsage?.auraScans },
@@ -769,6 +804,8 @@ export default function AdminCrmApp() {
             </div>
           )}
 
+          {section === "insights" && crmAccess && <InsightsWorkspace crmAccess={crmAccess} />}
+
           {section === "audit" && crmAccess?.canViewAudit && (
             <Card className={crm.card}>
               <CardHeader>
@@ -815,13 +852,35 @@ export default function AdminCrmApp() {
           )}
         </main>
 
-        <footer className="border-t border-slate-200 px-4 md:px-6 py-3 text-xs text-slate-500 flex flex-wrap justify-between gap-2 bg-white">
+        <footer className="hidden lg:flex border-t border-slate-200 px-4 md:px-6 py-3 text-xs text-slate-500 flex-wrap justify-between gap-2 bg-white">
           <div className="flex flex-wrap gap-4">
             <span>Open tickets: {kpis?.openTickets ?? 0}</span>
             <span>Revenue (30d): £{(kpis?.mrr ?? 0).toLocaleString()}</span>
           </div>
           <div>AuraEye Admin · simple mode</div>
         </footer>
+
+        <nav className={crm.bottomNav} aria-label="Admin navigation">
+          <div className="flex overflow-x-auto">
+            {nav.map((item) => {
+              const Icon = item.icon;
+              const active = section === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSection(item.id)}
+                  className={`flex-1 min-w-[4.5rem] flex flex-col items-center gap-0.5 py-2 px-1 text-[10px] ${
+                    active ? "text-indigo-700 bg-indigo-50" : "text-slate-500"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="truncate max-w-full">{item.label.split(" ")[0]}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       </div>
 
       <QuickActionDialog
