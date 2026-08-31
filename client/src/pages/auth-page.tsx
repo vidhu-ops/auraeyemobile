@@ -75,6 +75,15 @@ export default function AuthPage() {
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data, {
       onSuccess: (user) => {
+        const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+        const safeReturnTo =
+          returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+            ? returnTo
+            : null;
+        if (safeReturnTo) {
+          setLocation(safeReturnTo);
+          return;
+        }
         if (user.userType === "healer" || user.userType === "semi-healer") {
           setLocation("/healer-dashboard");
         } else {

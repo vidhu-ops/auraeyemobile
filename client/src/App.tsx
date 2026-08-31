@@ -252,6 +252,16 @@ function AppContent() {
 }
 
 function App() {
+  const [location] = useLocation();
+  const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+  const isAdminLogin = (location === "/auth" || location === "/login") && returnTo?.startsWith("/admin");
+  const suppressGlobalOverlays = [
+    "/admin",
+    "/privacy",
+    "/privacy-policy",
+    "/privacypolicy",
+  ].some((route) => location === route || location.startsWith(`${route}/`)) || isAdminLogin;
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -263,9 +273,9 @@ function App() {
                   <TooltipProvider>
                     <Toaster />
                     <div className="min-h-screen flex flex-col w-full">
-                      <InstallAppPrompt />
+                       {!suppressGlobalOverlays && <InstallAppPrompt />}
                       <AppContent />
-                      <CookieConsent />
+                       {!suppressGlobalOverlays && <CookieConsent />}
                     </div>
                   </TooltipProvider>
                 </BadgeProvider>
