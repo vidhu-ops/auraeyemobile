@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Activity,
+  ArrowLeft,
   CreditCard,
   Download,
   FileUp,
@@ -430,8 +431,8 @@ export default function PeopleWorkspace({
         <FileImportPanel target="users" disabled={!crmAccess.canEditUsers} />
       )}
 
-      <div className="grid xl:grid-cols-5 gap-4">
-        <Card className={`${crm.card} xl:col-span-2`}>
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 min-w-0">
+        <Card className={`${crm.card} xl:col-span-2 ${selectedUserId ? "hidden xl:block" : ""}`}>
           <CardHeader className="pb-2 space-y-3">
             <StepLabel n={1}>Find someone</StepLabel>
             <div className="relative">
@@ -511,9 +512,21 @@ export default function PeopleWorkspace({
           </CardContent>
         </Card>
 
-        <Card className={`${crm.card} xl:col-span-3`}>
+        <Card className={`${crm.card} xl:col-span-3 ${!selectedUserId ? "hidden xl:block" : ""}`}>
           <CardHeader className="pb-2">
-            <StepLabel n={2}>View & manage</StepLabel>
+            <div className="flex items-center gap-2">
+              {selectedUserId && (
+                <button
+                  type="button"
+                  className="xl:hidden rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 shrink-0"
+                  onClick={() => setSelectedUserId(null)}
+                  aria-label="Back to list"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+              )}
+              <StepLabel n={2}>View & manage</StepLabel>
+            </div>
           </CardHeader>
           <CardContent>
             {!selectedUserId && (

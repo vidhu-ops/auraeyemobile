@@ -48,7 +48,7 @@ import { CookieConsent } from "@/components/legal/cookie-consent";
 import PageViewTracker from "@/components/PageViewTracker";
 import { useEffect, useState, Component, ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   constructor(props: { children: ReactNode }) {
@@ -130,32 +130,44 @@ function Router() {
   );
 }
 
+function isAdminPath(path: string) {
+  return path === "/admin" || path.startsWith("/admin/");
+}
+
 function AppContent() {
   const { user, isLoading } = useAuth();
   const { lightsOn } = useLights();
   const [location, setLocation] = useLocation();
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(() => isAdminPath(window.location.pathname));
   const { currentBadge, closeBadge } = useBadgeContext();
   const [appNotification, setAppNotification] = useState<{ title: string; message: string } | null>(null);
+  const onAdmin = isAdminPath(location);
 
   // Force reset zoom on every route change (skip on admin for mobile usability)
   useEffect(() => {
-    const isAdmin = location === '/admin' || location.startsWith('/admin/');
+    const isAdmin = isAdminPath(location);
     const resetZoom = () => {
       if (isAdmin) {
-        document.documentElement.style.zoom = '';
-        document.body.style.zoom = '';
+        document.documentElement.classList.add("admin-crm-active");
+        document.body.classList.add("admin-crm-active");
+        document.documentElement.style.zoom = "";
+        document.body.style.zoom = "";
         const viewport = document.querySelector('meta[name="viewport"]');
         if (viewport) {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+          viewport.setAttribute("content", "width=device-width, initial-scale=1.0, viewport-fit=cover");
         }
         return;
       }
+      document.documentElement.classList.remove("admin-crm-active");
+      document.body.classList.remove("admin-crm-active");
       document.documentElement.style.zoom = "1";
       document.body.style.zoom = "1";
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+        viewport.setAttribute(
+          "content",
+          "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        );
       }
     };
     resetZoom();
@@ -190,9 +202,24 @@ function AppContent() {
     return () => window.removeEventListener("app-notification", handler);
   }, []);
 
-  // Don't render anything until we've checked onboarding status
+  // Don't render anything until we've checked onboarding status (admin loads immediately)
   if (!onboardingChecked) {
-    return null;
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  // Admin CRM: minimal shell — no mascot, notifications, install banner, or cookie overlay
+  if (onAdmin) {
+    return (
+      <div className="h-[100dvh] w-full max-w-[100vw] overflow-hidden flex flex-col">
+        <ErrorBoundary>
+          <Router />
+        </ErrorBoundary>
+      </div>
+    );
   }
 
   // If on welcome page, show it directly
@@ -213,6 +240,7 @@ function AppContent() {
 
   return (
     <>
+      <InstallAppPrompt />
       <PageViewTracker />
       <ErrorBoundary>
         <Router />
@@ -247,21 +275,12 @@ function AppContent() {
         </div>
       )}
       {user && !isPublicRoute && <NotificationPrompt />}
+      <CookieConsent />
     </>
   );
 }
 
 function App() {
-  const [location] = useLocation();
-  const returnTo = new URLSearchParams(window.location.search).get("returnTo");
-  const isAdminLogin = (location === "/auth" || location === "/login") && returnTo?.startsWith("/admin");
-  const suppressGlobalOverlays = [
-    "/admin",
-    "/privacy",
-    "/privacy-policy",
-    "/privacypolicy",
-  ].some((route) => location === route || location.startsWith(`${route}/`)) || isAdminLogin;
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -272,11 +291,7 @@ function App() {
                 <BadgeProvider>
                   <TooltipProvider>
                     <Toaster />
-                    <div className="min-h-screen flex flex-col w-full">
-                       {!suppressGlobalOverlays && <InstallAppPrompt />}
-                      <AppContent />
-                       {!suppressGlobalOverlays && <CookieConsent />}
-                    </div>
+                    <AppContent />
                   </TooltipProvider>
                 </BadgeProvider>
               </NotificationProvider>

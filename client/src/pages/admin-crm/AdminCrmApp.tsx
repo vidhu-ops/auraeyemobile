@@ -71,20 +71,7 @@ export default function AdminCrmApp() {
   const [showChecklist, setShowChecklist] = useState(false);
 
   const crmAccess = ((user as any)?.crmAccess || null) as CrmAccess | null;
-  const crmAccessQuery = useQuery<{ access: CrmAccess }>({
-    queryKey: ["/api/crm/me"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/crm/me");
-      if (!res.ok) {
-        throw new Error("CRM access unavailable");
-      }
-      return res.json();
-    },
-    enabled: !!user,
-    retry: false,
-  });
-  const resolvedCrmAccess = crmAccessQuery.data?.access || crmAccess;
-  const canUseCrm = !!resolvedCrmAccess;
+  const canUseCrm = !!crmAccess;
 
   const overviewQuery = useQuery<CrmOverview>({
     queryKey: ["/api/crm/overview"],
@@ -99,12 +86,12 @@ export default function AdminCrmApp() {
       const res = await apiRequest("GET", `/api/crm/revenue?${params.toString()}`);
       return res.json();
     },
-    enabled: canUseCrm && !!resolvedCrmAccess?.canViewRevenue && section === "money",
+    enabled: canUseCrm && !!crmAccess?.canViewRevenue && section === "money",
   });
 
   const auditQuery = useQuery<{ logs: any[] }>({
     queryKey: ["/api/crm/audit-logs"],
-    enabled: canUseCrm && !!resolvedCrmAccess?.canViewAudit && (section === "audit" || section === "home"),
+    enabled: canUseCrm && !!crmAccess?.canViewAudit && (section === "audit" || section === "home"),
   });
 
   const ticketsPreviewQuery = useQuery<{ tickets: any[] }>({
@@ -113,12 +100,12 @@ export default function AdminCrmApp() {
       const res = await apiRequest("GET", "/api/crm/tickets?status=open");
       return res.json();
     },
-    enabled: canUseCrm && !!resolvedCrmAccess?.canManageTickets && section === "home",
+    enabled: canUseCrm && !!crmAccess?.canManageTickets && section === "home",
   });
 
   const staffQuery = useQuery<{ staff: any[] }>({
     queryKey: ["/api/crm/staff"],
-    enabled: canUseCrm && !!resolvedCrmAccess?.canManageStaff && section === "team",
+    enabled: canUseCrm && !!crmAccess?.canManageStaff && section === "team",
   });
 
   const rollbackMutation = useMutation({
@@ -173,21 +160,21 @@ export default function AdminCrmApp() {
   const nav = useMemo(() => {
     const items: { id: CrmSection; label: string; hint: string; icon: any; show: boolean }[] = [
       { id: "home", label: "Home", hint: "Today's overview", icon: Home, show: true },
-      { id: "people", label: "People", hint: "Clients & healers", icon: Users, show: !!resolvedCrmAccess?.canViewUsers },
-      { id: "money", label: "Money", hint: "Payments & credits", icon: Wallet, show: !!resolvedCrmAccess?.canViewRevenue },
+      { id: "people", label: "People", hint: "Clients & healers", icon: Users, show: !!crmAccess?.canViewUsers },
+      { id: "money", label: "Money", hint: "Payments & credits", icon: Wallet, show: !!crmAccess?.canViewRevenue },
       {
         id: "inbox",
         label: "Messages & leads",
         hint: "Support + sales",
         icon: MessageSquare,
-        show: !!resolvedCrmAccess?.canManageTickets || !!resolvedCrmAccess?.canViewUsers,
+        show: !!crmAccess?.canManageTickets || !!crmAccess?.canViewUsers,
       },
-      { id: "team", label: "Team access", hint: "Staff logins", icon: UserPlus, show: !!resolvedCrmAccess?.canManageStaff },
-      { id: "insights", label: "Insights", hint: "Daily logs & traffic", icon: LineChart, show: !!resolvedCrmAccess?.canViewUsers },
-      { id: "audit", label: "Activity log", hint: "Who changed what", icon: Shield, show: !!resolvedCrmAccess?.canViewAudit },
+      { id: "team", label: "Team access", hint: "Staff logins", icon: UserPlus, show: !!crmAccess?.canManageStaff },
+      { id: "insights", label: "Insights", hint: "Daily logs & traffic", icon: LineChart, show: !!crmAccess?.canViewUsers },
+      { id: "audit", label: "Activity log", hint: "Who changed what", icon: Shield, show: !!crmAccess?.canViewAudit },
     ];
     return items.filter((i) => i.show);
-  }, [resolvedCrmAccess]);
+  }, [crmAccess]);
 
   const goToPeople = (opts: PeopleNav = {}) => {
     setPeopleNav(opts);
@@ -196,17 +183,11 @@ export default function AdminCrmApp() {
 
   if (!user) {
     return (
-      <div className={`${crm.page} items-center justify-center text-slate-700`}>
-        Please log in first.
-      </div>
-    );
-  }
-
-  if (crmAccessQuery.isLoading) {
-    return (
-      <div className={`${crm.page} items-center justify-center gap-3 text-slate-600`}>
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-200 border-t-indigo-600" />
-        <p className="text-sm">Opening admin panel…</p>
+      <div className={`${crm.page} items-center justify-center text-slate-700 p-6`}>
+        <p className="text-center mb-4">Please log in first.</p>
+        <Link href="/auth">
+          <Button className={crm.btnPrimary}>Go to login</Button>
+        </Link>
       </div>
     );
   }
@@ -227,7 +208,7 @@ export default function AdminCrmApp() {
   }
 
   const kpis = overviewQuery.data?.kpis;
-  const readOnlyBanner = !resolvedCrmAccess?.canEditUsers && !resolvedCrmAccess?.canEditCredits;
+  const readOnlyBanner = !crmAccess?.canEditUsers && !crmAccess?.canEditCredits;
 
   return (
     <div className={crm.page}>
@@ -274,7 +255,7 @@ export default function AdminCrmApp() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">{user.name || user.username}</div>
-               <div className="text-xs text-slate-500">{roleLabel(resolvedCrmAccess?.role || "viewer")}</div>
+              <div className="text-xs text-slate-500">{roleLabel(crmAccess?.role || "viewer")}</div>
             </div>
             <button type="button" onClick={() => logoutMutation.mutate()} className="text-slate-400 hover:text-slate-700" title="Log out">
               <LogOut className="h-4 w-4" />
@@ -283,7 +264,7 @@ export default function AdminCrmApp() {
         </div>
       </aside>
 
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-h-0 min-w-0 flex flex-col w-full">
         <header className={crm.header}>
           <div className="px-4 md:px-6 py-3 md:py-4 flex items-start gap-3 justify-between">
             <div className="min-w-0 flex-1">
@@ -303,7 +284,7 @@ export default function AdminCrmApp() {
                 {section === "audit" && "Activity log"}
               </h1>
               <p className="text-xs md:text-sm text-slate-500 line-clamp-2">
-                 {readOnlyBanner
+                {readOnlyBanner
                   ? "View-only mode — you can look but not change things."
                   : "Everything you need is in the menu below. No technical skills required."}
               </p>
@@ -317,13 +298,22 @@ export default function AdminCrmApp() {
               >
                 <LogOut className="h-4 w-4" />
               </button>
+              {(crmAccess?.canEditUsers || crmAccess?.canManageTickets) && (
+                <Button
+                  size="sm"
+                  className={`md:hidden ${crm.btnPrimary}`}
+                  onClick={() => setQuickActionOpen(true)}
+                >
+                  + Action
+                </Button>
+              )}
               <div className="hidden md:flex flex-wrap items-center gap-2">
                 {readOnlyBanner && (
                   <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 inline-flex items-center gap-1">
                     <Lock className="h-3 w-3" /> View only
                   </div>
                 )}
-                {(resolvedCrmAccess?.canEditUsers || resolvedCrmAccess?.canManageTickets) && (
+                {(crmAccess?.canEditUsers || crmAccess?.canManageTickets) && (
                   <Button size="sm" className={crm.btnPrimary} onClick={() => setQuickActionOpen(true)}>
                     + Quick action
                   </Button>
@@ -416,7 +406,7 @@ export default function AdminCrmApp() {
               </div>
 
               <div className="grid xl:grid-cols-3 gap-4">
-                {resolvedCrmAccess?.canManageTickets && (
+                {crmAccess?.canManageTickets && (
                   <Card className={`${crm.card} xl:col-span-1`}>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-base flex items-center gap-2">
@@ -511,7 +501,7 @@ export default function AdminCrmApp() {
                     <div className="text-3xl font-semibold mb-1">
                       £{(kpis?.mrr ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </div>
-                    {resolvedCrmAccess?.canViewRevenue && (
+                    {crmAccess?.canViewRevenue && (
                       <Button size="sm" variant="outline" className="mt-2" onClick={() => setSection("money")}>
                         Full money report →
                       </Button>
@@ -519,7 +509,7 @@ export default function AdminCrmApp() {
                   </CardContent>
                 </Card>
 
-                {resolvedCrmAccess?.canViewUsers && (
+                {crmAccess?.canViewUsers && (
                   <Card className={crm.card}>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-base flex items-center gap-2">
@@ -573,7 +563,7 @@ export default function AdminCrmApp() {
                 </Card>
               </div>
 
-              {resolvedCrmAccess?.canViewAudit && (
+              {crmAccess?.canViewAudit && (
                 <Card className={crm.card}>
                   <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-base">Recent changes</CardTitle>
@@ -627,9 +617,9 @@ export default function AdminCrmApp() {
             </>
           )}
 
-          {section === "people" && resolvedCrmAccess && (
+          {section === "people" && crmAccess && (
             <PeopleWorkspace
-              crmAccess={resolvedCrmAccess}
+              crmAccess={crmAccess}
               initialUserId={peopleNav.userId}
               initialPhaseFilter={peopleNav.phaseFilter}
               initialTypeFilter={peopleNav.typeFilter}
@@ -637,7 +627,7 @@ export default function AdminCrmApp() {
             />
           )}
 
-          {section === "money" && resolvedCrmAccess?.canViewRevenue && (
+          {section === "money" && crmAccess?.canViewRevenue && (
             <div className="space-y-4">
               <HelpTip>Payments, refunds, and credit expiry in one place. Use the entity filter for GBP vs INR.</HelpTip>
               <div className="flex flex-wrap gap-2 items-center">
@@ -734,14 +724,14 @@ export default function AdminCrmApp() {
             </div>
           )}
 
-          {section === "inbox" && resolvedCrmAccess && (
+          {section === "inbox" && crmAccess && (
             <InboxWorkspace
-              crmAccess={resolvedCrmAccess}
+              crmAccess={crmAccess}
               onSelectUser={(userId) => goToPeople({ userId })}
             />
           )}
 
-          {section === "team" && resolvedCrmAccess?.canManageStaff && (
+          {section === "team" && crmAccess?.canManageStaff && (
             <div className="grid xl:grid-cols-3 gap-4">
               <Card className={crm.card}>
                 <CardHeader>
@@ -826,9 +816,9 @@ export default function AdminCrmApp() {
             </div>
           )}
 
-          {section === "insights" && resolvedCrmAccess && <InsightsWorkspace crmAccess={resolvedCrmAccess} />}
+          {section === "insights" && crmAccess && <InsightsWorkspace crmAccess={crmAccess} />}
 
-          {section === "audit" && resolvedCrmAccess?.canViewAudit && (
+          {section === "audit" && crmAccess?.canViewAudit && (
             <Card className={crm.card}>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
@@ -859,7 +849,7 @@ export default function AdminCrmApp() {
                           {log.entityType} {log.entityId || ""}
                         </td>
                         <td className="py-2">
-                          {resolvedCrmAccess?.canEditUsers && log.action === "update" && log.entityType === "user" && log.previousValue && (
+                          {crmAccess?.canEditUsers && log.action === "update" && log.entityType === "user" && log.previousValue && (
                             <Button size="sm" variant="outline" onClick={() => rollbackMutation.mutate(log.id)}>
                               Undo
                             </Button>
@@ -908,9 +898,9 @@ export default function AdminCrmApp() {
       <QuickActionDialog
         open={quickActionOpen}
         onClose={() => setQuickActionOpen(false)}
-         canEditUsers={!!resolvedCrmAccess?.canEditUsers}
-         canEditCredits={!!resolvedCrmAccess?.canEditCredits}
-         canManageTickets={!!resolvedCrmAccess?.canManageTickets}
+        canEditUsers={!!crmAccess?.canEditUsers}
+        canEditCredits={!!crmAccess?.canEditCredits}
+        canManageTickets={!!crmAccess?.canManageTickets}
         selectedUserId={peopleNav.userId}
       />
     </div>
