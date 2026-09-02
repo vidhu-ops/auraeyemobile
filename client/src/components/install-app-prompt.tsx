@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Download, Smartphone, X } from "lucide-react";
 
@@ -8,6 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallAppPrompt() {
+  const [location] = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -77,7 +79,7 @@ export function InstallAppPrompt() {
     setShowPrompt(false);
   };
 
-  if (isInstalled || !showPrompt) {
+  if (location.startsWith("/admin") || isInstalled || !showPrompt) {
     return null;
   }
 

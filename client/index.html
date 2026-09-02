@@ -10,8 +10,16 @@
           return window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
         }
 
+        function applyAdminMode() {
+          if (isAdminPath()) {
+            document.documentElement.classList.add('admin-crm-active');
+            document.body.classList.add('admin-crm-active');
+          }
+        }
+
         function forceOneHundredZoom() {
           if (isAdminPath()) {
+            applyAdminMode();
             let viewport = document.querySelector('meta[name="viewport"]');
             const adminViewport = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
             if (viewport) viewport.content = adminViewport;
@@ -46,6 +54,7 @@
         }
 
         // Run immediately and on every possible event
+        applyAdminMode();
         forceOneHundredZoom();
         window.addEventListener('load', forceOneHundredZoom);
         window.addEventListener('resize', forceOneHundredZoom);

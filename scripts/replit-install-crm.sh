@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-BRANCH="${CRM_BRANCH:-cursor/admin-crm-fixes-5e41}"
+BRANCH="${CRM_BRANCH:-cursor/admin-crm-mobile-5e41}"
 BASE="https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/${BRANCH}"
 
 # Find app root if we're in the wrong folder

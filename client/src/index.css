@@ -546,6 +546,25 @@ body {
   zoom: 1 !important;
 }
 
+/* Admin CRM: allow natural scaling/layout on phones, Mac, and iPad */
+html.admin-crm-active,
+html.admin-crm-active body {
+  zoom: unset !important;
+  -moz-transform: none !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  overflow-x: hidden;
+  min-height: 100dvh;
+  height: 100%;
+}
+
+html.admin-crm-active #root {
+  min-height: 100dvh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* CSS for custom animations */
 .glass {
   background: rgba(255, 255, 255, 0.1);

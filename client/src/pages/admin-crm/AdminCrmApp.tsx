@@ -183,8 +183,11 @@ export default function AdminCrmApp() {
 
   if (!user) {
     return (
-      <div className={`${crm.page} items-center justify-center text-slate-700`}>
-        Please log in first.
+      <div className={`${crm.page} items-center justify-center text-slate-700 p-6`}>
+        <p className="text-center mb-4">Please log in first.</p>
+        <Link href="/auth">
+          <Button className={crm.btnPrimary}>Go to login</Button>
+        </Link>
       </div>
     );
   }
@@ -261,7 +264,7 @@ export default function AdminCrmApp() {
         </div>
       </aside>
 
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-h-0 min-w-0 flex flex-col w-full">
         <header className={crm.header}>
           <div className="px-4 md:px-6 py-3 md:py-4 flex items-start gap-3 justify-between">
             <div className="min-w-0 flex-1">
@@ -295,6 +298,15 @@ export default function AdminCrmApp() {
               >
                 <LogOut className="h-4 w-4" />
               </button>
+              {(crmAccess?.canEditUsers || crmAccess?.canManageTickets) && (
+                <Button
+                  size="sm"
+                  className={`md:hidden ${crm.btnPrimary}`}
+                  onClick={() => setQuickActionOpen(true)}
+                >
+                  + Action
+                </Button>
+              )}
               <div className="hidden md:flex flex-wrap items-center gap-2">
                 {readOnlyBanner && (
                   <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 inline-flex items-center gap-1">

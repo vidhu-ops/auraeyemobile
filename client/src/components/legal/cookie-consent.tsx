@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -7,6 +8,7 @@ import { Cookie, Shield, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function CookieConsent() {
+  const [location] = useLocation();
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -43,6 +45,7 @@ export function CookieConsent() {
     setShowSettings(false);
   };
 
+  if (location.startsWith("/admin")) return null;
   if (!showBanner && !showSettings) return null;
 
   return (
