@@ -39,7 +39,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     // Register service worker for Push API
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
+      navigator.serviceWorker.register('/service-worker.js?v=3')
         .then((registration) => {
           console.log('✅ Service Worker registered successfully:', registration);
           setSwRegistration(registration);

@@ -1,0 +1,1 @@
+- [Admin CRM PWA cache behavior](admin-pwa-cache.md) — version and bypass service-worker caches for admin changes so installed devices receive the current shell.

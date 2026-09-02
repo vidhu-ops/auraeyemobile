@@ -1,5 +1,5 @@
-const CACHE_NAME = 'auraeye-v2';
-const STATIC_CACHE = 'auraeye-static-v2';
+const CACHE_NAME = 'auraeye-v3';
+const STATIC_CACHE = 'auraeye-static-v3';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -43,10 +43,20 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
+  const isAdminNavigation =
+    event.request.mode === 'navigate' &&
+    (requestUrl.pathname.startsWith('/admin') ||
+      (requestUrl.pathname === '/auth' && requestUrl.searchParams.get('returnTo')?.startsWith('/admin')));
   
   // Never cache API requests or WebSocket connections - always go to network
   if (EXCLUDED_PATHS.some(path => requestUrl.pathname.startsWith(path))) {
     event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Admin must always receive the current shell, especially for installed PWAs.
+  if (isAdminNavigation) {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
     return;
   }
   
