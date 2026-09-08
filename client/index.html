@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      // Ultimate 100% zoom enforcement (skipped on /admin for mobile usability)
+      (function() {
+        function isAdminPath() {
+          return window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
+        }
+
+        function applyAdminMode() {
+          if (isAdminPath()) {
+            document.documentElement.classList.add('admin-crm-active');
+            document.body.classList.add('admin-crm-active');
+          }
+        }
+
+        function forceOneHundredZoom() {
+          if (isAdminPath()) {
+            applyAdminMode();
+            let viewport = document.querySelector('meta[name="viewport"]');
+            const adminViewport = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+            if (viewport) viewport.content = adminViewport;
+            document.documentElement.style.zoom = '';
+            if (document.body) document.body.style.zoom = '';
+            return;
+          }
+
+          // 1. Viewport Meta enforcement
+          let viewport = document.querySelector('meta[name="viewport"]');
+          const viewportContent = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            document.head.appendChild(viewport);
+          }
+          if (viewport.content !== viewportContent) {
+            viewport.content = viewportContent;
+          }
+          
+          // 2. CSS Zoom Property (WebKit/Blink)
+          if (document.documentElement.style.zoom !== "1") {
+            document.documentElement.style.zoom = "1";
+          }
+          if (document.body && document.body.style.zoom !== "1") {
+            document.body.style.zoom = "1";
+          }
+
+          // 3. Text Size Adjust
+          document.documentElement.style.webkitTextSizeAdjust = "100%";
+          document.documentElement.style.textSizeAdjust = "100%";
+        }
+
+        // Run immediately and on every possible event
+        applyAdminMode();
+        forceOneHundredZoom();
+        window.addEventListener('load', forceOneHundredZoom);
+        window.addEventListener('resize', forceOneHundredZoom);
+        window.addEventListener('orientationchange', forceOneHundredZoom);
+        window.addEventListener('popstate', forceOneHundredZoom);
+        
+        // Use MutationObserver to catch SPA route changes and dynamic injections
+        const observer = new MutationObserver(forceOneHundredZoom);
+        observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+
+        // Prevent pinch to zoom strictly (not on admin)
+        document.addEventListener('touchstart', function (event) {
+          if (isAdminPath()) return;
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', function (e) {
+          if (isAdminPath()) return;
+          e.preventDefault();
+        });
+
+        // Continuous enforcement
+        setInterval(forceOneHundredZoom, 500);
+      })();
+    </script>
+    <title>AuraEye - Your Energy Made Visible</title>
+    <meta name="description" content="Discover your spiritual energy through mystical aura readings, cosmic numerology, and divine guidance. Connect with your higher self and unlock spiritual transformation." />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AuraEye - Spiritual Awakening & Mystical Guidance" />
+    <meta property="og:description" content="Mystical aura readings, cosmic numerology, and spiritual guidance for your awakening journey." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourapp.replit.app" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AuraEye - Spiritual Awakening & Mystical Guidance" />
+    <meta name="twitter:description" content="Mystical aura readings, cosmic numerology, and spiritual guidance for your awakening journey." />
+    
+    <!-- Spiritual/Mystical Keywords -->
+    <meta name="keywords" content="aura reading, spiritual guidance, mystical, cosmic energy, numerology, chakras, meditation, soul awakening, divine connection" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#164e63" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AuraEye" />
+    <link rel="apple-touch-icon" href="/new-logo.jpeg" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/spiritual-icon.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
