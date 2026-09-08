@@ -39,7 +39,7 @@ export async function expireCreditsForUser(userId: number): Promise<number> {
           .where(eq(creditGrants.id, grant.id));
       }
 
-      const newCredits = Math.max(0, Number(user.credits || 0) - totalExpired);
+      const newCredits = Number(user.credits ?? 0) - totalExpired;
       await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
       await tx.insert(creditTransactions).values({
         userId,
@@ -78,7 +78,7 @@ export async function addCreditGrant(params: {
       if (!user) return null;
 
       const updateBalance = params.updateBalance !== false;
-      const creditsAfter = updateBalance ? Number(user.credits || 0) + amount : Number(user.credits || 0);
+      const creditsAfter = updateBalance ? Number(user.credits ?? 0) + amount : Number(user.credits ?? 0);
 
       if (updateBalance) {
         await tx.update(users).set({ credits: creditsAfter }).where(eq(users.id, params.userId));
@@ -179,12 +179,13 @@ export async function replaceCreditBalance(params: {
   createdByUserId?: number | null;
   note?: string;
 }): Promise<number> {
-  const newCredits = Math.max(0, Math.floor(Number(params.newCredits)));
+  const newCredits = Math.floor(Number(params.newCredits));
+  if (!Number.isFinite(newCredits)) throw new Error("Invalid credit amount");
   return await db.transaction(async (tx) => {
     const [user] = await tx.select().from(users).where(eq(users.id, params.userId)).for("update");
     if (!user) throw new Error("User not found");
 
-    const before = Number(user.credits || 0);
+    const before = Number(user.credits ?? 0);
     // Zero remaining on all existing grants (balance is being replaced)
     await tx
       .update(creditGrants)

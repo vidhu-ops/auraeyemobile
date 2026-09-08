@@ -89,6 +89,12 @@ export default function AdminCrmApp() {
     enabled: canUseCrm && !!crmAccess?.canViewRevenue && section === "money",
   });
 
+  const usageAuditQuery = useQuery<any>({
+    queryKey: ["/api/crm/credits/usage-audit"],
+    enabled: canUseCrm && !!crmAccess?.canViewUsers && (section === "money" || section === "home"),
+    refetchInterval: 15000,
+  });
+
   const creditHealthQuery = useQuery<any>({
     queryKey: ["/api/crm/credits/health"],
     enabled: canUseCrm && !!crmAccess?.canViewUsers && (section === "money" || section === "home"),
@@ -125,6 +131,25 @@ export default function AdminCrmApp() {
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
     },
     onError: (err: any) => toast({ title: "Rollback failed", description: err.message, variant: "destructive" }),
+  });
+
+  const correctUsageMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/crm/credits/correct-usage");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Usage priced at official rates",
+        description: `${data.usersChanged || 0} account(s) corrected. ${data.negativeBalances || 0} now show a negative balance.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/credits/health"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/credits/usage-audit"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/revenue"] });
+    },
+    onError: (err: any) => toast({ title: "Usage correction failed", description: err.message, variant: "destructive" }),
   });
 
   const reconcileCreditsMutation = useMutation({
@@ -684,6 +709,86 @@ export default function AdminCrmApp() {
                   </Card>
                 ))}
               </div>
+              <Card className={crm.card}>
+                <CardHeader className="pb-2 flex flex-row items-start justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-base">Activity vs official prices</CardTitle>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Aura 5 · object 1 · numerology 1 · find healer 0 · journal 0 · meditation 0. Missing charges can take a balance negative.
+                    </p>
+                  </div>
+                  {crmAccess?.role === "owner" && (
+                    <Button
+                      size="sm"
+                      className={crm.btnPrimary}
+                      disabled={correctUsageMutation.isPending}
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "Price every account’s activity at the official rates? Missing charges can take balances negative. This is logged.",
+                          )
+                        ) {
+                          correctUsageMutation.mutate();
+                        }
+                      }}
+                    >
+                      {correctUsageMutation.isPending ? "Correcting…" : "Correct all usage"}
+                    </Button>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    {[
+                      ["Accounts checked", usageAuditQuery.data?.totalUsers],
+                      ["Need correction", usageAuditQuery.data?.accountsWithDiscrepancy],
+                      ["Negative after", usageAuditQuery.data?.negativeAfterCorrection],
+                      ["Already negative", usageAuditQuery.data?.alreadyNegative],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
+                        <div className="font-semibold text-base">{Number(value || 0).toLocaleString()}</div>
+                        <div className="text-slate-500">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                    <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 text-sm font-medium">
+                      Accounts with a usage discrepancy or negative balance
+                    </div>
+                    <div className="max-h-72 overflow-auto">
+                      <table className="w-full min-w-[820px] text-xs">
+                        <thead className="sticky top-0 bg-white border-b border-slate-200 text-left text-slate-500">
+                          <tr>
+                            <th className="px-3 py-2">User</th>
+                            <th className="px-3 py-2">Type</th>
+                            <th className="px-3 py-2 text-right">Current</th>
+                            <th className="px-3 py-2 text-right">Expected spend</th>
+                            <th className="px-3 py-2 text-right">Adjust</th>
+                            <th className="px-3 py-2 text-right">Correct balance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(usageAuditQuery.data?.accounts || []).map((u: any) => (
+                            <tr key={u.userId} className="border-b border-slate-100 last:border-0">
+                              <td className="px-3 py-2">@{u.username}</td>
+                              <td className="px-3 py-2">{u.userType}</td>
+                              <td className={`px-3 py-2 text-right font-mono ${u.currentCredits < 0 ? "text-rose-600" : ""}`}>{u.currentCredits}</td>
+                              <td className="px-3 py-2 text-right font-mono">{u.expectedSpend}</td>
+                              <td className={`px-3 py-2 text-right font-mono ${u.deltaAmount < 0 ? "text-rose-600" : "text-emerald-700"}`}>
+                                {u.deltaAmount > 0 ? "+" : ""}
+                                {u.deltaAmount}
+                              </td>
+                              <td className={`px-3 py-2 text-right font-mono ${u.newBalance < 0 ? "text-rose-600 font-semibold" : ""}`}>{u.newBalance}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {(usageAuditQuery.data?.accounts || []).length === 0 && (
+                        <p className="p-4 text-sm text-emerald-700">Every account matches official service prices.</p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               <Card className={crm.card}>
                 <CardHeader className="pb-2 flex flex-row items-start justify-between gap-3">
                   <div>

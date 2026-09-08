@@ -163,7 +163,7 @@ export default function Mascot() {
       user.userType, 
       soulEnergy, 
       lastScanColor,
-      creditsData?.credits || 0,
+      creditsData?.credits ?? 0,
       moodData,
       journalData,
       latestAuraReading

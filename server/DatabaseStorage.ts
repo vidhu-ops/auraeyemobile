@@ -568,10 +568,11 @@ export class DatabaseStorage implements IStorage {
     // Credit management
     async getUserCredits(userId: number): Promise<number> {
         const [user] = await db.select().from(users).where(eq(users.id, userId));
-        return user?.credits || 0;
+        return user ? Number(user.credits ?? 0) : 0;
     }
 
-    async deductCredits(userId: number, amount: number, type: string, description: string): Promise<boolean> {
+    async deductCredits(userId: number, amount: number, type: string, description: string, options?: { allowNegative?: boolean }): Promise<boolean> {
+        if (!amount) return true;
         return await db.transaction(async (tx) => {
             const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
             if (!user) {
@@ -579,8 +580,8 @@ export class DatabaseStorage implements IStorage {
                 return false;
             }
 
-            const currentCredits = Number(user.credits || 0);
-            if (currentCredits < amount) {
+            const currentCredits = Number(user.credits ?? 0);
+            if (!options?.allowNegative && currentCredits < amount) {
                 console.log(`DeductCredits: User ${userId} has insufficient credits (${currentCredits} < ${amount})`);
                 return false;
             }
@@ -605,7 +606,7 @@ export class DatabaseStorage implements IStorage {
             const [user] = await tx.select().from(users).where(eq(users.id, userId)).for('update');
             if (!user) return false;
 
-            const newCredits = (user.credits || 0) + amount;
+            const newCredits = Number(user.credits ?? 0) + amount;
             await tx.update(users).set({ credits: newCredits }).where(eq(users.id, userId));
             await tx.insert(creditTransactions).values({
                 userId,
@@ -680,20 +681,10 @@ export class DatabaseStorage implements IStorage {
         await db.update(passwordResetTokens).set({ used: true }).where(eq(passwordResetTokens.id, tokenId));
     }
 
-    // Credit costs based on user type
-    async getCreditCost(userId: number, serviceType: string): Promise<number> {
-        const user = await this.getUser(userId);
-        if (!user) return 1;
-
-        const costs: Record<string, any> = {
-            'aura_analysis': { client: 5, healer: 5, semi_healer: 5, free_trial: 5 },
-            'vibe_check': { client: 1, healer: 1, semi_healer: 1, free_trial: 1 },
-            'numerology': { client: 3, healer: 3, semi_healer: 3, free_trial: 3 },
-            'object_analysis': { client: 2, healer: 2, semi_healer: 2, free_trial: 2 }
-        };
-
-        const type = user.userType || 'client';
-        return costs[serviceType]?.[type] ?? 1;
+    // Credit costs — same official prices for every account type
+    async getCreditCost(_userId: number, serviceType: string): Promise<number> {
+        const { getServiceCreditCost } = await import("../shared/credit-costs");
+        return getServiceCreditCost(serviceType);
     }
 
     // Store PDF

@@ -13,7 +13,7 @@ export function useCredits() {
   });
 
   return {
-    credits: data?.credits || 0,
+    credits: data?.credits ?? 0,
     isLoading,
     error,
     refetch, // Allow components to manually refetch if needed

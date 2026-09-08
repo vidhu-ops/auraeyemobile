@@ -5,7 +5,7 @@ import MobileNavigation from "@/components/layout/mobile-navigation";
 import Navbar from "@/components/layout/navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useSoulEnergy } from "@/hooks/use-soul-energy";
-import { useCredits } from "@/hooks/use-credits";
+import { SERVICE_CREDIT_COSTS } from "@shared/credit-costs";
 import { useHomeStats } from "@/hooks/use-home-stats";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -527,8 +527,7 @@ export default function HomePage() {
                     <Camera className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Aura Analysis</h3>
-                  <p className="text-xs text-gray-300 mt-1">15 credits-user</p>
-                  <p className="text-xs text-gray-300 mt-1">5 credits-healer</p>
+                  <p className="text-xs text-gray-300 mt-1">{SERVICE_CREDIT_COSTS.aura_analysis} credits</p>
                 </CardContent>
               </Card>
             </Link>
@@ -552,7 +551,7 @@ export default function HomePage() {
                     <Calculator className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Numerology</h3>
-                  <p className="text-xs text-gray-300 mt-1">3 credits</p>
+                  <p className="text-xs text-gray-300 mt-1">{SERVICE_CREDIT_COSTS.numerology} credit</p>
                 </CardContent>
               </Card>
             </Link>
@@ -564,7 +563,7 @@ export default function HomePage() {
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-sm font-semibold text-white">Find Healers</h3>
-                  <p className="text-xs text-gray-300 mt-1">1 credit</p>
+                  <p className="text-xs text-gray-300 mt-1">Free</p>
                 </CardContent>
               </Card>
             </Link>

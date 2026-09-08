@@ -113,7 +113,7 @@ app.post('/api/webhooks/stripe',
           
           if (user) {
             const creditsToAdd = determineCredits(amountTotal);
-            const currentCredits = user.credits || 0;
+            const currentCredits = Number(user.credits ?? 0);
             const currentUserType = user.user_type || 'client';
 
             if (currentUserType === 'client') {
@@ -189,7 +189,17 @@ app.use((req, res, next) => {
 
   // Seed all users and healers from production data
   // Don't block server startup - seed in background
-  setTimeout(() => runStartupSeed().catch(e => console.error("Seed failed:", e)), 100);
+  setTimeout(() => {
+    runStartupSeed()
+      .then(async () => {
+        const { correctAllCreditUsage } = await import("./credit-usage-audit");
+        const result = await correctAllCreditUsage();
+        console.log(
+          `💳 Credit usage correction: ${result.usersChanged} account(s) adjusted, ${result.negativeBalances} negative balance(s)`,
+        );
+      })
+      .catch((e) => console.error("Seed/credit correction failed:", e));
+  }, 100);
   
   const server = await registerRoutes(app);
 

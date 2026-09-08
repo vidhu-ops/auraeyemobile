@@ -390,7 +390,7 @@ export default function ProfilePage() {
               <CardContent className="space-y-3">
                 <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-400/50">
                   <p className="text-purple-300 text-sm">Available Credits</p>
-                  <p className="text-2xl font-bold text-indigo-300" data-testid="display-credits">{credits || 0}</p>
+                  <p className={`text-2xl font-bold ${credits < 0 ? "text-rose-400" : "text-indigo-300"}`} data-testid="display-credits">{credits}</p>
                 </div>
                 {subscription && (
                   <div className="p-3 rounded-lg bg-green-500/10 border border-green-400/50">

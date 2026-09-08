@@ -503,7 +503,7 @@ export default function PeopleWorkspace({
                     </div>
                     <div className="text-xs text-slate-500 mt-1 flex gap-3">
                       <span>{u.userType}</span>
-                      <span className="font-mono text-emerald-700">{u.credits} credits</span>
+                      <span className={`font-mono ${u.credits < 0 ? "text-rose-600" : "text-emerald-700"}`}>{u.credits} credits</span>
                     </div>
                   </button>
                 ))}
@@ -555,7 +555,9 @@ export default function PeopleWorkspace({
                     </div>
                     <div className="text-xs text-slate-500">
                       @{profileQuery.data.user.username} · {profileQuery.data.user.userType} ·{" "}
-                      {profileQuery.data.user.credits} credits
+                      <span className={profileQuery.data.user.credits < 0 ? "text-rose-600 font-semibold" : ""}>
+                        {profileQuery.data.user.credits} credits
+                      </span>
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full border ${phaseBadge(profileQuery.data.user.phase)}`}>
@@ -738,7 +740,9 @@ export default function PeopleWorkspace({
                               ["Credits used", summary.creditsUsed ?? 0],
                             ].map(([label, value]) => (
                               <div key={label} className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
-                                <div className="font-semibold text-base">{Number(value).toLocaleString()}</div>
+                                <div className={`font-semibold text-base ${label === "Current balance" && Number(value) < 0 ? "text-rose-600" : ""}`}>
+                                  {Number(value).toLocaleString()}
+                                </div>
                                 <div className="text-slate-500">{label}</div>
                               </div>
                             ))}
@@ -763,6 +767,44 @@ export default function PeopleWorkspace({
                               </span>
                             )}
                           </div>
+                          {profileQuery.data.usageAudit && (
+                            <div className="rounded-xl border border-slate-200 overflow-hidden">
+                              <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 text-sm font-medium">
+                                Activity priced at official rates
+                              </div>
+                              <table className="w-full text-xs">
+                                <thead className="bg-white border-b border-slate-200 text-left text-slate-500">
+                                  <tr>
+                                    <th className="px-3 py-2">Service</th>
+                                    <th className="px-3 py-2 text-right">Uses</th>
+                                    <th className="px-3 py-2 text-right">Expected</th>
+                                    <th className="px-3 py-2 text-right">Charged</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {[
+                                    ["Aura analysis", profileQuery.data.usageAudit.usage.aura, profileQuery.data.usageAudit.usage.aura * 5, profileQuery.data.usageAudit.charged.aura],
+                                    ["Object analysis", profileQuery.data.usageAudit.usage.object, profileQuery.data.usageAudit.usage.object * 1, profileQuery.data.usageAudit.charged.object],
+                                    ["Numerology", profileQuery.data.usageAudit.usage.numerology, profileQuery.data.usageAudit.usage.numerology * 1, profileQuery.data.usageAudit.charged.numerology],
+                                    ["Find healer", profileQuery.data.usageAudit.usage.healerBookings, 0, profileQuery.data.usageAudit.charged.healerBookings],
+                                    ["Journal", profileQuery.data.usageAudit.usage.journals, 0, 0],
+                                    ["Meditation", profileQuery.data.usageAudit.usage.meditations, 0, 0],
+                                  ].map(([label, uses, expected, charged]) => (
+                                    <tr key={String(label)} className="border-b border-slate-100 last:border-0">
+                                      <td className="px-3 py-2">{label}</td>
+                                      <td className="px-3 py-2 text-right font-mono">{uses}</td>
+                                      <td className="px-3 py-2 text-right font-mono">{expected}</td>
+                                      <td className="px-3 py-2 text-right font-mono">{charged}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                              <div className={`px-3 py-2 text-xs ${profileQuery.data.usageAudit.newBalance < 0 ? "text-rose-700 bg-rose-50" : "text-slate-600"}`}>
+                                Correct balance after official pricing: {profileQuery.data.usageAudit.newBalance} credits
+                                {profileQuery.data.usageAudit.hasDiscrepancy ? ` (adjust ${profileQuery.data.usageAudit.deltaAmount > 0 ? "+" : ""}${profileQuery.data.usageAudit.deltaAmount})` : ""}
+                              </div>
+                            </div>
+                          )}
                           {crmAccess.canEditCredits && (
                             <>
                               <HelpTip>

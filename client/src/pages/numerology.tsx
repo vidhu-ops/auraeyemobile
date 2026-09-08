@@ -782,7 +782,7 @@ With awareness and responsibility,
     }
 
     // Check if user is a new user (default client) and has 0 credits
-    if (user.userType === 'client' && (user.credits || 0) === 0) {
+    if (user.userType === 'client' && (user.credits ?? 0) === 0 && !(user as any).isPremium) {
       toast({
         title: "Upgrade Required",
         description: "Numerology is a premium feature. Please buy credits and upgrade your account to access your spiritual blueprint.",

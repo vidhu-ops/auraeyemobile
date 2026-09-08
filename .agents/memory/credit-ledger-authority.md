@@ -1,10 +1,20 @@
 ---
 name: Credit ledger authority
-description: Durable rules for seeded credit balances, legacy ledger repair, and admin reconciliation.
+description: Durable rules for seeded credit balances, official service prices, usage correction, and negative balances.
 ---
 
-Existing user credit balances are live ledger state, not seed data. Startup seeding may create missing accounts and apply a documented expiry, but it must not restore a CSV balance over deductions, admin adjustments, or a deliberate zero.
+Existing user credit balances are live ledger state, not seed data. Startup seeding may create missing accounts and apply a documented expiry, but it must not restore a CSV balance over deductions, admin adjustments, a deliberate zero, or a negative usage correction.
 
-**Why:** A startup upsert that used the maximum of the stored and CSV balances silently restored old credits after a correction, making the CRM and transaction history disagree again.
+Official prices are in `shared/credit-costs.ts` and must be used for deductions, UI labels, and historical usage correction:
 
-**How to apply:** Treat `users.credits` as the current balance, preserve transaction amounts, and use an explicit owner-triggered reconciliation to add transparent opening/grant records, repair running snapshots, and write audit entries. Keep the operation idempotent.
+- Aura analysis: 5
+- Object analysis: 1
+- Numerology: 1
+- Finding a healer: 0
+- Journaling: 0
+- Meditation: 0
+- Vibe check: 1
+
+Never coerce credits with `value || 0` — that hides negative balances. Use `?? 0` or `creditNumber()`.
+
+Startup and CRM usage correction compare recorded activity to those prices, write a `usage_correction` ledger row, and may take `users.credits` negative. The operation is idempotent. Paid services still require a non-negative balance going forward; free services (find healer, journal, meditation) do not.

@@ -2624,7 +2624,7 @@ export default function HealerDashboard() {
             </Button>
             <div className="flex items-center space-x-2 bg-violet-100 px-4 py-2 rounded-full">
               <div className="text-violet-600">💳</div>
-              <span className="font-medium text-violet-800">{credits} credits</span>
+              <span className={`font-medium ${credits < 0 ? "text-rose-700" : "text-violet-800"}`}>{credits} credits</span>
             </div>
           </div>
         </div>
@@ -3340,7 +3340,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Numerology</h3>
-                      <p className="text-slate-600 text-xs">3 credits = +300 soul energy</p>
+                      <p className="text-slate-600 text-xs">1 credit = +100 soul energy</p>
                     </div>
                   </div>
                 </div>
@@ -3352,7 +3352,7 @@ export default function HealerDashboard() {
                     </div>
                     <div>
                       <h3 className="text-slate-800 font-semibold">Client Sessions</h3>
-                      <p className="text-slate-600 text-xs">1 credits = +100 soul energy</p>
+                      <p className="text-slate-600 text-xs">Finding a healer is free</p>
                     </div>
                   </div>
                 </div>
@@ -4076,7 +4076,7 @@ export default function HealerDashboard() {
                 Numerology Analysis
               </CardTitle>
               <CardDescription>Generate comprehensive numerology readings by entering client information</CardDescription>
-              <CardDescription className="text-red-500">3 credits</CardDescription>
+              <CardDescription className="text-red-500">1 credit</CardDescription>
             </CardHeader>
             <CardContent>
               <NumerologyInputForm />

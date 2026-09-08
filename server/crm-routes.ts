@@ -23,6 +23,8 @@ import {
 } from "../shared/schema";
 import { addCreditGrant, daysFromNow, listCreditGrants, replaceCreditBalance } from "./credit-grants";
 import { getCreditIntegrityReport, reconcileAllCreditLedgers } from "./credit-reconciliation";
+import { correctAllCreditUsage, getCreditUsageAuditReport, getCreditUsageForUser } from "./credit-usage-audit";
+import { SERVICE_CREDIT_COSTS } from "../shared/credit-costs";
 
 type AuthedRequest = Request & { user?: Express.User; crmAccess?: CrmPerms };
 
@@ -419,6 +421,56 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
+  app.get("/api/crm/credits/usage-audit", requireCrm("canViewUsers"), async (_req, res) => {
+    try {
+      const report = await getCreditUsageAuditReport();
+      res.json({
+        ...report,
+        accounts: report.accounts.filter((account) => account.hasDiscrepancy || account.currentCredits < 0 || account.newBalance < 0),
+        allAccounts: report.accounts,
+      });
+    } catch (error) {
+      console.error("CRM credit usage audit error:", error);
+      res.status(500).json({ message: "Failed to load credit usage audit" });
+    }
+  });
+
+  app.post("/api/crm/credits/correct-usage", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
+    if (req.crmAccess?.role !== "owner" && req.user?.username !== "admin") {
+      return res.status(403).json({ message: "Only the owner can correct every account" });
+    }
+    try {
+      const result = await correctAllCreditUsage();
+      await writeAudit({
+        actor: req.user,
+        action: "credit_usage_correction",
+        entityType: "credit_system",
+        newValue: {
+          usersProcessed: result.usersProcessed,
+          usersChanged: result.usersChanged,
+          negativeBalances: result.negativeBalances,
+          prices: SERVICE_CREDIT_COSTS,
+        },
+        note: "Owner-triggered usage correction at official service prices",
+      });
+      for (const changed of result.changedUsers) {
+        await writeAudit({
+          actor: req.user,
+          action: "credit_usage_correction_user",
+          entityType: "user",
+          entityId: changed.userId,
+          previousValue: { credits: changed.creditsBefore },
+          newValue: { credits: changed.creditsAfter, deltaAmount: changed.deltaAmount },
+          note: "Activity priced at official rates; negative balances kept",
+        });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("CRM credit usage correction error:", error);
+      res.status(500).json({ message: "Failed to correct credit usage" });
+    }
+  });
+
   app.get("/api/crm/users", requireCrm("canViewUsers"), async (req, res) => {
     try {
       const q = String(req.query.q || "").trim().toLowerCase();
@@ -574,6 +626,7 @@ export function registerCrmRoutes(app: Express) {
         .slice(0, 150);
 
       const currentCredits = await storage.getUserCredits(id);
+      const usageAudit = await getCreditUsageForUser(id);
       const issuedCredits = credits.filter((c) => c.amount > 0).reduce((sum, c) => sum + c.amount, 0);
       const usedCredits = credits.filter((c) => c.amount < 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
       const latestCredit = credits[0] || null;
@@ -638,6 +691,7 @@ export function registerCrmRoutes(app: Express) {
           firstTransactionAt: credits[credits.length - 1]?.createdAt || null,
           lastTransactionAt: latestCredit?.createdAt || null,
         },
+        usageAudit,
         creditGrants: await listCreditGrants(id),
         payments,
         contract: contract[0] || null,
@@ -962,7 +1016,8 @@ export function registerCrmRoutes(app: Express) {
           id,
           parsed,
           "admin_subtract",
-          description || `CRM credit deduct by ${req.user?.username}`
+          description || `CRM credit deduct by ${req.user?.username}`,
+          { allowNegative: true }
         );
         if (!ok) return res.status(400).json({ message: "Insufficient credits or update failed" });
         after = await storage.getUserCredits(id);
@@ -1803,7 +1858,7 @@ export function registerCrmRoutes(app: Express) {
         const [user] = await tx.select().from(users).where(eq(users.id, id)).for("update");
         if (!user) throw new Error("User not found");
 
-        const before = Number(user.credits || 0);
+        const before = Number(user.credits ?? 0);
         if (before !== fromGrants) {
           await tx.update(users).set({ credits: fromGrants }).where(eq(users.id, id));
           await tx.insert(creditTransactions).values({

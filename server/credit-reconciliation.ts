@@ -101,7 +101,7 @@ export async function getCreditIntegrityReport(): Promise<CreditIntegrityReport>
       .reduce((sum, grant) => sum + asNumber(grant.remaining), 0);
 
     const currentCredits = asNumber(user.credits);
-    const grantMismatch = grantRemaining !== currentCredits;
+    const grantMismatch = grantRemaining !== Math.max(currentCredits, 0);
     if (transactions.length === 0 && currentCredits !== 0) usersWithoutLedger += 1;
     if (previousBalance !== null && previousBalance !== currentCredits) balanceMismatches += 1;
     if (userChainMismatches) chainMismatches += userChainMismatches;

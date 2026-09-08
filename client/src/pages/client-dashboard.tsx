@@ -198,7 +198,7 @@ export default function ClientDashboard() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{creditsLoading ? '...' : (credits || 0)}</div>
+                <div className={`text-2xl font-bold ${!creditsLoading && credits < 0 ? "text-rose-300" : "text-white"}`}>{creditsLoading ? '...' : credits}</div>
                 <div className="text-xs text-purple-100">Credits</div>
               </div>
               <div className="text-center">

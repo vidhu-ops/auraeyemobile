@@ -23,6 +23,7 @@ import { validateEmailAddress } from "./email-validator";
 import { db } from "./db";
 import { eq, and, gt, gte, lt, sql } from "drizzle-orm";
 import { auraReadings } from "../shared/schema";
+import { SERVICE_CREDIT_COSTS } from "../shared/credit-costs";
 import { getVapidPublicKey, sendPushToUser, sendPushNotification } from "./push-service";
 
 interface AuthenticatedRequest extends Request {
@@ -49,7 +50,7 @@ function checkCredits(serviceType: string) {
       });
     }
     
-    if (userCredits < requiredCredits) {
+    if (requiredCredits > 0 && userCredits < requiredCredits) {
       return res.status(402).json({ 
         error: "Insufficient credits",
         message: `You need ${requiredCredits} credits to use this service. You have ${userCredits} credits.`,
@@ -86,7 +87,7 @@ function optionalCheckCredits(serviceType: string) {
       });
     }
     
-    if (userCredits < requiredCredits) {
+    if (requiredCredits > 0 && userCredits < requiredCredits) {
       return res.status(402).json({ 
         error: "Insufficient credits",
         message: `You need ${requiredCredits} credits to use this service. You have ${userCredits} credits.`,
@@ -2194,8 +2195,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         }
         
         // Deduct credits for successful numerology reading
-        // All users pay 3 credits for numerology
-        const numerologyCost = 3;
+        const numerologyCost = req.creditCost ?? (await storage.getCreditCost(req.user.id, "numerology"));
         const deductionResult = await storage.deductCredits(req.user.id, numerologyCost, 'numerology', `Numerology reading for ${name}`);
         if (!deductionResult) {
           return res.status(402).json({ error: "Insufficient credits" });
@@ -2316,8 +2316,7 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         });
         
         // Deduct credits for successful numerology reading
-        // All users pay 3 credits for numerology
-        const numerologyCost = 3;
+        const numerologyCost = req.creditCost ?? (await storage.getCreditCost(req.user.id, "numerology"));
         const deductionResult = await storage.deductCredits(req.user.id, numerologyCost, 'numerology', `Numerology reading for ${name}`);
         if (!deductionResult) {
           return res.status(402).json({ error: "Insufficient credits" });
@@ -2421,9 +2420,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
         
         // Add soul energy (credits * 100) for completing numerology analysis
         try {
-          const soulEnergyAmount = (req.creditCost || 3) * 100;
+          const soulEnergyAmount = (req.creditCost ?? 1) * 100;
           await storage.addSoulEnergy(req.user!.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
-          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user!.id} for numerology analysis completion (${req.creditCost || 3} credits × 100)`);
+          console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user!.id} for numerology analysis completion (${req.creditCost ?? 1} credits × 100)`);
         } catch (soulEnergyError) {
           console.error("Error adding soul energy:", soulEnergyError);
         }
@@ -2477,9 +2476,9 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
           
           // Add soul energy (credits * 100) for completing numerology analysis (fallback path)
           try {
-            const soulEnergyAmount = (req.creditCost || 3) * 100;
+            const soulEnergyAmount = (req.creditCost ?? 1) * 100;
             await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
-            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (fallback: ${req.creditCost || 3} credits × 100)`);
+            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion (fallback: ${req.creditCost ?? 1} credits × 100)`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
           }
@@ -2577,10 +2576,11 @@ async function detectHumanInImage(imageBuffer: Buffer): Promise<boolean> {
             interpretation: numerologyProfile.interpretation
           });
           
-          // Add soul energy +300 for completing numerology analysis (3 credits * 100)
+          // Add soul energy for completing numerology analysis (credits × 100)
           try {
-            await storage.addSoulEnergy(req.user.id, 300, 'numerology_analysis', 'Numerology analysis completed');
-            console.log(`⚡ Added +300 soul energy to user ${req.user.id} for numerology analysis completion`);
+            const soulEnergyAmount = (req.creditCost ?? 1) * 100;
+            await storage.addSoulEnergy(req.user.id, soulEnergyAmount, 'numerology_analysis', 'Numerology analysis completed');
+            console.log(`⚡ Added +${soulEnergyAmount} soul energy to user ${req.user.id} for numerology analysis completion`);
           } catch (soulEnergyError) {
             console.error("Error adding soul energy:", soulEnergyError);
           }
@@ -2991,7 +2991,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
     }
   })();
 
-  // Healer booking API endpoint with email notification - 3 credits to client, 1 to healer
+  // Healer booking API endpoint — finding a healer is free (0 credits)
   app.post("/api/book-session", isAuthenticated, checkCredits('healer_booking'), async (req, res) => {
     try {
       const user = req.user as any;
@@ -3012,26 +3012,26 @@ function calculateDominantSoulChakra(birthDate: string): number {
 
       console.log(`✅ Healer found: ${healer.name}`);
 
-      // Deduct 3 credits from client
-      const creditDeducted = await storage.deductCredits(
-        user.id,
-        3,
-        "healer_booking",
-        `Healer booking with ${healer.name}`
-      );
+      const bookingCost = req.creditCost ?? (await storage.getCreditCost(user.id, "healer_booking"));
+      if (bookingCost > 0) {
+        const creditDeducted = await storage.deductCredits(
+          user.id,
+          bookingCost,
+          "healer_booking",
+          `Healer booking with ${healer.name}`
+        );
 
-      if (!creditDeducted) {
-        console.error(`Failed to deduct credits from user ${user.id}`);
-        return res.status(400).json({ 
-          message: "Failed to deduct credits. Please try again.",
-          requiredCredits: 3,
-          currentCredits: await storage.getUserCredits(user.id)
-        });
+        if (!creditDeducted) {
+          console.error(`Failed to deduct credits from user ${user.id}`);
+          return res.status(400).json({
+            message: "Failed to deduct credits. Please try again.",
+            requiredCredits: bookingCost,
+            currentCredits: await storage.getUserCredits(user.id)
+          });
+        }
       }
 
-      console.log(`💳 Credits deducted from user ${user.id}`);
-
-      // For permanent contacts, use their mapped userId; otherwise get healer user
+      // Finding a healer is free — do not credit the healer or deduct from the client
       let healerUser;
       if (PERMANENT_CONTACTS[healerId as keyof typeof PERMANENT_CONTACTS]) {
         const contact = PERMANENT_CONTACTS[healerId as keyof typeof PERMANENT_CONTACTS];
@@ -3040,31 +3040,12 @@ function calculateDominantSoulChakra(birthDate: string): number {
         healerUser = await storage.getUserByUsername(healer.username);
       }
 
-      if (healerUser) {
-        await storage.addCredits(
-          healerUser.id,
-          1,
-          "healer_booking_credit",
-          `Credit from booking by ${user.username}`
-        );
-        
-        // Add soul energy (credits * 100) for healer connection
+      if (bookingCost > 0) {
         try {
-          const healerSoulEnergyAmount = 1 * 100; // 1 credit = 100 soul energy
-          await storage.addSoulEnergy(healerUser.id, healerSoulEnergyAmount, 'healer_booking', 'Healer booking connection');
-          console.log(`⚡ Added +${healerSoulEnergyAmount} soul energy to healer ${healerUser.id} for booking connection`);
+          await storage.addSoulEnergy(user.id, bookingCost * 100, 'healer_booking', 'Booked healer session');
         } catch (soulEnergyError) {
-          console.error("Error adding soul energy to healer:", soulEnergyError);
+          console.error("Error adding soul energy:", soulEnergyError);
         }
-      }
-
-      // Add soul energy (credits * 100) to client for booking a healer
-      try {
-        const clientSoulEnergyAmount = 3 * 100; // 3 credits = 300 soul energy
-        await storage.addSoulEnergy(user.id, clientSoulEnergyAmount, 'healer_booking', 'Booked healer session');
-        console.log(`⚡ Added +${clientSoulEnergyAmount} soul energy to user ${user.id} for healer booking`);
-      } catch (soulEnergyError) {
-        console.error("Error adding soul energy:", soulEnergyError);
       }
 
       // Create booking record - use healer ID directly (no FK constraint now)
@@ -3142,7 +3123,7 @@ function calculateDominantSoulChakra(birthDate: string): number {
         message: "Booking request sent successfully",
         booking: booking,
         emailSent: emailSent,
-        creditsDeducted: 3,
+        creditsDeducted: bookingCost,
         remainingCredits: await storage.getUserCredits(user.id)
       });
     } catch (error) {
@@ -4517,6 +4498,11 @@ function calculateDominantSoulChakra(birthDate: string): number {
       console.error("Error retrieving aura readings:", error);
       res.status(500).json({ message: "Failed to retrieve aura readings" });
     }
+  });
+
+  // Official service prices — used by UI so labels cannot drift from deductions
+  app.get("/api/credit-costs", (_req, res) => {
+    res.json(SERVICE_CREDIT_COSTS);
   });
 
   // Get user's credits

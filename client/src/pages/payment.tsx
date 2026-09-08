@@ -128,7 +128,7 @@ export default function PaymentPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-purple-200">Your Current Credits</span>
                   <Badge className="bg-purple-600/30 text-purple-100 text-lg px-4 py-1">
-                    {Number(user.credits) || 0} Credits
+                    {Number(user.credits ?? 0)} Credits
                   </Badge>
                 </div>
               </CardContent>
