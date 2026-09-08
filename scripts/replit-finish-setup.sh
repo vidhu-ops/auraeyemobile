@@ -21,7 +21,7 @@ for f in \
     echo "   OK  $f"
   else
     echo "   MISSING $f — run install first:"
-    echo "   curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-ux-overhaul-5e41/scripts/replit-install-crm.sh | bash"
+    echo "   curl -fsSL https://raw.githubusercontent.com/vidhu-ops/auraeyemobile/cursor/admin-crm-mobile-5e41/scripts/replit-install-crm.sh | bash"
     exit 1
   fi
 done

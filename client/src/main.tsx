@@ -5,11 +5,11 @@ import "./index.css";
 import { ThemeProvider } from "next-themes";
 import { registerServiceWorker } from "./utils/register-sw";
 
-// Handle hard refresh on link open
+// Handle hard refresh on link open (skip admin — avoids reload loop on mobile)
+const adminPath = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
 const lastVisit = localStorage.getItem('last_visit_timestamp');
 const now = Date.now();
-// If it's been more than 5 minutes since last visit, or first visit
-if (!lastVisit || (now - parseInt(lastVisit)) > 300000) {
+if (!adminPath && (!lastVisit || (now - parseInt(lastVisit)) > 300000)) {
   localStorage.setItem('last_visit_timestamp', now.toString());
   if (!window.location.search.includes('v=')) {
     const url = new URL(window.location.href);

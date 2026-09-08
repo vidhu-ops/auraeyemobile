@@ -39,10 +39,19 @@ type RegisterData = z.infer<typeof registerSchema>;
 
 type OnboardingStep = "auth" | "question1" | "question2" | "question3";
 
+function getSafeRedirectPath(): string | null {
+  const redirect = new URLSearchParams(window.location.search).get("redirect");
+  if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+    return redirect;
+  }
+  return null;
+}
+
 export default function AuthPage() {
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const redirectAfterAuth = getSafeRedirectPath();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>("auth");
   
@@ -75,7 +84,9 @@ export default function AuthPage() {
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data, {
       onSuccess: (user) => {
-        if (user.userType === "healer" || user.userType === "semi-healer") {
+        if (redirectAfterAuth) {
+          setLocation(redirectAfterAuth);
+        } else if (user.userType === "healer" || user.userType === "semi-healer") {
           setLocation("/healer-dashboard");
         } else {
           setLocation("/");
@@ -269,7 +280,9 @@ export default function AuthPage() {
   // Wait for auth loading to complete before redirecting
   // Don't redirect if user is in the middle of onboarding questions
   if (!isLoading && user && onboardingStep === "auth") {
-    // Always redirect to home page after login - lights activation will be shown if needed
+    if (redirectAfterAuth) {
+      return <Redirect to={redirectAfterAuth} />;
+    }
     return <Redirect to="/" />;
   }
 
