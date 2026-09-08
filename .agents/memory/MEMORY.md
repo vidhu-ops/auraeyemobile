@@ -1,1 +1,2 @@
 - [Admin CRM PWA cache behavior](admin-pwa-cache.md) — version and bypass service-worker caches for admin changes so installed devices receive the current shell.
+- [Credit ledger authority](credit-ledger-authority.md) — startup seed data must never overwrite live user balances; reconcile legacy ledgers explicitly while preserving current balances.

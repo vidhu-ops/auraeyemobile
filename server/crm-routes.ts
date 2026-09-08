@@ -22,6 +22,7 @@ import {
   crmLeads,
 } from "../shared/schema";
 import { addCreditGrant, daysFromNow, listCreditGrants, replaceCreditBalance } from "./credit-grants";
+import { getCreditIntegrityReport, reconcileAllCreditLedgers } from "./credit-reconciliation";
 
 type AuthedRequest = Request & { user?: Express.User; crmAccess?: CrmPerms };
 
@@ -361,6 +362,63 @@ export function registerCrmRoutes(app: Express) {
     }
   });
 
+  app.get("/api/crm/credits/health", requireCrm("canViewUsers"), async (_req, res) => {
+    try {
+      res.json(await getCreditIntegrityReport());
+    } catch (error) {
+      console.error("CRM credit health error:", error);
+      res.status(500).json({ message: "Failed to load credit health" });
+    }
+  });
+
+  app.post("/api/crm/credits/reconcile", requireCrm("canEditCredits"), async (req: AuthedRequest, res) => {
+    if (req.crmAccess?.role !== "owner" && req.user?.username !== "admin") {
+      return res.status(403).json({ message: "Only the owner can reconcile every account" });
+    }
+
+    try {
+      const result = await reconcileAllCreditLedgers();
+      await writeAudit({
+        actor: req.user,
+        action: "credit_reconcile",
+        entityType: "credit_system",
+        newValue: {
+          usersProcessed: result.usersProcessed,
+          usersChanged: result.usersChanged,
+          transactionsRepaired: result.transactionsRepaired,
+          openingTransactionsAdded: result.openingTransactionsAdded,
+          grantsAdded: result.grantsAdded,
+          usernamesRepaired: result.usernamesRepaired,
+          remainingDiscrepancies: {
+            chainMismatches: result.report.chainMismatches,
+            balanceMismatches: result.report.balanceMismatches,
+            usernameMismatches: result.report.usernameMismatches,
+            grantMismatches: result.report.grantMismatches,
+            usersWithoutLedger: result.report.usersWithoutLedger,
+          },
+        },
+        note: "Owner-triggered full credit ledger reconciliation",
+      });
+      for (const changedUser of result.changedUsers) {
+        await writeAudit({
+          actor: req.user,
+          action: "credit_reconcile_user",
+          entityType: "user",
+          entityId: changedUser.userId,
+          newValue: {
+            username: changedUser.username,
+            reason: "Legacy credit ledger repaired while preserving the current balance",
+          },
+          note: "Credit ledger reconciliation correction",
+        });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("CRM credit reconciliation error:", error);
+      res.status(500).json({ message: "Failed to reconcile credit ledgers" });
+    }
+  });
+
   app.get("/api/crm/users", requireCrm("canViewUsers"), async (req, res) => {
     try {
       const q = String(req.query.q || "").trim().toLowerCase();
@@ -428,12 +486,25 @@ export function registerCrmRoutes(app: Express) {
       const user = await storage.getUser(id);
       if (!user) return res.status(404).json({ message: "User not found" });
 
+      const isHealerAccount = ["healer", "semi-healer", "semi_healer"].includes(String(user.userType));
       const [aura, vibes, numerology, objects, credits, payments, contract, journalRows, meditations, logins] =
         await Promise.all([
-          db.select().from(auraReadings).where(eq(auraReadings.userId, id)).orderBy(desc(auraReadings.createdAt)).limit(100),
+          db
+            .select()
+            .from(auraReadings)
+            .where(eq(isHealerAccount ? auraReadings.performedBy : auraReadings.userId, id))
+            .orderBy(desc(auraReadings.createdAt)),
           db.select().from(vibeReadings).where(eq(vibeReadings.userId, id)).orderBy(desc(vibeReadings.createdAt)).limit(100),
-          db.select().from(numerologyReadings).where(eq(numerologyReadings.userId, id)).orderBy(desc(numerologyReadings.createdAt)).limit(100),
-          db.select().from(objectAnalyses).where(eq(objectAnalyses.userId, id)).orderBy(desc(objectAnalyses.createdAt)).limit(100),
+          db
+            .select()
+            .from(numerologyReadings)
+            .where(eq(isHealerAccount ? numerologyReadings.performedBy : numerologyReadings.userId, id))
+            .orderBy(desc(numerologyReadings.createdAt)),
+          db
+            .select()
+            .from(objectAnalyses)
+            .where(eq(isHealerAccount ? objectAnalyses.performedBy : objectAnalyses.userId, id))
+            .orderBy(desc(objectAnalyses.createdAt)),
           storage.getCreditTransactionsByUser(id),
           db.select().from(paymentTransactions).where(eq(paymentTransactions.userId, id)).orderBy(desc(paymentTransactions.createdAt)).limit(100),
           db.select().from(practitionerContracts).where(eq(practitionerContracts.userId, id)).limit(1),
@@ -502,6 +573,22 @@ export function registerCrmRoutes(app: Express) {
         .sort((a, b) => new Date(b.at as any).getTime() - new Date(a.at as any).getTime())
         .slice(0, 150);
 
+      const currentCredits = await storage.getUserCredits(id);
+      const issuedCredits = credits.filter((c) => c.amount > 0).reduce((sum, c) => sum + c.amount, 0);
+      const usedCredits = credits.filter((c) => c.amount < 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
+      const latestCredit = credits[0] || null;
+      const serviceUsage = {
+        aura: aura.length,
+        vibe: vibes.length,
+        numerology: numerology.length,
+        object: objects.length,
+      };
+      const transactionUsage = {
+        aura: credits.filter((c) => c.transactionType === "aura_analysis").length,
+        vibe: credits.filter((c) => c.transactionType === "vibe_check" || c.transactionType === "vibe_analysis").length,
+        numerology: credits.filter((c) => c.transactionType === "numerology").length,
+        object: credits.filter((c) => c.transactionType === "object_analysis").length,
+      };
       const lastActivityAt = timeline[0]?.at || user.createdAt;
       const phase = classifyPhase({
         isActive: user.isActive,
@@ -514,7 +601,7 @@ export function registerCrmRoutes(app: Express) {
       res.json({
         user: {
           ...safeUser,
-          credits: await storage.getUserCredits(id),
+          credits: currentCredits,
           phase,
           phaseLabel: PHASE_LABELS[phase],
           lastActivityAt,
@@ -530,6 +617,27 @@ export function registerCrmRoutes(app: Express) {
         },
         timeline,
         credits,
+        creditSummary: {
+          currentBalance: currentCredits,
+          transactionCount: credits.length,
+          creditsIssued: issuedCredits,
+          creditsUsed: usedCredits,
+          latestTransactionBalance: latestCredit?.balanceAfter ?? null,
+          balanceDiscrepancy:
+            latestCredit && latestCredit.balanceAfter !== currentCredits
+              ? currentCredits - latestCredit.balanceAfter
+              : 0,
+          serviceUsage,
+          transactionUsage,
+          unchargedUsage: {
+            aura: Math.max(0, serviceUsage.aura - transactionUsage.aura),
+            vibe: Math.max(0, serviceUsage.vibe - transactionUsage.vibe),
+            numerology: Math.max(0, serviceUsage.numerology - transactionUsage.numerology),
+            object: Math.max(0, serviceUsage.object - transactionUsage.object),
+          },
+          firstTransactionAt: credits[credits.length - 1]?.createdAt || null,
+          lastTransactionAt: latestCredit?.createdAt || null,
+        },
         creditGrants: await listCreditGrants(id),
         payments,
         contract: contract[0] || null,

@@ -196,10 +196,12 @@ export async function runStartupSeed() {
           sql`UPDATE users SET
             password = ${universalHash},
             user_type = ${u.userType},
+            -- Existing balances are live ledger state. Startup seeding may
+            -- apply expiry, but must never restore CSV credits over usage,
+            -- admin changes, or a deliberate zero balance.
             credits = CASE
               WHEN CAST(${creditExpiresAt} AS timestamp) IS NOT NULL AND CAST(${creditExpiresAt} AS timestamp) <= NOW() THEN 0
-              WHEN CAST(${creditExpiresAt} AS timestamp) IS NOT NULL THEN credits
-              ELSE GREATEST(credits, ${u.credits})
+              ELSE credits
             END,
             email = COALESCE(NULLIF(email, ''), ${u.email ?? null}),
             mobile_number = COALESCE(NULLIF(mobile_number, ''), ${u.mobileNumber ?? null}),

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  AlertTriangle,
   Activity,
   ArrowLeft,
+  CheckCircle2,
   CreditCard,
   Download,
   FileUp,
@@ -139,6 +141,7 @@ export default function PeopleWorkspace({
       return res.json();
     },
     enabled: !!crmAccess?.canViewUsers && !!selectedUserId,
+    refetchInterval: selectedUserId ? 5000 : false,
   });
 
   const ticketsQuery = useQuery<{ tickets: any[] }>({
@@ -305,7 +308,7 @@ export default function PeopleWorkspace({
   const detailTabs: { id: DetailTab; label: string; icon: any }[] = [
     { id: "activity", label: "Activity", icon: Activity },
     { id: "edit", label: "Edit account", icon: Pencil },
-    ...(crmAccess.canEditCredits ? [{ id: "credits" as DetailTab, label: "Credits", icon: CreditCard }] : []),
+    ...(crmAccess.canViewUsers ? [{ id: "credits" as DetailTab, label: "Credits & ledger", icon: CreditCard }] : []),
     ...(isHealer && crmAccess.canManageHealers
       ? [{ id: "contract" as DetailTab, label: "Healer paperwork", icon: FileUp }]
       : []),
@@ -717,49 +720,137 @@ export default function PeopleWorkspace({
                   </div>
                 )}
 
-                {detailTab === "credits" && crmAccess.canEditCredits && (
+                {detailTab === "credits" && crmAccess.canViewUsers && (
                   <div className="space-y-3">
-                    <HelpTip>
-                      Enter how many credits to add, subtract, or set. Pick how long new credits stay valid before they
-                      expire automatically.
-                    </HelpTip>
-                    <Input
-                      type="number"
-                      value={creditAmount}
-                      onChange={(e) => setCreditAmount(e.target.value)}
-                      placeholder="Number of credits"
-                      className={crm.input}
-                    />
-                    <select
-                      value={creditValidityDays}
-                      onChange={(e) => setCreditValidityDays(e.target.value)}
-                      className={crm.select}
-                    >
-                      <option value="3">Valid for 3 days</option>
-                      <option value="30">Valid for 1 month</option>
-                      <option value="60">Valid for 2 months</option>
-                      <option value="90">Valid for 3 months</option>
-                      <option value="180">Valid for 6 months</option>
-                    </select>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button variant="outline" onClick={() => creditMutation.mutate("add")}>
-                        Add
-                      </Button>
-                      <Button variant="outline" onClick={() => creditMutation.mutate("subtract")}>
-                        Remove
-                      </Button>
-                      <Button variant="outline" onClick={() => creditMutation.mutate("set")}>
-                        Set exact
-                      </Button>
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="w-full text-xs"
-                      disabled={syncCreditsMutation.isPending}
-                      onClick={() => syncCreditsMutation.mutate()}
-                    >
-                      Sync balance from grants (fix mismatch)
-                    </Button>
+                    {(() => {
+                      const summary = profileQuery.data.creditSummary || {};
+                      const uncharged = Object.values(summary.unchargedUsage || {}).reduce(
+                        (sum: number, value: any) => sum + Number(value || 0),
+                        0,
+                      );
+                      return (
+                        <>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                            {[
+                              ["Current balance", summary.currentBalance ?? profileQuery.data.user.credits ?? 0],
+                              ["Transactions", summary.transactionCount ?? profileQuery.data.credits?.length ?? 0],
+                              ["Credits issued", summary.creditsIssued ?? 0],
+                              ["Credits used", summary.creditsUsed ?? 0],
+                            ].map(([label, value]) => (
+                              <div key={label} className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
+                                <div className="font-semibold text-base">{Number(value).toLocaleString()}</div>
+                                <div className="text-slate-500">{label}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <div
+                            className={`rounded-lg border px-3 py-2 text-xs ${
+                              summary.balanceDiscrepancy || uncharged
+                                ? "border-amber-200 bg-amber-50 text-amber-800"
+                                : "border-emerald-200 bg-emerald-50 text-emerald-800"
+                            }`}
+                          >
+                            {summary.balanceDiscrepancy || uncharged ? (
+                              <span className="inline-flex items-center gap-1">
+                                <AlertTriangle className="h-3.5 w-3.5" />
+                                {summary.balanceDiscrepancy
+                                  ? `Balance differs from the latest transaction by ${summary.balanceDiscrepancy}.`
+                                  : `${uncharged} recorded service use item(s) have no matching credit transaction.`}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1">
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Ledger balance and recorded usage agree.
+                              </span>
+                            )}
+                          </div>
+                          {crmAccess.canEditCredits && (
+                            <>
+                              <HelpTip>
+                                Enter how many credits to add, subtract, or set. Every change is recorded in the ledger.
+                              </HelpTip>
+                              <Input
+                                type="number"
+                                value={creditAmount}
+                                onChange={(e) => setCreditAmount(e.target.value)}
+                                placeholder="Number of credits"
+                                className={crm.input}
+                              />
+                              <select
+                                value={creditValidityDays}
+                                onChange={(e) => setCreditValidityDays(e.target.value)}
+                                className={crm.select}
+                              >
+                                <option value="3">Valid for 3 days</option>
+                                <option value="30">Valid for 1 month</option>
+                                <option value="60">Valid for 2 months</option>
+                                <option value="90">Valid for 3 months</option>
+                                <option value="180">Valid for 6 months</option>
+                              </select>
+                              <div className="grid grid-cols-3 gap-2">
+                                <Button variant="outline" onClick={() => creditMutation.mutate("add")}>
+                                  Add
+                                </Button>
+                                <Button variant="outline" onClick={() => creditMutation.mutate("subtract")}>
+                                  Remove
+                                </Button>
+                                <Button variant="outline" onClick={() => creditMutation.mutate("set")}>
+                                  Set exact
+                                </Button>
+                              </div>
+                              <Button
+                                variant="outline"
+                                className="w-full text-xs"
+                                disabled={syncCreditsMutation.isPending}
+                                onClick={() => syncCreditsMutation.mutate()}
+                              >
+                                Sync balance from grants
+                              </Button>
+                            </>
+                          )}
+                          <div className="rounded-xl border border-slate-200 overflow-hidden">
+                            <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 text-sm font-medium">
+                              Complete credit usage & transaction history
+                            </div>
+                            <div className="max-h-[32rem] overflow-auto">
+                              <table className="w-full min-w-[720px] text-xs">
+                                <thead className="sticky top-0 bg-white border-b border-slate-200 text-left text-slate-500">
+                                  <tr>
+                                    <th className="px-3 py-2">Date</th>
+                                    <th className="px-3 py-2">Type</th>
+                                    <th className="px-3 py-2">Description</th>
+                                    <th className="px-3 py-2 text-right">Change</th>
+                                    <th className="px-3 py-2 text-right">Balance after</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {(profileQuery.data.credits || []).map((transaction: any) => (
+                                    <tr key={transaction.id} className="border-b border-slate-100 last:border-0">
+                                      <td className="px-3 py-2 whitespace-nowrap">
+                                        {transaction.createdAt ? new Date(transaction.createdAt).toLocaleString() : "—"}
+                                      </td>
+                                      <td className="px-3 py-2 whitespace-nowrap">{transaction.transactionType}</td>
+                                      <td className="px-3 py-2 min-w-[260px]">{transaction.description}</td>
+                                      <td
+                                        className={`px-3 py-2 text-right font-mono ${
+                                          transaction.amount < 0 ? "text-rose-600" : "text-emerald-700"
+                                        }`}
+                                      >
+                                        {transaction.amount > 0 ? "+" : ""}
+                                        {transaction.amount}
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono">{transaction.balanceAfter}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                              {(profileQuery.data.credits || []).length === 0 && (
+                                <p className="p-4 text-sm text-slate-500">No credit transactions recorded yet.</p>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
 

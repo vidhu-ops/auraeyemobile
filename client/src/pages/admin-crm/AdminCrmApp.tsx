@@ -89,6 +89,12 @@ export default function AdminCrmApp() {
     enabled: canUseCrm && !!crmAccess?.canViewRevenue && section === "money",
   });
 
+  const creditHealthQuery = useQuery<any>({
+    queryKey: ["/api/crm/credits/health"],
+    enabled: canUseCrm && !!crmAccess?.canViewUsers && (section === "money" || section === "home"),
+    refetchInterval: 10000,
+  });
+
   const auditQuery = useQuery<{ logs: any[] }>({
     queryKey: ["/api/crm/audit-logs"],
     enabled: canUseCrm && !!crmAccess?.canViewAudit && (section === "audit" || section === "home"),
@@ -119,6 +125,24 @@ export default function AdminCrmApp() {
       queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
     },
     onError: (err: any) => toast({ title: "Rollback failed", description: err.message, variant: "destructive" }),
+  });
+
+  const reconcileCreditsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/crm/credits/reconcile");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Credit ledgers reconciled",
+        description: `${data.transactionsRepaired || 0} transaction snapshots repaired and ${data.grantsAdded || 0} grant records added.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/credits/health"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/overview"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/revenue"] });
+    },
+    onError: (err: any) => toast({ title: "Credit reconciliation failed", description: err.message, variant: "destructive" }),
   });
 
   const createStaffMutation = useMutation({
@@ -660,6 +684,119 @@ export default function AdminCrmApp() {
                   </Card>
                 ))}
               </div>
+              <Card className={crm.card}>
+                <CardHeader className="pb-2 flex flex-row items-start justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-base">Credit ledger health</CardTitle>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Live check of every user balance, transaction chain, username, and grant record.
+                    </p>
+                  </div>
+                  {crmAccess?.role === "owner" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={reconcileCreditsMutation.isPending}
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "Reconcile every account while preserving each current balance? Existing credit usage amounts will be kept and any correction will be recorded.",
+                          )
+                        ) {
+                          reconcileCreditsMutation.mutate();
+                        }
+                      }}
+                    >
+                      {reconcileCreditsMutation.isPending ? "Reconciling…" : "Reconcile all ledgers"}
+                    </Button>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+                    {[
+                      ["Transactions", creditHealthQuery.data?.totalTransactions],
+                      ["Credits issued", creditHealthQuery.data?.totalCreditsIssued],
+                      ["Credits used", creditHealthQuery.data?.totalCreditsUsed],
+                      ["Chain issues", creditHealthQuery.data?.chainMismatches],
+                      ["Balance issues", creditHealthQuery.data?.balanceMismatches],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
+                        <div className="font-semibold text-base">{Number(value || 0).toLocaleString()}</div>
+                        <div className="text-slate-500">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    {[
+                      ["Username issues", creditHealthQuery.data?.usernameMismatches],
+                      ["Grant issues", creditHealthQuery.data?.grantMismatches],
+                      ["Users without ledger", creditHealthQuery.data?.usersWithoutLedger],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-lg border border-slate-100 px-3 py-2 flex justify-between">
+                        <span className="text-slate-600">{label}</span>
+                        <span className={Number(value || 0) ? "font-semibold text-amber-700" : "font-semibold text-emerald-700"}>
+                          {Number(value || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                    <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 text-sm font-medium">
+                      Accounts needing attention
+                    </div>
+                    <div className="max-h-64 overflow-auto">
+                      <table className="w-full min-w-[700px] text-xs">
+                        <thead className="sticky top-0 bg-white border-b border-slate-200 text-left text-slate-500">
+                          <tr>
+                            <th className="px-3 py-2">User</th>
+                            <th className="px-3 py-2 text-right">Current</th>
+                            <th className="px-3 py-2 text-right">Used</th>
+                            <th className="px-3 py-2 text-right">Transactions</th>
+                            <th className="px-3 py-2">Issues</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(creditHealthQuery.data?.users || [])
+                            .filter(
+                              (u: any) =>
+                                u.chainMismatches ||
+                                u.usernameMismatches ||
+                                u.grantMismatch ||
+                                (u.lastTransactionBalance !== null && u.lastTransactionBalance !== u.credits) ||
+                                (u.transactionCount === 0 && u.credits !== 0),
+                            )
+                            .map((u: any) => (
+                              <tr key={u.userId} className="border-b border-slate-100 last:border-0">
+                                <td className="px-3 py-2">@{u.username}</td>
+                                <td className="px-3 py-2 text-right font-mono">{u.credits}</td>
+                                <td className="px-3 py-2 text-right font-mono">{u.creditsUsed}</td>
+                                <td className="px-3 py-2 text-right font-mono">{u.transactionCount}</td>
+                                <td className="px-3 py-2 text-amber-700">
+                                  {[
+                                    u.chainMismatches ? `${u.chainMismatches} chain` : "",
+                                    u.usernameMismatches ? `${u.usernameMismatches} username` : "",
+                                    u.grantMismatch ? "grant" : "",
+                                    u.lastTransactionBalance !== null && u.lastTransactionBalance !== u.credits ? "balance" : "",
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ") || "opening ledger"}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                      {(creditHealthQuery.data?.users || []).filter(
+                        (u: any) =>
+                          u.chainMismatches ||
+                          u.usernameMismatches ||
+                          u.grantMismatch ||
+                          (u.lastTransactionBalance !== null && u.lastTransactionBalance !== u.credits) ||
+                          (u.transactionCount === 0 && u.credits !== 0),
+                      ).length === 0 && <p className="p-4 text-sm text-emerald-700">All credit records agree.</p>}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               <div className="grid xl:grid-cols-2 gap-4">
                 <Card className={crm.card}>
                   <CardHeader>
