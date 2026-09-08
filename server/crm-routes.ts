@@ -1680,22 +1680,46 @@ export function registerCrmRoutes(app: Express) {
     try {
       const id = parseInt(req.params.id, 10);
       const grants = await listCreditGrants(id);
+      if (grants.length === 0) {
+        return res.status(409).json({
+          message: "No credit grants exist for this account; legacy balance was not changed.",
+        });
+      }
+
       const now = new Date();
       const fromGrants = grants
         .filter((g) => g.remaining > 0 && (!g.expiresAt || new Date(g.expiresAt) > now))
         .reduce((sum, g) => sum + g.remaining, 0);
-      const before = await storage.getUserCredits(id);
-      await storage.updateUserCredits(id, fromGrants);
+
+      const { before, after } = await db.transaction(async (tx) => {
+        const [user] = await tx.select().from(users).where(eq(users.id, id)).for("update");
+        if (!user) throw new Error("User not found");
+
+        const before = Number(user.credits || 0);
+        if (before !== fromGrants) {
+          await tx.update(users).set({ credits: fromGrants }).where(eq(users.id, id));
+          await tx.insert(creditTransactions).values({
+            userId: id,
+            username: user.username,
+            amount: fromGrants - before,
+            transactionType: "credit_sync",
+            description: "Synced balance from active credit grants",
+            balanceAfter: fromGrants,
+          });
+        }
+        return { before, after: fromGrants };
+      });
+
       await writeAudit({
         actor: req.user,
         action: "credit_sync",
         entityType: "credit",
         entityId: id,
         previousValue: { credits: before },
-        newValue: { credits: fromGrants },
+        newValue: { credits: after },
         note: "Synced balance from active credit grants",
       });
-      res.json({ success: true, creditsBefore: before, creditsAfter: fromGrants });
+      res.json({ success: true, creditsBefore: before, creditsAfter: after });
     } catch (error) {
       console.error("CRM credit sync error:", error);
       res.status(500).json({ message: "Failed to sync credits" });
